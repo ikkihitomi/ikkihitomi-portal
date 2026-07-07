@@ -15,7 +15,7 @@
 
 <body>
     <main class="admin-wrap">
-        <h1>記事管理｜一箕CMS Ver1.00</h1>
+        <h1>記事管理｜一箕CMS Ver1.10</h1>
         <p>お知らせ・行事案内・活動報告などを登録します。</p>
 
         <p>
@@ -30,11 +30,72 @@
             <label>タイトル</label>
             <input type="text" id="title" />
 
+            <label>記事種類</label>
+            <select id="postType">
+                <option value="news">お知らせ</option>
+                <option value="event">イベント</option>
+                <option value="report">活動報告</option>
+                <option value="bosai">防災・緊急</option>
+                <option value="recruit">募集</option>
+            </select>
+
+
             <label>カテゴリ</label>
             <select id="category"></select>
 
+            <label>主催者</label>
+            <select id="organizer"></select>
+
             <label>本文</label>
             <textarea id="body" rows="10"></textarea>
+
+            <div id="eventFields" style="display:none;">
+                <h3>イベント情報</h3>
+
+                <label>開催日</label>
+                <input type="date" id="eventDate" />
+
+                <label>受付開始時間</label>
+                <input type="text" id="eventReceptionTime" placeholder="例：09:40" />
+
+                <label>開始時間</label>
+                <input type="text" id="eventStartTime" placeholder="例：10:00" />
+
+                <label>終了時間</label>
+                <input type="text" id="eventEndTime" placeholder="例：11:00" />
+
+                <label>開催場所</label>
+                <input type="text" id="eventLocation" />
+
+                <label>Google Map URL</label>
+                <input type="url" id="eventMapUrl" placeholder="https://maps.app.goo.gl/..." />
+
+                <label>定員</label>
+                <input type="number" id="eventCapacity" />
+
+                <label>参加費</label>
+                <input type="text" id="eventFee" placeholder="例：無料、500円" />
+
+                <label>持ち物</label>
+                <textarea id="eventBelongings" rows="3" placeholder="例：運動靴、タオル、水分補給用の飲み物"></textarea>
+
+                <label>講師</label>
+                <input type="text" id="eventLecturer" placeholder="例：武蔵 有加里 氏" />
+
+                <label>申込方法</label>
+                <textarea id="eventApplyMethod" rows="3" placeholder="例：当日受付（事前予約不要）"></textarea>
+
+                <label>申込締切</label>
+                <input type="date" id="eventDeadline" />
+
+                <label>お問い合わせ先</label>
+                <textarea id="eventContact" rows="3" placeholder="例：安部 幸子　090-5057-3227"></textarea>
+
+                <label>
+                    <input type="checkbox" id="showOnCalendar" />
+                    カレンダーに表示する
+                </label>
+            </div>
 
             <label>アイキャッチ画像</label>
 
