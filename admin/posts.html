@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>記事管理｜一箕地区ポータル</title>
+
+    <link rel="stylesheet" href="./admin.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase-config.js"></script>
+</head>
+
+<body>
+    <main class="admin-wrap">
+        <h1>記事管理｜一箕CMS Ver1.00</h1>
+        <p>お知らせ・行事案内・活動報告などを登録します。</p>
+
+        <p>
+            <a href="./index.html">← 管理トップへ戻る</a>
+        </p>
+
+        <section class="admin-card">
+            <h2>新規記事作成</h2>
+
+            <input type="hidden" id="editingPostId" />
+
+            <label>タイトル</label>
+            <input type="text" id="title" />
+
+            <label>カテゴリ</label>
+            <select id="category"></select>
+
+            <label>本文</label>
+            <textarea id="body" rows="10"></textarea>
+
+            <label>アイキャッチ画像</label>
+
+            <input type="file" id="eyecatchFile" accept="image/*">
+
+            <img id="previewImage" style="
+                    margin-top:15px;
+                    max-width:350px;
+                    display:none;
+                    border-radius:10px;
+                    ">
+            <label>公開状態</label>
+            <select id="status">
+                <option value="draft">下書き</option>
+                <option value="published">公開</option>
+                <option value="private">非公開</option>
+            </select>
+
+            <button id="saveBtn">記事を保存</button>
+
+            <div id="message" class="message"></div>
+        </section>
+
+        <section class="admin-card">
+            <h2>記事一覧</h2>
+            <div id="postsList"></div>
+        </section>
+    </main>
+
+    <script src="./posts.js"></script>
+</body>
+
+</html>
