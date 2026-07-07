@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>記事詳細｜一箕地区ポータル</title>
+
+    <link rel="stylesheet" href="../css/style.css" />
+</head>
+
+<body>
+    <main class="page-container">
+        <p class="back-link">
+            <a href="../index.html">← トップページへ戻る</a>
+        </p>
+
+        <p class="back-link">
+            <a href="../index.html#publicPostsList">
+                ← 最新のお知らせへ戻る
+            </a>
+        </p>
+
+
+        <article id="postDetail" class="content-card">
+            <p>読み込み中...</p>
+        </article>
+
+        <div class="detail-nav">
+
+            <a id="prevPost"></a>
+
+            <a href="../index.html#publicPostsList">
+                一覧へ戻る
+            </a>
+
+            <a id="nextPost"></a>
+
+        </div>
+
+
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../admin/supabase-config.js"></script>
+    <script src="../js/post-detail.js"></script>
+</body>
+
+</html>

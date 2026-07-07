@@ -108,6 +108,11 @@ async function loadPublicPosts() {
                 </p>
                 <h3>${post.title}</h3>
                 ${eventHtml}
+                
+                <p class="detail-link">
+                <a href="./news/detail.html?id=${post.id}">詳しく見る →</a>
+                </p>
+
             </div>
         `;
         publicPostsList.appendChild(article);
