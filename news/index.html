@@ -1,37 +1,63 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>お知らせ｜一箕地区ポータルサイト</title>
-  <link rel="stylesheet" href="../css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>お知らせ一覧｜一箕地区ポータル</title>
+  <meta name="description" content="一箕地区ポータルのお知らせ・行事案内・活動報告の一覧です。" />
+
+  <link rel="stylesheet" href="../css/style.css" />
 </head>
 
 <body>
+  <main class="page-container">
 
-<div id="commonHeader"></div>
+    <p class="back-link">
+      <a href="../index.html">← トップページへ戻る</a>
+    </p>
 
-<main>
-  <section class="sub-page-hero">
-    <div class="section-inner">
-      <p class="sub-label">News</p>
-      <h2>お知らせ</h2>
-      <p>一箕地区からのお知らせを掲載します。</p>
-    </div>
-  </section>
+    <section class="content-card">
+      <h1>お知らせ一覧</h1>
+      <p>一箕地区からのお知らせ・行事案内・活動報告を掲載しています。</p>
 
-  <section class="section light">
-    <div class="section-inner">
-      <h2 class="section-title">お知らせ一覧</h2>
-      <div class="news-box" id="newsBox"></div>
-    </div>
-  </section>
-</main>
+      <div class="news-filter">
+        <label>
+          カテゴリ
+          <select id="categoryFilter">
+            <option value="">すべて</option>
+          </select>
+        </label>
 
-<div id="commonFooter"></div>
+        <label>
+          キーワード検索
+          <input type="text" id="keywordFilter" placeholder="例：健康、ゴルフ、防災">
+        </label>
 
-<script src="../js/common.js"></script>
-<script src="../js/news.js"></script>
+        <label>
+          記事種類
+          <select id="typeFilter">
+            <option value="">すべて</option>
+            <option value="news">お知らせ</option>
+            <option value="event">イベント</option>
+            <option value="report">活動報告</option>
+            <option value="bosai">防災・緊急</option>
+            <option value="recruit">募集</option>
+          </select>
+        </label>
+      </div>
 
+      <div id="newsList">
+        <p>読み込み中...</p>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../admin/supabase-config.js"></script>
+  <script src="../js/news-list.js"></script>
 </body>
+
 </html>

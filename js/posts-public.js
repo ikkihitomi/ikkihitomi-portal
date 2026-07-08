@@ -1,7 +1,7 @@
 // ==============================
 // 一箕地区ポータル 公開記事表示
 // ==============================
-
+const TOP_PAGE_POSTS = 3;
 const publicPostsList = document.getElementById("publicPostsList");
 
 function formatDate(dateString) {
@@ -54,7 +54,7 @@ async function loadPublicPosts() {
         `)
         .eq("status", "published")
         .order("published_at", { ascending: false })
-        .limit(6);
+        .limit(TOP_PAGE_POSTS);
 
     if (error) {
         console.error(error);
@@ -71,6 +71,26 @@ async function loadPublicPosts() {
 
     data.forEach((post) => {
         const categoryName = post.post_categories?.name || "";
+        let categoryClass = "";
+
+        switch (categoryName) {
+
+            case "お知らせ":
+                categoryClass = "category-news";
+                break;
+
+            case "行事案内":
+                categoryClass = "category-event";
+                break;
+
+            case "活動報告":
+                categoryClass = "category-report";
+                break;
+
+            default:
+                categoryClass = "category-news";
+        }
+
         const organizerName = post.organizers?.name || "";
 
         const imageHtml = post.eyecatch_url
@@ -102,10 +122,18 @@ async function loadPublicPosts() {
             }
 
             <div class="public-post-body">
-                <p class="public-post-meta">
-                    ${categoryName ? categoryName : ""}
-                    ${organizerName ? "｜" + organizerName : ""}
-                </p>
+                <div class="public-post-meta">
+
+                <span class="post-category ${categoryClass}">
+                    ${categoryName}
+                </span>
+
+                ${organizerName
+                ? `<span class="post-organizer">｜ ${organizerName}</span>`
+                : ""
+            }
+
+                 </div>
                 <h3>${post.title}</h3>
                 ${eventHtml}
                 
