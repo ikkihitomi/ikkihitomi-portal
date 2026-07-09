@@ -232,6 +232,9 @@ async function loadPosts() {
         </div>
       <button type="button" onclick="editPost('${post.id}')">編集</button>
       <button type="button" onclick="deletePost('${post.id}')">削除</button>
+      <button type="button" onclick="prepareLinePost('${post.id}')">
+        LINE配信
+      </button>
     `;
 
         postsList.appendChild(div);
@@ -457,6 +460,59 @@ function resetForm() {
     eventContactInput.value = "";
 
     saveBtn.textContent = "記事を保存";
+}
+
+//======================================
+// LINE配信準備
+//======================================
+async function prepareLinePost(id) {
+
+    const { data, error } = await supabaseClient
+        .from("posts")
+        .select(`
+            id,
+            title,
+            body,
+            status,
+            post_type,
+            eyecatch_url
+        `)
+        .eq("id", id)
+        .single();
+
+    if (error) {
+        alert("記事を取得できません。");
+        console.error(error);
+        return;
+    }
+
+    const detailUrl =
+        `${location.origin}/news/detail.html?id=${data.id}`;
+
+    const message =
+        `この内容をLINE配信しますか？
+
+----------------------------
+タイトル：
+${data.title}
+
+公開状態：
+${data.status}
+
+詳細URL：
+${detailUrl}
+
+配信先：
+一箕地区公式LINE
+----------------------------
+
+※次の段階で実際のLINE送信処理へ進みます。`;
+
+    if (!confirm(message)) {
+        return;
+    }
+
+    alert("確認できました。次はLINE送信用 Edge Function を作成します。");
 }
 
 saveBtn.addEventListener("click", savePost);

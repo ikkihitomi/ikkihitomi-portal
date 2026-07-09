@@ -62,7 +62,6 @@ async function loadPostDetail() {
             post_categories (
                 name
             ),
-            organizer_id,
             organizers (
                 name
             )
@@ -117,23 +116,22 @@ async function loadPostDetail() {
             : "";
 
     postDetail.innerHTML = `
-        ${imageHtml}
+    <p class="detail-meta">
+        ${categoryName ? categoryName : ""}
+        ${organizerName ? "｜" + organizerName : ""}
+    </p>
 
-        <p class="detail-meta">
-            ${categoryName ? categoryName : ""}
-            ${organizerName ? "｜" + organizerName : ""}
-        </p>
+    <h1>${data.title}</h1>
 
-        <h1>${data.title}</h1>
+    ${imageHtml}
 
-        ${eventHtml}
+    ${eventHtml}
 
-        ${data.body
+    ${data.body
             ? `<div class="detail-body">${data.body.replace(/\n/g, "<br>")}</div>`
             : ""
         }
-    `;
-
+`;
     setupPostNavigation(data.id, allPosts || []);
 }
 

@@ -1,158 +1,204 @@
-// ==============================
-// 一箕地区ポータル お知らせ一覧
-// ==============================
+// =======================================
+// 一箕地区ポータルサイト
+// お知らせ一覧
+// Ver1.30
+// =======================================
 
 const newsList = document.getElementById("newsList");
-const categoryFilter = document.getElementById("categoryFilter");
-const typeFilter = document.getElementById("typeFilter");
 const keywordFilter = document.getElementById("keywordFilter");
+const typeFilter = document.getElementById("typeFilter");
+const categoryFilter = document.getElementById("categoryFilter");
 
-function formatDate(dateString) {
-    if (!dateString) return "";
+let allPosts = [];
 
-    const date = new Date(dateString);
+loadPosts();
 
-    return date.toLocaleDateString("ja-JP", {
-        year: "numeric",
-        month: "long",
-        day: "numeric"
-    });
-}
+async function loadPosts() {
 
-function formatTime(value) {
-    if (!value) return "";
-    return value.slice(0, 5);
-}
-
-async function loadCategories() {
-    const { data, error } = await supabaseClient
-        .from("post_categories")
-        .select("id, name")
-        .order("sort_order", { ascending: true });
-
-    if (error) {
-        console.error(error);
-        return;
-    }
-
-    data.forEach((cat) => {
-        const option = document.createElement("option");
-        option.value = cat.id;
-        option.textContent = cat.name;
-        categoryFilter.appendChild(option);
-    });
-}
-
-async function loadNewsList() {
     newsList.innerHTML = "<p>読み込み中...</p>";
 
-    let query = supabaseClient
+    const { data, error } = await supabaseClient
         .from("posts")
         .select(`
-            id,
-            title,
-            body,
-            status,
-            post_type,
-            category_id,
-            eyecatch_url,
-            event_date,
-            event_start_time,
-            event_end_time,
-            event_location,
-            published_at,
-            post_categories (
-                name
-            ),
-            organizers (
-                name
-            )
+            *,
+            post_categories(name),
+            organizers(name)
         `)
         .eq("status", "published")
         .order("published_at", { ascending: false });
 
-    if (categoryFilter.value) {
-        query = query.eq("category_id", categoryFilter.value);
-    }
-
-    if (typeFilter.value) {
-        query = query.eq("post_type", typeFilter.value);
-    }
-
-    const keyword = keywordFilter.value.trim();
-
-    if (keyword) {
-        query = query.or(`title.ilike.%${keyword}%,body.ilike.%${keyword}%`);
-    }
-
-
-    const { data, error } = await query;
-
     if (error) {
+
+        newsList.innerHTML = "<p>記事を取得できませんでした。</p>";
         console.error(error);
-        newsList.innerHTML = "<p>記事一覧を取得できませんでした。</p>";
         return;
+
     }
 
-    if (!data || data.length === 0) {
-        newsList.innerHTML = "<p>該当する記事はありません。</p>";
+    allPosts = data;
+
+    createCategoryList();
+
+    renderPosts(allPosts);
+
+}
+
+function createCategoryList() {
+
+    const names = [...new Set(
+        allPosts
+            .map(x => x.post_categories?.name)
+            .filter(Boolean)
+    )];
+
+    categoryFilter.innerHTML =
+        '<option value="">すべて</option>';
+
+    names.forEach(name => {
+
+        categoryFilter.innerHTML +=
+            `<option value="${name}">${name}</option>`;
+
+    });
+
+}
+
+function renderPosts(posts) {
+
+    if (posts.length === 0) {
+
+        newsList.innerHTML = "<p>記事はありません。</p>";
         return;
+
     }
 
     newsList.innerHTML = "";
 
-    data.forEach((post) => {
-        const categoryName = post.post_categories?.name || "";
-        const organizerName = post.organizers?.name || "";
+    posts.forEach(post => {
 
-        const imageHtml =
-            post.post_type === "report" && post.eyecatch_url
-                ? `<img class="news-list-image" src="${post.eyecatch_url}" alt="${post.title}">`
-                : "";
+        const category =
+            post.post_categories?.name || "";
 
-        const eventHtml =
+        const organizer =
+            post.organizers?.name || "";
+
+        const image = post.eyecatch_url
+            ? `<img class="public-post-image"
+                   src="${post.eyecatch_url}"
+                   alt="${post.title}">`
+            : "";
+
+        const eventInfo =
             post.post_type === "event"
                 ? `
-                <div class="public-event-info">
-                    ${post.event_date ? `<p>開催日：${formatDate(post.event_date)}</p>` : ""}
-                    ${post.event_start_time
-                    ? `<p>時間：${formatTime(post.event_start_time)}${post.event_end_time ? "〜" + formatTime(post.event_end_time) : ""}</p>`
-                    : ""
-                }
-                    ${post.event_location ? `<p>場所：${post.event_location}</p>` : ""}
-                </div>
-                `
+<div class="event-summary">
+
+<p><strong>開催日：</strong>${post.event_date || ""}</p>
+
+<p><strong>時間：</strong>
+${post.event_start_time || ""}
+${post.event_end_time ? "～" + post.event_end_time : ""}
+</p>
+
+<p><strong>場所：</strong>${post.event_location || ""}</p>
+
+</div>
+`
                 : "";
 
-        const article = document.createElement("article");
-        article.className = "news-list-item";
+        newsList.innerHTML += `
 
-        article.innerHTML = `
-            ${imageHtml}
+<article class="public-post-card">
 
-            <div class="news-list-body">
-                <p class="public-post-meta">
-                    ${categoryName}
-                    ${organizerName ? "｜" + organizerName : ""}
-                </p>
+${image}
 
-                <h2>${post.title}</h2>
+<div class="public-post-body">
 
-                ${eventHtml}
+<div class="post-meta">
 
-                <p class="detail-link">
-                    <a href="./detail.html?id=${post.id}">詳しく見る →</a>
-                </p>
-            </div>
-        `;
+<span class="category">${category}</span>
 
-        newsList.appendChild(article);
+${organizer ? `<span>｜${organizer}</span>` : ""}
+
+</div>
+
+<h3>${post.title}</h3>
+
+${eventInfo}
+
+<p class="public-post-date">
+
+${formatDate(post.published_at)}
+
+</p>
+
+<p>
+
+<p class="detail-link">
+  <a href="detail.html?id=${post.id}">
+    詳しく見る →
+  </a>
+</p>
+
+</p>
+
+</div>
+
+</article>
+
+`;
+
     });
+
 }
 
-categoryFilter.addEventListener("change", loadNewsList);
-typeFilter.addEventListener("change", loadNewsList);
-keywordFilter.addEventListener("input", loadNewsList);
+function formatDate(date) {
 
-loadCategories();
-loadNewsList();
+    if (!date) return "";
+
+    return new Date(date).toLocaleDateString("ja-JP");
+
+}
+
+function applyFilter() {
+
+    const keyword =
+        keywordFilter.value.toLowerCase();
+
+    const type =
+        typeFilter.value;
+
+    const category =
+        categoryFilter.value;
+
+    const filtered = allPosts.filter(post => {
+
+        const hitKeyword =
+
+            post.title.toLowerCase().includes(keyword)
+
+            ||
+
+            (post.body || "").toLowerCase().includes(keyword);
+
+        const hitType =
+            !type ||
+            post.post_type === type;
+
+        const hitCategory =
+            !category ||
+            post.post_categories?.name === category;
+
+        return hitKeyword && hitType && hitCategory;
+
+    });
+
+    renderPosts(filtered);
+
+}
+
+keywordFilter.addEventListener("input", applyFilter);
+
+typeFilter.addEventListener("change", applyFilter);
+
+categoryFilter.addEventListener("change", applyFilter);
