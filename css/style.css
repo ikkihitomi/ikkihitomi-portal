@@ -1821,3 +1821,132 @@ button:focus-visible {
     min-height: auto;
   }
 }
+
+/* ==================================================
+   Ver1.00 最新のお知らせカード調整
+================================================== */
+
+.public-post-list {
+  align-items: stretch;
+}
+
+.public-post-card {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.public-post-image-wrap {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background: #eef2f5;
+}
+
+.public-post-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.public-post-card:hover .public-post-image {
+  transform: scale(1.025);
+}
+
+/* 画像なし記事 */
+.public-post-no-image {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background:
+    linear-gradient(135deg, #edf6fb, #eef8ef);
+  color: #0c4a7c;
+}
+
+.public-post-no-image-icon {
+  font-size: 52px;
+  line-height: 1;
+}
+
+.public-post-no-image-text {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+/* カード本文 */
+.public-post-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.public-post-meta {
+  min-height: 34px;
+}
+
+.public-post-body h3 {
+  min-height: 82px;
+  margin: 0 0 14px;
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+/* 行事情報 */
+.public-event-info {
+  margin-bottom: 18px;
+}
+
+.public-event-info p {
+  word-break: break-word;
+}
+
+/* 詳しく見るを最下部に統一 */
+.public-post-detail-link {
+  margin-top: auto;
+  padding-top: 18px;
+}
+
+.public-post-detail-link a {
+  display: inline-block;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.public-post-detail-link a:hover {
+  color: #0a4f8f;
+  transform: translateX(3px);
+}
+
+/* 読み込み・エラー表示 */
+.public-post-message {
+  grid-column: 1 / -1;
+  padding: 32px;
+  border-radius: 14px;
+  background: #fff;
+  text-align: center;
+  color: #555;
+}
+
+/* スマートフォン */
+@media (max-width: 768px) {
+
+  .public-post-image-wrap,
+  .public-post-no-image {
+    height: 220px;
+  }
+
+  .public-post-body h3 {
+    min-height: auto;
+  }
+}
