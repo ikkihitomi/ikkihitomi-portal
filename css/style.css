@@ -2081,3 +2081,196 @@ button:focus-visible {
     padding: 16px;
   }
 }
+
+/* ==================================================
+   Ver1.00 Aboutページ
+================================================== */
+
+/* ページ内メニュー */
+.about-page-nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid #dfe7ed;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+.about-page-nav a {
+  color: #0c4a7c;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.about-page-nav a:hover {
+  color: #2f8f5b;
+}
+
+/* 固定メニューで見出しが隠れないようにする */
+#overview,
+#history,
+#nature,
+#community,
+#purpose,
+#operation {
+  scroll-margin-top: 90px;
+}
+
+.content-section-light {
+  background: #eef3f7;
+}
+
+.content-label {
+  margin-bottom: 6px !important;
+  color: #2f8f5b !important;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.about-note {
+  margin-top: 30px;
+  padding: 24px;
+  border-left: 5px solid #2f8f5b;
+  border-radius: 12px;
+  background: #eef8f0;
+}
+
+.about-note strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #0c4a7c;
+  font-size: 18px;
+}
+
+.about-note p {
+  margin-bottom: 0;
+}
+
+.about-link-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  margin-top: 30px;
+  padding: 24px;
+  border: 1px solid #dce5eb;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.about-link-box h4 {
+  margin-bottom: 6px;
+  color: #0c4a7c;
+  font-size: 18px;
+}
+
+.about-link-box p {
+  margin-bottom: 0;
+  font-size: 14px;
+}
+
+.about-link-box a {
+  flex: 0 0 auto;
+  padding: 11px 18px;
+  border-radius: 8px;
+  background: #0c5ca8;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.about-link-box a:hover {
+  background: #084d91;
+}
+
+.operation-table {
+  margin: 24px 0 36px;
+  overflow: hidden;
+  border: 1px solid #dde5eb;
+  border-radius: 12px;
+}
+
+.operation-table dl {
+  margin: 0;
+}
+
+.operation-table dl>div {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  border-bottom: 1px solid #dde5eb;
+}
+
+.operation-table dl>div:last-child {
+  border-bottom: none;
+}
+
+.operation-table dt,
+.operation-table dd {
+  padding: 14px 18px;
+}
+
+.operation-table dt {
+  background: #edf4f8;
+  color: #0c4a7c;
+  font-weight: 700;
+}
+
+.operation-table dd {
+  margin: 0;
+  background: #fff;
+}
+
+/* タブレット・スマートフォン */
+@media (max-width: 768px) {
+
+  .about-page-nav {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .about-page-nav a {
+    padding: 8px 5px;
+    border: 1px solid #dce5eb;
+    border-radius: 7px;
+    background: #f8fafc;
+    text-align: center;
+    font-size: 13px;
+  }
+
+  .about-link-box {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .about-link-box a {
+    text-align: center;
+  }
+
+  .operation-table dl>div {
+    grid-template-columns: 1fr;
+  }
+
+  .operation-table dt {
+    padding-bottom: 7px;
+  }
+
+  .operation-table dd {
+    padding-top: 7px;
+  }
+}
+
+@media (max-width: 420px) {
+
+  .about-page-nav {
+    grid-template-columns: 1fr;
+  }
+}
