@@ -3,51 +3,113 @@
 
 <head>
   <meta charset="UTF-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>一箕地区ポータルサイト｜会津若松市一箕地区</title>
+
   <meta name="description" content="会津若松市一箕地区の地域情報、行事予定、お知らせ、防災情報、施設予約、公式LINE案内を発信する地域ポータルサイトです。">
+
+  <meta name="robots" content="index, follow">
+
+  <link rel="canonical" href="https://ikki-portal.com/">
+
   <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
+  <!--
+    一箕地区ポータルサイト
+    Version 1.00
+    Domain: https://ikki-portal.com/
+  -->
+
   <header class="site-header">
+
     <div class="header-inner">
+
       <div class="site-title">
-        <span>会津若松市</span>
-        <h1>一箕地区ポータルサイト</h1>
-        <p>～ 人と人、地域と未来をつなぐ。～ Ver0.80</p>
+
+        <span>会津若松市 一箕地区</span>
+
+        <h1>
+          <a href="index.html">
+            一箕地区ポータルサイト
+          </a>
+        </h1>
+
+        <p>
+          ～ 人と人、地域と未来をつなぐ。～
+        </p>
+
       </div>
 
-      <nav class="global-nav">
-        <a href="index.html">🏠 ホーム</a>
-        <a href="news/">📢 お知らせ</a>
-        <a href="event/">📅 行事予定</a>
-        <a href="community/">🏘️ 町内会</a>
-        <a href="facility/">🏢 施設予約</a>
-        <a href="disaster/">🚨 防災情報</a>
-        <a href="line/">LINE 公式LINE</a>
-        <a href="photo/">📷 フォトコンテスト</a>
+      <nav class="global-nav" aria-label="メインメニュー">
+
+        <a href="index.html" aria-current="page">
+          🏠 ホーム
+        </a>
+
+        <a href="news/">
+          📢 お知らせ
+        </a>
+
+        <a href="event/">
+          📅 行事予定
+        </a>
+
+        <a href="community/">
+          🏘️ 町内会
+        </a>
+
+        <a href="facility/">
+          🏢 施設予約
+        </a>
+
+        <a href="disaster/">
+          🚨 防災情報
+        </a>
+
+        <a href="line/">
+          LINE 公式LINE
+        </a>
+
+        <a href="photo/">
+          📷 フォトコンテスト
+        </a>
+
       </nav>
+
+    </div>
+
   </header>
+
 
   <main>
 
-    <section class="hero">
+    <!-- メインビジュアル -->
+    <section class="hero" aria-label="一箕地区の紹介">
+
       <div class="hero-bg hero-bg-1"></div>
       <div class="hero-bg hero-bg-2"></div>
 
       <div class="hero-content">
-        <p class="hero-photo-label">フォトコンテスト2025 応募作品</p>
 
-        <p class="hero-lead">ようこそ、一箕地区へ</p>
+        <p class="hero-photo-label">
+          フォトコンテスト2025 応募作品
+        </p>
+
+        <p class="hero-lead">
+          ようこそ、一箕地区へ
+        </p>
 
         <h2>
           人と自然、歴史がつながる<br>
           まち、一箕地区。
         </h2>
 
-        <div class="hero-line"></div>
+        <div class="hero-line" aria-hidden="true"></div>
 
         <p class="hero-text">
           四季折々の美しい風景、地域の行事、<br>
@@ -56,25 +118,49 @@
         </p>
 
         <div class="hero-buttons">
-          <a href="#news" class="hero-button primary">最新のお知らせを見る</a>
-          <a href="#events" class="hero-button secondary">行事予定を確認する</a>
+
+          <a href="#news" class="hero-button primary">
+            最新のお知らせを見る
+          </a>
+
+          <a href="#main-menu" class="hero-button secondary">
+            主なメニューを見る
+          </a>
+
         </div>
 
         <div class="hero-photo-info">
-          <span id="heroPhotoTitle">一箕地区の風景</span>
-          <span id="heroPhotoCount">1 / 9</span>
+
+          <span id="heroPhotoTitle">
+            一箕地区の風景
+          </span>
+
+          <span id="heroPhotoCount">
+            1 / 9
+          </span>
+
         </div>
 
       </div>
-      <button class="hero-nav hero-prev" type="button">‹</button>
-      <button class="hero-nav hero-next" type="button">›</button>
 
-      <div class="hero-dots" id="heroDots"></div>
+      <button class="hero-nav hero-prev" type="button" aria-label="前の写真を表示">
+        ‹
+      </button>
+
+      <button class="hero-nav hero-next" type="button" aria-label="次の写真を表示">
+        ›
+      </button>
+
+      <div class="hero-dots" id="heroDots" aria-label="写真の選択"></div>
 
     </section>
 
-    <section class="section">
+
+    <!-- 最新のお知らせ -->
+    <section class="section" id="news">
+
       <div class="section-inner">
+
         <div class="section-heading">
 
           <h2 class="section-title-center">
@@ -88,103 +174,238 @@
         </p>
 
         <p class="more-link-right">
-          <a href="./news/index.html">
+
+          <a href="news/">
             すべて見る →
           </a>
+
         </p>
-        <div id="publicPostsList" class="public-post-list">
+
+        <div id="publicPostsList" class="public-post-list" aria-live="polite">
+
           <p>読み込み中...</p>
+
         </div>
 
+        <noscript>
+          <p>
+            お知らせを表示するには、JavaScriptを有効にしてください。
+          </p>
+        </noscript>
 
       </div>
+
     </section>
 
 
+    <!-- 主なメニュー -->
     <section class="section light" id="main-menu">
+
       <div class="section-inner">
-        <h2 class="section-title">主なメニュー</h2>
+
+        <h2 class="section-title">
+          主なメニュー
+        </h2>
 
         <div class="card-grid menu-grid-7">
 
           <a class="menu-card" href="news/">
-            <div class="card-icon">📢</div>
+
+            <div class="card-icon" aria-hidden="true">
+              📢
+            </div>
+
             <h3>お知らせ</h3>
-            <p>地域からのお知らせを掲載しています。</p>
-            <span>→</span>
+
+            <p>
+              地域からのお知らせを掲載しています。
+            </p>
+
+            <span aria-hidden="true">→</span>
+
           </a>
+
 
           <a class="menu-card" href="event/">
-            <div class="card-icon">📅</div>
+
+            <div class="card-icon" aria-hidden="true">
+              📅
+            </div>
+
             <h3>行事予定</h3>
-            <p>地区行事やイベント予定を確認できます。</p>
-            <span>→</span>
+
+            <p>
+              地区行事やイベント予定を確認できます。
+            </p>
+
+            <span aria-hidden="true">→</span>
+
           </a>
+
 
           <a class="menu-card" href="community/">
-            <div class="card-icon">🏘️</div>
+
+            <div class="card-icon" aria-hidden="true">
+              🏘️
+            </div>
+
             <h3>町内会紹介</h3>
-            <p>一箕地区内の町内会情報を掲載します。</p>
-            <span>→</span>
+
+            <p>
+              一箕地区内の町内会情報を掲載します。
+            </p>
+
+            <span aria-hidden="true">→</span>
+
           </a>
+
 
           <a class="menu-card" href="facility/">
-            <div class="card-icon">🏢</div>
+
+            <div class="card-icon" aria-hidden="true">
+              🏢
+            </div>
+
             <h3>施設予約</h3>
-            <p>集会所などの利用案内や予約へ進みます。</p>
-            <span>→</span>
+
+            <p>
+              集会所などの利用案内や予約へ進みます。
+            </p>
+
+            <span aria-hidden="true">→</span>
+
           </a>
+
 
           <a class="menu-card" href="disaster/">
-            <div class="card-icon">🛡️</div>
+
+            <div class="card-icon" aria-hidden="true">
+              🛡️
+            </div>
+
             <h3>防災情報</h3>
-            <p>災害時に必要な情報をまとめます。</p>
-            <span>→</span>
+
+            <p>
+              災害時に必要な情報をまとめます。
+            </p>
+
+            <span aria-hidden="true">→</span>
+
           </a>
+
 
           <a class="menu-card" href="line/">
-            <div class="card-icon line-icon">LINE</div>
+
+            <div class="card-icon line-icon" aria-hidden="true">
+              LINE
+            </div>
+
             <h3>公式LINE</h3>
-            <p>公式LINEで最新情報を受け取れます。</p>
-            <span>→</span>
+
+            <p>
+              公式LINEで最新情報を受け取れます。
+            </p>
+
+            <span aria-hidden="true">→</span>
+
           </a>
 
+
           <a class="menu-card photo-card" href="photo/">
-            <div class="card-icon">📷</div>
+
+            <div class="card-icon" aria-hidden="true">
+              📷
+            </div>
+
             <h3>フォトコンテスト</h3>
-            <p>応募作品や地域の風景写真を紹介します。</p>
-            <span>→</span>
+
+            <p>
+              応募作品や地域の風景写真を紹介します。
+            </p>
+
+            <span aria-hidden="true">→</span>
+
           </a>
 
         </div>
+
       </div>
+
     </section>
 
   </main>
 
+
   <footer class="site-footer">
+
     <div class="footer-inner">
 
-      <h2>一箕地区ポータルサイト</h2>
+      <h2>
+        一箕地区ポータルサイト
+      </h2>
 
       <p>
-        ～ 人と人、地域と未来をつなぐ。～
+        ～ 人と人、地域と未来をつなぐ～
       </p>
 
-      <nav class="footer-nav">
-        <a href="index.html">ホーム</a>
-        <a href="news/">お知らせ</a>
-        <a href="event/">行事予定</a>
-        <a href="community/">町内会紹介</a>
-        <a href="facility/">施設予約</a>
-        <a href="disaster/">防災情報</a>
-        <a href="line/">公式LINE</a>
-        <a href="photo/">フォトコンテスト</a>
+      <nav class="footer-nav" aria-label="フッターメニュー">
 
-        <a href="sitemap/">サイトマップ</a>
-        <a href="terms/">利用規約</a>
-        <a href="privacy/">プライバシーポリシー</a>
-        <a href="contact/">お問い合わせ</a>
+        <a href="index.html">
+          ホーム
+        </a>
+
+        <a href="news/">
+          お知らせ
+        </a>
+
+        <a href="event/">
+          行事予定
+        </a>
+
+        <a href="community/">
+          町内会紹介
+        </a>
+
+        <a href="facility/">
+          施設予約
+        </a>
+
+        <a href="disaster/">
+          防災情報
+        </a>
+
+        <a href="line/">
+          公式LINE
+        </a>
+
+        <a href="photo/">
+          フォトコンテスト
+        </a>
+
+        <a href="about/">
+          運営情報
+        </a>
+
+        <a href="sitemap/">
+          サイトマップ
+        </a>
+
+        <a href="terms/">
+          利用規約
+        </a>
+
+        <a href="privacy/">
+          プライバシーポリシー
+        </a>
+
+        <a href="contact/">
+          お問い合わせ
+        </a>
+
+        <a href="release/">
+          更新履歴
+        </a>
+
       </nav>
 
       <p class="copyright">
@@ -192,15 +413,17 @@
       </p>
 
     </div>
+
   </footer>
 
 
+  <!-- メインビジュアル -->
   <script src="js/hero.js"></script>
 
-
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./admin/supabase-config.js"></script>
-  <script src="./js/posts-public.js"></script>
+  <script src="admin/supabase-config.js"></script>
+  <script src="js/posts-public.js"></script>
 
 </body>
 
