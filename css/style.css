@@ -1069,6 +1069,11 @@ body {
 }
 
 
+/* ==========================================================
+   Ver1.00 追加CSS
+========================================================== */
+
+
 /* ==================================================
    一箕地区ポータル Ver1.00
    ヘッダー・ナビゲーション・スマートフォン調整
@@ -1295,6 +1300,156 @@ button:focus-visible {
 
   .blog-introduction-panel {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ==================================================
+   Ver1.00 一箕地区について
+================================================== */
+
+.about-introduction {
+  background: #fff;
+}
+
+.about-introduction-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  align-items: center;
+  gap: 60px;
+}
+
+.about-label {
+  color: #2f8f5b;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  margin-bottom: 14px;
+}
+
+.about-introduction-text h2 {
+  color: #0c4a7c;
+  font-size: 34px;
+  line-height: 1.55;
+  margin-bottom: 24px;
+}
+
+.about-introduction-text p {
+  color: #444;
+  line-height: 2;
+  margin-bottom: 16px;
+}
+
+.about-button {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 13px 24px;
+  border: 2px solid #0c5ca8;
+  border-radius: 8px;
+  color: #0c5ca8;
+  background: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.about-button:hover {
+  color: #fff;
+  background: #0c5ca8;
+  transform: translateY(-2px);
+}
+
+.about-information {
+  display: grid;
+  gap: 16px;
+}
+
+.about-information-item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px;
+  border: 1px solid #e0e8ef;
+  border-radius: 16px;
+  background: #f8fafc;
+  color: #1f2d3d;
+  text-decoration: none;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.about-information-item:hover {
+  transform: translateY(-3px);
+  border-color: #8bbf9a;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.about-information-icon {
+  flex: 0 0 58px;
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #e8f3ed;
+  font-size: 28px;
+}
+
+.about-information-item h3 {
+  color: #0c4a7c;
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.about-information-item p {
+  color: #555;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* タブレット・スマートフォン */
+@media (max-width: 850px) {
+
+  .about-introduction-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .about-introduction-text h2 {
+    font-size: 27px;
+  }
+
+  .about-button {
+    display: block;
+    text-align: center;
+  }
+
+  .about-information-item {
+    padding: 18px;
+  }
+
+  .about-information-icon {
+    flex-basis: 50px;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+  }
+}
+
+.about-introduction {
+  padding-top: 56px;
+  padding-bottom: 56px;
+
+  #main-menu {
+    padding-top: 56px;
   }
 }
 
