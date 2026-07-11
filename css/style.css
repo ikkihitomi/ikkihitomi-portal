@@ -1165,6 +1165,139 @@ button:focus-visible {
   padding: 3px 0;
 }
 
+/* ==================================================
+   Ver1.00 地域ブログ追加
+================================================== */
+
+.photo-card {
+  grid-column: span 1;
+}
+
+.blog-card {
+  background: linear-gradient(135deg, #ffffff, #eef7ff);
+}
+
+.blog-card h3 {
+  color: #1f6fb2;
+}
+
+/* ==================================================
+   Ver1.00 地域ブログ紹介
+================================================== */
+
+.blog-section {
+  background: linear-gradient(135deg, #edf6fc, #f4fbf4);
+}
+
+.blog-introduction {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  align-items: center;
+  gap: 50px;
+  padding: 50px;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+}
+
+.blog-label {
+  color: #2f8f5b;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  margin-bottom: 12px;
+}
+
+.blog-introduction h2 {
+  color: #0c4a7c;
+  font-size: 34px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.blog-introduction-text>p:not(.blog-label) {
+  color: #444;
+  line-height: 2;
+  margin-bottom: 26px;
+}
+
+.blog-button {
+  display: inline-block;
+  padding: 13px 24px;
+  border-radius: 8px;
+  background: #0c5ca8;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.blog-button:hover {
+  background: #084d91;
+  transform: translateY(-2px);
+}
+
+.blog-introduction-panel {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.blog-introduction-panel span {
+  min-height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  border-radius: 14px;
+  background: #eef6fb;
+  color: #0c4a7c;
+  font-weight: 700;
+  text-align: center;
+}
+
+.blog-introduction-panel span:nth-child(2),
+.blog-introduction-panel span:nth-child(3) {
+  background: #eef8ef;
+  color: #2f7f48;
+}
+
+@media (max-width: 768px) {
+
+  .blog-introduction {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding: 30px 22px;
+  }
+
+  .blog-introduction h2 {
+    font-size: 27px;
+  }
+
+  .blog-introduction-panel {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .blog-introduction-panel span {
+    min-height: 80px;
+    font-size: 14px;
+  }
+
+  .blog-button {
+    display: block;
+    text-align: center;
+  }
+}
+
+@media (max-width: 420px) {
+
+  .blog-introduction-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* --------------------------
    タブレット
 -------------------------- */
