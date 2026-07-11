@@ -2689,3 +2689,34 @@ button:focus-visible {
     height: 200px;
   }
 }
+
+/* ==================================================
+   Ver1.00 公式LINEアカウント情報
+================================================== */
+
+.line-account-info {
+  margin: 24px 0 18px;
+  padding: 18px 20px;
+  border-left: 5px solid #30b84a;
+  border-radius: 10px;
+  background: #f1faf3;
+}
+
+.line-account-name {
+  margin-bottom: 5px !important;
+  color: #0c4a7c !important;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.line-account-id {
+  margin-bottom: 0 !important;
+  color: #444 !important;
+  font-size: 15px;
+}
+
+.line-account-id strong {
+  color: #218a38;
+  font-size: 18px;
+  letter-spacing: 0.04em;
+}
