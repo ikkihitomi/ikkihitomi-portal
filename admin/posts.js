@@ -79,6 +79,25 @@ eyecatchFile.addEventListener("change", () => {
 // アイキャッチ画像アップロード
 // ==============================
 async function uploadEyecatch() {
+
+    console.log("uploadEyecatch 開始");
+
+    const {
+        data: { session },
+        error: sessionError
+    } = await supabaseClient.auth.getSession();
+
+    console.log("Supabase session:", session);
+
+    if (sessionError) {
+        console.error("セッション取得エラー:", sessionError);
+        throw sessionError;
+    }
+
+    if (!session) {
+        throw new Error("Supabaseにログインしていません。");
+    }
+
     const file = eyecatchFile.files[0];
 
     if (!file) return currentEyecatchUrl || null;
