@@ -3354,6 +3354,136 @@ button:focus-visible {
   line-height: 1.9;
 }
 
+/* ==========================================
+   町内会紹介カード
+========================================== */
+
+.neighborhood-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+  margin-top: 40px;
+}
+
+.neighborhood-card {
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #dfe7da;
+  border-radius: 20px;
+  box-shadow: 0 10px 28px rgba(29, 66, 35, 0.08);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.neighborhood-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 34px rgba(29, 66, 35, 0.14);
+}
+
+.neighborhood-card-image-link {
+  display: block;
+  overflow: hidden;
+  background: #edf3e9;
+}
+
+.neighborhood-card-image {
+  display: block;
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+
+  /* 画像の上側を優先して表示 */
+  object-position: center 20%;
+}
+
+.neighborhood-card:hover .neighborhood-card-image {
+  transform: scale(1.035);
+}
+
+.neighborhood-card-body {
+  padding: 24px 26px 26px;
+}
+
+.neighborhood-card-title {
+  margin: 0 0 14px;
+  font-size: 1.25rem;
+  line-height: 1.5;
+}
+
+.neighborhood-card-title a {
+  color: #164e7a;
+  text-decoration: none;
+}
+
+.neighborhood-card-title a:hover {
+  text-decoration: underline;
+}
+
+.neighborhood-card-excerpt {
+  margin: 0 0 22px;
+  color: #505b55;
+  font-size: 0.96rem;
+  line-height: 1.9;
+}
+
+.neighborhood-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #3f7727;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.neighborhood-card-link:hover {
+  text-decoration: underline;
+}
+
+.neighborhood-loading,
+.wordpress-loading,
+.wordpress-empty,
+.wordpress-error {
+  grid-column: 1 / -1;
+  padding: 32px;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 16px;
+}
+
+.neighborhood-card-info {
+  margin: 10px 0 20px;
+  color: #555;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.neighborhood-card-info p {
+  margin: 2px 0;
+}
+
+.neighborhood-info-label {
+  display: inline-block;
+  min-width: 58px;
+  margin-left: 4px;
+}
+
+/* スマートフォン */
+@media (max-width: 768px) {
+  .neighborhood-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .neighborhood-card-image {
+    height: 200px;
+  }
+
+  .neighborhood-card-body {
+    padding: 20px;
+  }
+}
+
 /* カード一覧 */
 
 .neighborhood-grid {

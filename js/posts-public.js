@@ -279,4 +279,43 @@ async function loadPublicPosts() {
     }
 }
 
+function getNeighborhoodBasicInfo(html = "") {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+
+    const rows = doc.querySelectorAll(
+        ".neighborhood-basic-info tbody tr, table tbody tr"
+    );
+
+    const info = {
+        district: "一箕地区",
+        meetingPlace: "未登録",
+        households: "未登録"
+    };
+
+    rows.forEach((row) => {
+        const cells = row.querySelectorAll("th, td");
+
+        if (cells.length < 2) return;
+
+        const label = cells[0].textContent.trim();
+        const value = cells[1].textContent.trim();
+
+        if (label === "地区") {
+            info.district = value;
+        }
+
+        if (label === "集会所") {
+            info.meetingPlace = value;
+        }
+
+        if (label === "世帯数") {
+            info.households = value;
+        }
+    });
+
+    return info;
+}
+
+
 loadPublicPosts();

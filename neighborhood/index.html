@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="一箕地区の町内会をご紹介します。各町内会の概要、活動、年間行事、地域の様子をご覧いただけます。">
+
+    <title>町内会紹介｜一箕地区ポータル</title>
+
+    <!-- 共通CSS -->
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- 町内会紹介ページ専用CSS -->
+    <link rel="stylesheet" href="../css/neighborhood.css">
+</head>
+
+<body>
+
+    <!-- 共通ヘッダー -->
+    <div id="commonHeader"></div>
+
+
+    <main>
+
+        <!-- ページタイトル -->
+        <section class="page-hero">
+            <div class="page-hero-inner">
+
+                <p class="page-hero-label">
+                    Neighborhood Associations
+                </p>
+
+                <h1>町内会紹介</h1>
+
+                <p class="page-hero-description">
+                    一箕地区で活動する町内会をご紹介します。
+                    地域の特色や活動内容、年間行事などをご覧ください。
+                </p>
+
+            </div>
+        </section>
+
+
+        <!-- パンくず -->
+        <nav class="breadcrumb" aria-label="パンくずリスト">
+            <div class="breadcrumb-inner">
+
+                <a href="../index.html">
+                    ホーム
+                </a>
+
+                <span aria-hidden="true">›</span>
+
+                <span aria-current="page">
+                    町内会紹介
+                </span>
+
+            </div>
+        </nav>
+
+
+        <!-- 町内会紹介 -->
+        <section class="neighborhood-section">
+
+            <div class="section-inner">
+
+                <div class="section-heading">
+
+                    <p class="section-heading-label">
+                        一箕地区の町内会
+                    </p>
+
+                    <h2>町内会一覧</h2>
+
+                    <p>
+                        WordPressに登録された町内会紹介を表示しています。
+                    </p>
+
+                </div>
+
+
+                <!--
+                    wordpress-neighborhood.jsが
+                    この場所に町内会カードを表示します
+                -->
+                <div id="neighborhoodPosts" class="wordpress-posts-grid neighborhood-posts-grid">
+                    <p class="wordpress-loading">
+                        町内会紹介を読み込んでいます。
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- 案内 -->
+        <section class="neighborhood-guide">
+
+            <div class="section-inner">
+
+                <div class="guide-box">
+
+                    <h2>町内会情報について</h2>
+
+                    <p>
+                        掲載内容の追加や修正については、
+                        一箕地区ポータル運用事務局までお知らせください。
+                    </p>
+
+                    <a href="../contact/" class="button-primary">
+                        お問い合わせ
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- 共通フッター -->
+    <div id="commonFooter"></div>
+
+
+    <!-- 共通JavaScript -->
+    <script src="../js/common.js"></script>
+
+    <!-- 町内会紹介取得JavaScript -->
+    <script src="../js/wordpress-neighborhood.js"></script>
+
+</body>
+
+</html>
