@@ -3468,6 +3468,149 @@ button:focus-visible {
   margin-left: 4px;
 }
 
+.organization-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
+}
+
+.neighborhood-section .section-footer,
+.organization-section .section-footer {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.organization-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+  margin-top: 40px;
+}
+
+.neighborhood-card {
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.neighborhood-card-image-link {
+  display: block;
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+}
+
+.neighborhood-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+}
+
+.neighborhood-card-body {
+  padding: 24px;
+}
+
+.neighborhood-card-title {
+  margin: 0 0 16px;
+  font-size: 1.25rem;
+}
+
+.neighborhood-card-title a {
+  color: #124b83;
+  text-decoration: none;
+}
+
+.neighborhood-card-info {
+  margin-bottom: 22px;
+}
+
+.neighborhood-card-info p {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 8px 0;
+  line-height: 1.6;
+}
+
+.neighborhood-info-label {
+  min-width: 72px;
+  font-weight: 500;
+}
+
+.neighborhood-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #124b83;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.organization-section {
+  padding: 72px 20px;
+  background: #f4f7fb;
+}
+
+.organization-section .container {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+}
+
+.organization-section .section-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.organization-section .section-header h2 {
+  color: #124b83;
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.organization-section .section-header p {
+  margin: 18px 0 0;
+  color: #334155;
+  font-size: 1.1rem;
+}
+
+.organization-section .section-header::after {
+  content: "";
+  display: block;
+  width: 80px;
+  height: 3px;
+  background: #4CAF50;
+  margin: 20px auto 0;
+}
+
+.organization-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 40px;
+}
+
+.organization-section .section-footer {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.organization-section .more-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 265px;
+  padding: 15px 28px;
+  color: #376d23;
+  font-weight: 700;
+  text-decoration: none;
+  border: 2px solid #4d832f;
+  border-radius: 999px;
+  background: #fff;
+}
+
 /* スマートフォン */
 @media (max-width: 768px) {
   .neighborhood-grid {
@@ -3481,6 +3624,29 @@ button:focus-visible {
 
   .neighborhood-card-body {
     padding: 20px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .organization-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+
+  .organization-section {
+    padding: 56px 16px;
+  }
+
+  .organization-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .neighborhood-card-image-link {
+    height: 210px;
   }
 }
 
