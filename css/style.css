@@ -3611,6 +3611,91 @@ button:focus-visible {
   background: #fff;
 }
 
+.staff-section {
+  padding: 72px 20px;
+  background: #ffffff;
+}
+
+.staff-section .container {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+}
+
+.staff-section .section-header {
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.staff-section .section-header h2 {
+  margin: 0;
+  color: #124b83;
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.staff-section .section-header p {
+  margin: 18px 0 0;
+  color: #334155;
+  font-size: 1.1rem;
+}
+
+.staff-section .section-header::after {
+  content: "";
+  display: block;
+  width: 80px;
+  height: 3px;
+  margin: 24px auto 0;
+  background: #4ba44f;
+}
+
+.staff-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+}
+
+.staff-section .section-footer {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.staff-section .more-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 300px;
+  padding: 15px 28px;
+  color: #376d23;
+  font-weight: 700;
+  text-decoration: none;
+  border: 2px solid #4d832f;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.staff-grid:has(.neighborhood-card:only-child) {
+  grid-template-columns: minmax(0, 520px);
+  justify-content: center;
+}
+
+@media screen and (max-width: 768px) {
+
+  .staff-section {
+    padding: 56px 16px;
+  }
+
+  .staff-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .staff-section .more-button {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+
 /* スマートフォン */
 @media (max-width: 768px) {
   .neighborhood-grid {
