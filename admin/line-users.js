@@ -4,10 +4,11 @@
    一箕地区ポータル
    LINE登録者管理
 
-   Ver1.32
+   Ver1.35
    ・登録者一覧表示
    ・検索・絞り込み
    ・配信対象者の選択
+   ・4桁マスターコード連携
 ========================================== */
 
 
@@ -811,8 +812,11 @@ async function loadLineUsers() {
                     registered_name,
                     district_name,
                     neighborhood_name,
+                    neighborhood_code,
                     district_group,
+                    district_code,
                     organization_name,
+                    organization_code,
                     email,
                     phone,
                     admin_note,
@@ -878,6 +882,22 @@ async function loadLineUsers() {
    9. 登録者情報の編集
 ========================================== */
 
+/*
+ * Ver1.35
+ * マスター連携処理でinputがselectへ置き換わるため、
+ * 編集時には常に現在のHTML要素を取得します。
+ */
+function getUserEditMasterControls() {
+    return {
+        neighborhood:
+            document.getElementById("edit-neighborhood-name"),
+        district:
+            document.getElementById("edit-district-group"),
+        organization:
+            document.getElementById("edit-organization-name"),
+    };
+}
+
 function openUserEditModal(userId) {
 
     const user =
@@ -890,22 +910,40 @@ function openUserEditModal(userId) {
         return;
     }
 
+    const masterControls =
+        getUserEditMasterControls();
+
     editLineUserIdInput.value =
         user.id || "";
 
     editRegisteredNameInput.value =
         user.registered_name || "";
 
-    editNeighborhoodNameInput.value =
+    masterControls.neighborhood.value =
         user.neighborhood_name
         || user.district_name
         || "";
 
-    editDistrictGroupInput.value =
+    masterControls.district.value =
         user.district_group || "";
 
-    editOrganizationNameInput.value =
+    masterControls.organization.value =
         user.organization_name || "";
+
+    /*
+     * Ver1.35
+     * 既存のマスターコードを編集項目へ保持します。
+     * 選択内容を変更しないで保存した場合も、
+     * 現在のコードが失われません。
+     */
+    masterControls.neighborhood.dataset.masterCode =
+        user.neighborhood_code || "";
+
+    masterControls.district.dataset.masterCode =
+        user.district_code || "";
+
+    masterControls.organization.dataset.masterCode =
+        user.organization_code || "";
 
     editEmailInput.value =
         user.email || "";
@@ -968,17 +1006,20 @@ async function saveUserEdit(event) {
         return;
     }
 
+    const masterControls =
+        getUserEditMasterControls();
+
     const registeredName =
         editRegisteredNameInput.value.trim();
 
     const neighborhoodName =
-        editNeighborhoodNameInput.value.trim();
+        masterControls.neighborhood.value.trim();
 
     const districtGroup =
-        editDistrictGroupInput.value.trim();
+        masterControls.district.value.trim();
 
     const organizationName =
-        editOrganizationNameInput.value.trim();
+        masterControls.organization.value.trim();
 
     const email =
         editEmailInput.value.trim();
@@ -988,6 +1029,20 @@ async function saveUserEdit(event) {
 
     const adminNote =
         editAdminNoteInput.value.trim();
+
+    /*
+     * Ver1.35
+     * line-users-relation_Ver1.35.jsから、
+     * 地区・町内会・所属団体のコードを取得します。
+     */
+    const masterCodes =
+        window.getLineUserMasterCodes
+            ? window.getLineUserMasterCodes()
+            : {
+                neighborhood_code: null,
+                district_code: null,
+                organization_code: null,
+            };
 
     if (
         email
@@ -1027,6 +1082,18 @@ async function saveUserEdit(event) {
                         districtGroup || null,
                     organization_name:
                         organizationName || null,
+
+                    /*
+                     * Ver1.35
+                     * 表示名と併せてマスターコードを保存します。
+                     */
+                    neighborhood_code:
+                        masterCodes.neighborhood_code,
+                    district_code:
+                        masterCodes.district_code,
+                    organization_code:
+                        masterCodes.organization_code,
+
                     email:
                         email || null,
                     phone:
@@ -1066,6 +1133,15 @@ async function saveUserEdit(event) {
 
             targetUser.organization_name =
                 organizationName || null;
+
+            targetUser.neighborhood_code =
+                masterCodes.neighborhood_code;
+
+            targetUser.district_code =
+                masterCodes.district_code;
+
+            targetUser.organization_code =
+                masterCodes.organization_code;
 
             targetUser.email =
                 email || null;
