@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>住民登録｜一箕地区ポータル</title>
+
+    <link rel="stylesheet" href="./style.css">
+
+    <!-- LIFF SDK -->
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+
+<body>
+
+    <main class="register-page">
+
+        <section class="register-card">
+
+            <div class="register-header">
+
+                <p class="register-label">
+                    一箕地区ポータル【公式】
+                </p>
+
+                <h1>
+                    住民登録
+                </h1>
+
+                <p class="register-lead">
+                    お住まいの地区に合わせた情報をお届けするため、
+                    氏名と地区名をご登録ください。
+                </p>
+
+            </div>
+
+            <div id="loading-message" class="status-message">
+                LINE情報を確認しています。
+            </div>
+
+            <form id="resident-form" class="resident-form" hidden>
+
+                <div class="profile-box">
+
+                    <img id="profile-image" class="profile-image" src="" alt="LINEプロフィール画像" hidden>
+
+                    <div>
+                        <p class="profile-caption">
+                            LINE表示名
+                        </p>
+
+                        <p id="display-name" class="profile-name">
+                            確認中
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="registered-name">
+                        氏名
+                        <span class="required">
+                            必須
+                        </span>
+                    </label>
+
+                    <input type="text" id="registered-name" name="registered_name" maxlength="50" autocomplete="name"
+                        placeholder="例：一箕 太郎" required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="district-name">
+                        地区名
+                        <span class="required">
+                            必須
+                        </span>
+                    </label>
+
+                    <select id="district-name" name="district_name" required>
+                        <option value="">
+                            選択してください
+                        </option>
+
+                        <option value="一箕地区">
+                            一箕地区
+                        </option>
+
+                        <option value="地区外">
+                            地区外
+                        </option>
+
+                        <option value="その他">
+                            その他
+                        </option>
+                    </select>
+
+                </div>
+
+                <div class="privacy-box">
+
+                    <p>
+                        ご登録いただいた情報は、一箕地区ポータルからの
+                        情報提供および運営管理のために使用します。
+                    </p>
+
+                </div>
+
+                <button type="submit" id="submit-button" class="submit-button">
+                    登録する
+                </button>
+
+                <p id="form-message" class="form-message" aria-live="polite"></p>
+
+            </form>
+
+            <div id="complete-message" class="complete-message" hidden>
+
+                <div class="complete-icon">
+                    ✓
+                </div>
+
+                <h2>
+                    登録が完了しました
+                </h2>
+
+                <p>
+                    ご登録ありがとうございます。
+                    一箕地区の情報をLINEでお届けします。
+                </p>
+
+                <button type="button" id="close-button" class="close-button">
+                    画面を閉じる
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="./app.js"></script>
+
+</body>
+
+</html>
