@@ -3,7 +3,7 @@
 /*
  * LIFFアプリ作成後に書き換えます。
  */
-const LIFF_ID = "YOUR_LIFF_ID";
+const LIFF_ID = "2010870639-dCVC8ERa";
 
 /*
  * 次の工程で作るSupabase Edge Functionです。
