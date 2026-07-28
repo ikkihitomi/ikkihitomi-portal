@@ -4,7 +4,7 @@
    一箕地区ポータル
    LINE登録者管理
 
-   Ver1.30-4
+   Ver1.32
    ・登録者一覧表示
    ・検索・絞り込み
    ・配信対象者の選択
@@ -105,6 +105,51 @@ const deliveryFormMessage =
 
 const deliverySubmitButton =
     document.getElementById("delivery-submit-button");
+
+
+/* 登録者編集ダイアログ */
+
+const userEditModal =
+    document.getElementById("user-edit-modal");
+
+const userEditModalClose =
+    document.getElementById("user-edit-modal-close");
+
+const userEditCancelButton =
+    document.getElementById("user-edit-cancel-button");
+
+const userEditForm =
+    document.getElementById("user-edit-form");
+
+const editLineUserIdInput =
+    document.getElementById("edit-line-user-id");
+
+const editRegisteredNameInput =
+    document.getElementById("edit-registered-name");
+
+const editNeighborhoodNameInput =
+    document.getElementById("edit-neighborhood-name");
+
+const editDistrictGroupInput =
+    document.getElementById("edit-district-group");
+
+const editOrganizationNameInput =
+    document.getElementById("edit-organization-name");
+
+const editEmailInput =
+    document.getElementById("edit-email");
+
+const editPhoneInput =
+    document.getElementById("edit-phone");
+
+const editAdminNoteInput =
+    document.getElementById("edit-admin-note");
+
+const userEditMessage =
+    document.getElementById("user-edit-message");
+
+const userEditSubmitButton =
+    document.getElementById("user-edit-submit-button");
 
 /* ==========================================
   Ver1.31
@@ -272,7 +317,11 @@ function getFilteredUsers() {
         const searchText = [
             user.display_name,
             user.registered_name,
-            user.district_name,
+            user.neighborhood_name,
+            user.district_group,
+            user.organization_name,
+            user.email,
+            user.phone,
         ]
             .filter(Boolean)
             .join(" ")
@@ -287,9 +336,13 @@ function getFilteredUsers() {
         }
 
         // 地区
-        if (
+        if (district === "未設定") {
+            if (user.district_group) {
+                return false;
+            }
+        } else if (
             district
-            && user.district_name !== district
+            && user.district_group !== district
         ) {
             return false;
         }
@@ -481,7 +534,7 @@ function renderLineUsers() {
         lineUsersBody.innerHTML = `
             <tr>
                 <td
-                    colspan="7"
+                    colspan="10"
                     class="admin-empty-cell"
                 >
                     条件に一致する登録者はいません。
@@ -618,7 +671,24 @@ function renderLineUsers() {
 
             <td>
                 ${escapeHtml(
-                user.district_name
+                user.neighborhood_name
+                || user.district_name
+                || "-",
+            )
+            }
+            </td>
+
+            <td>
+                ${escapeHtml(
+                user.district_group
+                || "未設定",
+            )
+            }
+            </td>
+
+            <td>
+                ${escapeHtml(
+                user.organization_name
                 || "-",
             )
             }
@@ -639,6 +709,16 @@ function renderLineUsers() {
                 ),
             )
             }
+            </td>
+
+            <td>
+                <button
+                    type="button"
+                    class="admin-button secondary line-user-edit-button"
+                    data-user-id="${escapeHtml(user.id || "")}"
+                >
+                    編集
+                </button>
             </td>
         `;
 
@@ -680,6 +760,20 @@ function renderLineUsers() {
             );
         }
 
+        const editButton =
+            row.querySelector(
+                ".line-user-edit-button",
+            );
+
+        if (editButton) {
+            editButton.addEventListener(
+                "click",
+                () => {
+                    openUserEditModal(user.id);
+                },
+            );
+        }
+
         lineUsersBody.appendChild(row);
     }
 
@@ -716,6 +810,12 @@ async function loadLineUsers() {
                     is_following,
                     registered_name,
                     district_name,
+                    neighborhood_name,
+                    district_group,
+                    organization_name,
+                    email,
+                    phone,
+                    admin_note,
                     registration_completed,
                     created_at,
                     updated_at
@@ -753,7 +853,7 @@ async function loadLineUsers() {
         lineUsersBody.innerHTML = `
             <tr>
                 <td
-                    colspan="7"
+                    colspan="10"
                     class="admin-empty-cell"
                 >
                     データを取得できませんでした。
@@ -775,7 +875,253 @@ async function loadLineUsers() {
 }
 
 /* ==========================================
-   9. LINE配信
+   9. 登録者情報の編集
+========================================== */
+
+function openUserEditModal(userId) {
+
+    const user =
+        lineUsers.find(
+            item => String(item.id) === String(userId),
+        );
+
+    if (!user) {
+        alert("登録者情報を確認できませんでした。");
+        return;
+    }
+
+    editLineUserIdInput.value =
+        user.id || "";
+
+    editRegisteredNameInput.value =
+        user.registered_name || "";
+
+    editNeighborhoodNameInput.value =
+        user.neighborhood_name
+        || user.district_name
+        || "";
+
+    editDistrictGroupInput.value =
+        user.district_group || "";
+
+    editOrganizationNameInput.value =
+        user.organization_name || "";
+
+    editEmailInput.value =
+        user.email || "";
+
+    editPhoneInput.value =
+        user.phone || "";
+
+    editAdminNoteInput.value =
+        user.admin_note || "";
+
+    userEditMessage.textContent = "";
+    userEditMessage.className =
+        "delivery-form-message";
+
+    userEditModal.hidden = false;
+
+    document.body.classList.add(
+        "delivery-modal-open",
+    );
+
+    window.setTimeout(
+        () => {
+            editRegisteredNameInput.focus();
+        },
+        50,
+    );
+}
+
+
+function closeUserEditModal() {
+
+    if (userEditSubmitButton.disabled) {
+        return;
+    }
+
+    userEditModal.hidden = true;
+
+    if (deliveryModal.hidden) {
+        document.body.classList.remove(
+            "delivery-modal-open",
+        );
+    }
+}
+
+
+async function saveUserEdit(event) {
+
+    event.preventDefault();
+
+    const userId =
+        editLineUserIdInput.value.trim();
+
+    if (!userId) {
+        userEditMessage.textContent =
+            "更新する登録者を確認できません。";
+
+        userEditMessage.className =
+            "delivery-form-message error";
+
+        return;
+    }
+
+    const registeredName =
+        editRegisteredNameInput.value.trim();
+
+    const neighborhoodName =
+        editNeighborhoodNameInput.value.trim();
+
+    const districtGroup =
+        editDistrictGroupInput.value.trim();
+
+    const organizationName =
+        editOrganizationNameInput.value.trim();
+
+    const email =
+        editEmailInput.value.trim();
+
+    const phone =
+        editPhoneInput.value.trim();
+
+    const adminNote =
+        editAdminNoteInput.value.trim();
+
+    if (
+        email
+        && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    ) {
+        userEditMessage.textContent =
+            "メールアドレスの形式を確認してください。";
+
+        userEditMessage.className =
+            "delivery-form-message error";
+
+        editEmailInput.focus();
+        return;
+    }
+
+    userEditSubmitButton.disabled = true;
+    userEditSubmitButton.textContent =
+        "保存しています";
+
+    userEditMessage.textContent =
+        "登録者情報を保存しています。";
+
+    userEditMessage.className =
+        "delivery-form-message";
+
+    try {
+
+        const { error } =
+            await supabaseClient
+                .from("line_users")
+                .update({
+                    registered_name:
+                        registeredName || null,
+                    neighborhood_name:
+                        neighborhoodName || null,
+                    district_group:
+                        districtGroup || null,
+                    organization_name:
+                        organizationName || null,
+                    email:
+                        email || null,
+                    phone:
+                        phone || null,
+                    admin_note:
+                        adminNote || null,
+                    updated_at:
+                        new Date().toISOString(),
+                })
+                .eq("id", userId);
+
+        if (error) {
+            throw error;
+        }
+
+        /*
+         * Supabaseへの保存完了後は、一覧を再取得せず、
+         * 画面上で保持している登録者データを更新します。
+         * これにより、保存後の再読込待ちで画面が止まることを防ぎます。
+         */
+        const targetUser =
+            lineUsers.find(
+                user =>
+                    String(user.id)
+                    === String(userId),
+            );
+
+        if (targetUser) {
+            targetUser.registered_name =
+                registeredName || null;
+
+            targetUser.neighborhood_name =
+                neighborhoodName || null;
+
+            targetUser.district_group =
+                districtGroup || null;
+
+            targetUser.organization_name =
+                organizationName || null;
+
+            targetUser.email =
+                email || null;
+
+            targetUser.phone =
+                phone || null;
+
+            targetUser.admin_note =
+                adminNote || null;
+
+            targetUser.updated_at =
+                new Date().toISOString();
+        }
+
+        updateSummary();
+        renderLineUsers();
+
+        userEditMessage.textContent =
+            "登録者情報を保存しました。";
+
+        userEditMessage.className =
+            "delivery-form-message success";
+
+        window.setTimeout(
+            () => {
+                closeUserEditModal();
+            },
+            600,
+        );
+
+    } catch (error) {
+
+        console.error(
+            "LINE user update error:",
+            error,
+        );
+
+        userEditMessage.textContent =
+            error instanceof Error
+                ? error.message
+                : "登録者情報の保存に失敗しました。";
+
+        userEditMessage.className =
+            "delivery-form-message error";
+
+    } finally {
+
+        userEditSubmitButton.disabled = false;
+        userEditSubmitButton.textContent =
+            "保存";
+    }
+}
+
+
+/* ==========================================
+   10. LINE配信
 ========================================== */
 
 /**
@@ -1154,7 +1500,7 @@ async function sendLineMessage(event) {
 }
 
 /* ==========================================
-   10. イベント
+   11. イベント
 ========================================== */
 
 // 検索
@@ -1266,21 +1612,56 @@ deliveryModal.addEventListener(
     },
 );
 
+userEditForm.addEventListener(
+    "submit",
+    saveUserEdit,
+);
+
+userEditModalClose.addEventListener(
+    "click",
+    closeUserEditModal,
+);
+
+userEditCancelButton.addEventListener(
+    "click",
+    closeUserEditModal,
+);
+
+userEditModal.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target.matches(
+                "[data-close-user-edit-modal]",
+            )
+        ) {
+            closeUserEditModal();
+        }
+    },
+);
+
 document.addEventListener(
     "keydown",
     event => {
 
-        if (
-            event.key === "Escape"
-            && !deliveryModal.hidden
-        ) {
+        if (event.key !== "Escape") {
+            return;
+        }
+
+        if (!userEditModal.hidden) {
+            closeUserEditModal();
+            return;
+        }
+
+        if (!deliveryModal.hidden) {
             closeDeliveryModal();
         }
     },
 );
 
 /* ==========================================
-   11. 初期表示
+   12. 初期表示
 ========================================== */
 
 /* ==========================================

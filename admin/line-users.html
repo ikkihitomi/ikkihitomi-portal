@@ -14,6 +14,7 @@
 <body>
 
     <header class="admin-header">
+
         <div>
             <p class="admin-header-label">
                 一箕地区ポータル
@@ -27,12 +28,14 @@
         <a href="./index.html" class="admin-back-link">
             管理トップへ戻る
         </a>
+
     </header>
 
     <main class="admin-main">
 
         <section class="admin-panel">
 
+            <!-- 集計 -->
             <div class="line-user-summary">
 
                 <div class="summary-card">
@@ -57,6 +60,7 @@
 
             </div>
 
+            <!-- 検索 -->
             <div class="line-user-filters">
 
                 <div class="filter-item">
@@ -64,19 +68,24 @@
                         検索
                     </label>
 
-                    <input type="search" id="search-input" placeholder="表示名・氏名を検索">
+                    <input type="search" id="search-input" placeholder="表示名・氏名・町内会を検索">
                 </div>
 
                 <div class="filter-item">
                     <label for="district-filter">
-                        地区
+                        7地区
                     </label>
 
                     <select id="district-filter">
                         <option value="">すべて</option>
-                        <option value="一箕地区">一箕地区</option>
-                        <option value="地区外">地区外</option>
-                        <option value="その他">その他</option>
+                        <option value="未設定">未設定</option>
+                        <option value="第1地区">第1地区</option>
+                        <option value="第2地区">第2地区</option>
+                        <option value="第3地区">第3地区</option>
+                        <option value="第4地区">第4地区</option>
+                        <option value="第5地区">第5地区</option>
+                        <option value="第6地区">第6地区</option>
+                        <option value="第7地区">第7地区</option>
                     </select>
                 </div>
 
@@ -110,6 +119,7 @@
 
             </div>
 
+            <!-- 配信対象 -->
             <div class="line-delivery-panel">
 
                 <div>
@@ -147,32 +157,26 @@
                 LINE登録者を読み込んでいます。
             </p>
 
-            <thead>
-                <tr>
-                    <th>
-                        <input type="checkbox" id="select-all-checkbox" aria-label="表示中の登録者をすべて選択">
-                    </th>
-                    <th>LINE</th>
-                    <th>登録氏名</th>
-                    <th>地区</th>
-                    <th>登録状況</th>
-                    <th>友だち状態</th>
-                    <th>登録日時</th>
-                </tr>
-            </thead>
-
+            <!-- 一覧 -->
             <div class="admin-table-wrap">
 
                 <table class="admin-table">
 
                     <thead>
                         <tr>
+                            <th>
+                                <input type="checkbox" id="select-all-checkbox" aria-label="表示中の登録者をすべて選択">
+                            </th>
+
                             <th>LINE</th>
                             <th>登録氏名</th>
-                            <th>地区</th>
+                            <th>町内会</th>
+                            <th>7地区</th>
+                            <th>所属団体</th>
                             <th>登録状況</th>
                             <th>友だち状態</th>
                             <th>登録日時</th>
+                            <th>編集</th>
                         </tr>
                     </thead>
 
@@ -186,14 +190,13 @@
 
     </main>
 
-    <!-- ==========================================
-     LINE配信ダイアログ
-========================================== -->
-
+    <!-- LINE配信ダイアログ -->
     <div id="delivery-modal" class="delivery-modal" hidden>
+
         <div class="delivery-modal-backdrop" data-close-delivery-modal></div>
 
         <section class="delivery-modal-card" role="dialog" aria-modal="true" aria-labelledby="delivery-modal-title">
+
             <div class="delivery-modal-header">
 
                 <div>
@@ -237,10 +240,10 @@
                         配信本文
                     </label>
 
-                    <textarea id="delivery-body" rows="7" maxlength="1000" placeholder="配信する内容を入力してください。"></textarea>
+                    <textarea id="delivery-body" rows="7" maxlength="500" placeholder="配信する内容を入力してください。"></textarea>
 
                     <p class="delivery-input-note">
-                        LINEでは本文の先頭300文字を配信します。
+                        LINE配信は100～150文字程度を推奨します。
                     </p>
 
                 </div>
@@ -280,11 +283,127 @@
             </form>
 
         </section>
+
+    </div>
+
+    <!-- 登録者編集ダイアログ -->
+    <div id="user-edit-modal" class="delivery-modal" hidden>
+
+        <div class="delivery-modal-backdrop" data-close-user-edit-modal></div>
+
+        <section class="delivery-modal-card" role="dialog" aria-modal="true" aria-labelledby="user-edit-modal-title">
+
+            <div class="delivery-modal-header">
+
+                <div>
+                    <p class="delivery-modal-label">
+                        LINE登録者情報
+                    </p>
+
+                    <h2 id="user-edit-modal-title">
+                        登録者情報の編集
+                    </h2>
+                </div>
+
+                <button type="button" id="user-edit-modal-close" class="delivery-modal-close" aria-label="編集画面を閉じる">
+                    ×
+                </button>
+
+            </div>
+
+            <form id="user-edit-form">
+
+                <input type="hidden" id="edit-line-user-id">
+
+                <div class="delivery-form-group">
+                    <label for="edit-registered-name">
+                        氏名
+                    </label>
+
+                    <input type="text" id="edit-registered-name" maxlength="100">
+                </div>
+
+                <div class="delivery-form-group">
+                    <label for="edit-neighborhood-name">
+                        町内会名
+                    </label>
+
+                    <input type="text" id="edit-neighborhood-name" maxlength="100" placeholder="例：八幡町内会">
+                </div>
+
+                <div class="delivery-form-group">
+                    <label for="edit-district-group">
+                        7地区
+                    </label>
+
+                    <select id="edit-district-group">
+                        <option value="">未設定</option>
+                        <option value="第1地区">第1地区</option>
+                        <option value="第2地区">第2地区</option>
+                        <option value="第3地区">第3地区</option>
+                        <option value="第4地区">第4地区</option>
+                        <option value="第5地区">第5地区</option>
+                        <option value="第6地区">第6地区</option>
+                        <option value="第7地区">第7地区</option>
+                    </select>
+                </div>
+
+                <div class="delivery-form-group">
+                    <label for="edit-organization-name">
+                        所属団体
+                    </label>
+
+                    <input type="text" id="edit-organization-name" maxlength="200" placeholder="例：区長会、防犯協会">
+                </div>
+
+                <div class="delivery-form-group">
+                    <label for="edit-email">
+                        メールアドレス
+                    </label>
+
+                    <input type="email" id="edit-email" maxlength="200">
+                </div>
+
+                <div class="delivery-form-group">
+                    <label for="edit-phone">
+                        電話番号
+                    </label>
+
+                    <input type="tel" id="edit-phone" maxlength="30">
+                </div>
+
+                <div class="delivery-form-group">
+                    <label for="edit-admin-note">
+                        管理者備考
+                    </label>
+
+                    <textarea id="edit-admin-note" rows="4" maxlength="500"></textarea>
+                </div>
+
+                <p id="user-edit-message" class="delivery-form-message" aria-live="polite"></p>
+
+                <div class="delivery-modal-actions">
+
+                    <button type="button" id="user-edit-cancel-button" class="admin-button secondary">
+                        キャンセル
+                    </button>
+
+                    <button type="submit" id="user-edit-submit-button" class="admin-button">
+                        保存
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
     <script src="./line-users.js"></script>
+
 </body>
 
 </html>
