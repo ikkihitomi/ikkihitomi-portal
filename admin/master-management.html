@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マスター管理｜一箕地区ポータル</title>
+    <link rel="stylesheet" href="./master-management.css">
+</head>
+
+<body>
+    <header class="page-header">
+        <div>
+            <p class="eyebrow">一箕地区ポータル 管理画面</p>
+            <h1>マスター管理</h1>
+        </div>
+        <a class="back-link" href="./index.html">管理トップへ戻る</a>
+    </header>
+
+    <main class="container">
+        <section class="notice">
+            <strong>Ver1.33</strong>
+            <span>地区・町内会・所属団体を管理できます。CSVによる一括登録・出力にも対応しています。</span>
+        </section>
+
+        <section class="summary-grid" aria-label="登録件数">
+            <article class="summary-card">
+                <span>地区</span>
+                <strong id="district-count">0</strong>
+            </article>
+            <article class="summary-card">
+                <span>町内会</span>
+                <strong id="neighborhood-count">0</strong>
+            </article>
+            <article class="summary-card">
+                <span>所属団体</span>
+                <strong id="organization-count">0</strong>
+            </article>
+        </section>
+
+        <nav class="tabs" aria-label="マスター切替">
+            <button class="tab-button is-active" data-master="district" type="button">地区マスター</button>
+            <button class="tab-button" data-master="neighborhood" type="button">町内会マスター</button>
+            <button class="tab-button" data-master="organization" type="button">所属団体マスター</button>
+        </nav>
+
+        <section class="toolbar">
+            <div class="toolbar-left">
+                <button id="add-button" class="primary-button" type="button">新規追加</button>
+                <label class="secondary-button file-label">
+                    CSV取込
+                    <input id="csv-file-input" type="file" accept=".csv,text/csv" hidden>
+                </label>
+                <button id="csv-export-button" class="secondary-button" type="button">CSV出力</button>
+            </div>
+
+            <div class="toolbar-right">
+                <input id="master-search" type="search" placeholder="コード・名称で検索">
+                <select id="active-filter">
+                    <option value="all">すべて</option>
+                    <option value="true">使用中</option>
+                    <option value="false">停止中</option>
+                </select>
+            </div>
+        </section>
+
+        <p id="page-message" class="page-message" aria-live="polite"></p>
+
+        <section class="table-wrap">
+            <table>
+                <thead id="master-table-head"></thead>
+                <tbody id="master-table-body"></tbody>
+            </table>
+        </section>
+    </main>
+
+    <div id="edit-modal" class="modal" hidden>
+        <div class="modal-backdrop" data-close-modal></div>
+
+        <section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <header class="modal-header">
+                <div>
+                    <p class="eyebrow">マスター情報</p>
+                    <h2 id="modal-title">新規追加</h2>
+                </div>
+                <button class="icon-button" type="button" data-close-modal aria-label="閉じる">×</button>
+            </header>
+
+            <form id="master-form">
+                <input id="edit-id" type="hidden">
+
+                <div class="form-grid">
+                    <label>
+                        <span>コード</span>
+                        <input id="edit-code" type="text" maxlength="50" required>
+                    </label>
+
+                    <label>
+                        <span>名称</span>
+                        <input id="edit-name" type="text" maxlength="100" required>
+                    </label>
+
+                    <label id="district-code-field" hidden>
+                        <span>所属地区</span>
+                        <select id="edit-district-code"></select>
+                    </label>
+
+                    <label>
+                        <span>表示順</span>
+                        <input id="edit-sort-order" type="number" min="0" step="1" value="0">
+                    </label>
+
+                    <label class="checkbox-label">
+                        <input id="edit-is-active" type="checkbox" checked>
+                        <span>使用中</span>
+                    </label>
+                </div>
+
+                <p id="form-message" class="form-message" aria-live="polite"></p>
+
+                <footer class="modal-footer">
+                    <button class="secondary-button" type="button" data-close-modal>キャンセル</button>
+                    <button id="save-button" class="primary-button" type="submit">保存</button>
+                </footer>
+            </form>
+        </section>
+    </div>
+
+    <!--
+      既存のSupabase設定ファイル名に合わせて変更してください。
+      このファイル内で window.supabaseClient が作成されている必要があります。
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase-config.js"></script>
+    <script src="./master-management.js"></script>
+</body>
+
+</html>
