@@ -86,3 +86,138 @@ body {
     color: #666;
     font-size: 14px;
 }
+
+/* ==========================================
+   LINE登録者管理
+========================================== */
+
+.line-user-summary {
+    margin-bottom: 24px;
+    display: grid;
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.summary-card {
+    padding: 18px;
+    background: #f5f9f8;
+    border: 1px solid #dce7e4;
+    border-radius: 10px;
+}
+
+.summary-card span {
+    display: block;
+    color: #657280;
+    font-size: 0.86rem;
+}
+
+.summary-card strong {
+    display: block;
+    margin-top: 6px;
+    color: #173b63;
+    font-size: 1.7rem;
+}
+
+.line-user-filters {
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.filter-item {
+    min-width: 170px;
+}
+
+.filter-item label {
+    margin-bottom: 5px;
+    display: block;
+    font-weight: 700;
+}
+
+.filter-item input,
+.filter-item select {
+    width: 100%;
+    min-height: 42px;
+    padding: 8px 10px;
+    border: 1px solid #bbc8c5;
+    border-radius: 7px;
+}
+
+.line-user-profile {
+    min-width: 210px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.line-user-profile small {
+    margin-top: 3px;
+    display: block;
+    color: #71808e;
+}
+
+.line-user-picture,
+.line-user-picture-placeholder {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    border-radius: 50%;
+}
+
+.line-user-picture {
+    object-fit: cover;
+}
+
+.line-user-picture-placeholder {
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    background: #25a67b;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.status-badge {
+    padding: 4px 9px;
+    display: inline-block;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.status-badge.completed,
+.status-badge.following {
+    color: #176a4e;
+    background: #e0f5ec;
+}
+
+.status-badge.incomplete {
+    color: #8a6415;
+    background: #fff2cf;
+}
+
+.status-badge.unfollowed {
+    color: #8b3c3c;
+    background: #f8dddd;
+}
+
+.admin-empty-cell {
+    padding: 30px;
+    color: #71808e;
+    text-align: center;
+}
+
+@media screen and (max-width: 800px) {
+
+    .line-user-summary {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .filter-item {
+        width: 100%;
+    }
+}
