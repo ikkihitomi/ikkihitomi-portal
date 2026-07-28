@@ -1,5 +1,21 @@
 "use strict";
 
+/* ==========================================
+   一箕地区ポータル
+   LINE登録者管理
+
+   Ver1.30-4
+   ・登録者一覧表示
+   ・検索・絞り込み
+   ・配信対象者の選択
+========================================== */
+
+
+/* ==========================================
+   1. HTML要素
+========================================== */
+
+// 集計
 const followingCount =
     document.getElementById("following-count");
 
@@ -12,6 +28,8 @@ const incompleteCount =
 const unfollowedCount =
     document.getElementById("unfollowed-count");
 
+
+// 検索・絞り込み
 const searchInput =
     document.getElementById("search-input");
 
@@ -27,14 +45,91 @@ const followingFilter =
 const refreshButton =
     document.getElementById("refresh-button");
 
+
+// 表示
 const statusMessage =
     document.getElementById("status-message");
 
 const lineUsersBody =
     document.getElementById("line-users-body");
 
+
+// 配信対象選択
+const selectAllCheckbox =
+    document.getElementById("select-all-checkbox");
+
+const selectFilteredButton =
+    document.getElementById("select-filtered-button");
+
+const clearSelectionButton =
+    document.getElementById("clear-selection-button");
+
+const selectedCount =
+    document.getElementById("selected-count");
+
+const deliveryButton =
+    document.getElementById("delivery-button");
+
+
+/* 配信ダイアログ */
+
+const deliveryModal =
+    document.getElementById("delivery-modal");
+
+const deliveryModalClose =
+    document.getElementById("delivery-modal-close");
+
+const deliveryCancelButton =
+    document.getElementById("delivery-cancel-button");
+
+const deliveryTargetCount =
+    document.getElementById("delivery-target-count");
+
+const deliveryForm =
+    document.getElementById("delivery-form");
+
+const deliveryTitleInput =
+    document.getElementById("delivery-title");
+
+const deliveryBodyInput =
+    document.getElementById("delivery-body");
+
+const deliveryUrlInput =
+    document.getElementById("delivery-url");
+
+const deliveryPreviewText =
+    document.getElementById("delivery-preview-text");
+
+const deliveryFormMessage =
+    document.getElementById("delivery-form-message");
+
+const deliverySubmitButton =
+    document.getElementById("delivery-submit-button");
+
+
+/* ==========================================
+   2. データ保持
+========================================== */
+
 let lineUsers = [];
 
+/*
+ * 配信対象として選択した
+ * LINE User IDを保持します。
+ */
+const selectedUserIds = new Set();
+
+
+/* ==========================================
+   3. 共通関数
+========================================== */
+
+/**
+ * HTMLへ表示する文字列を安全に変換します。
+ *
+ * @param {unknown} value
+ * @returns {string}
+ */
 function escapeHtml(value) {
 
     return String(value ?? "")
@@ -45,6 +140,13 @@ function escapeHtml(value) {
         .replaceAll("'", "&#039;");
 }
 
+
+/**
+ * 日時を日本語表示へ変換します。
+ *
+ * @param {string|null|undefined} value
+ * @returns {string}
+ */
 function formatDate(value) {
 
     if (!value) {
@@ -69,42 +171,79 @@ function formatDate(value) {
     ).format(date);
 }
 
+
+/**
+ * 配信可能な登録者か判定します。
+ *
+ * @param {object} user
+ * @returns {boolean}
+ */
+function canDeliverToUser(user) {
+
+    return (
+        user.is_following === true
+        && user.registration_completed === true
+        && Boolean(user.line_user_id)
+    );
+}
+
+
+/* ==========================================
+   4. 集計表示
+========================================== */
+
 function updateSummary() {
 
     const following =
         lineUsers.filter(
-            user => user.is_following === true,
+            user =>
+                user.is_following === true,
         ).length;
 
     const completed =
         lineUsers.filter(
             user =>
-                user.registration_completed === true
-                && user.is_following === true,
+                user.is_following === true
+                && user.registration_completed === true,
         ).length;
 
     const incomplete =
         lineUsers.filter(
             user =>
-                user.registration_completed !== true
-                && user.is_following === true,
+                user.is_following === true
+                && user.registration_completed !== true,
         ).length;
 
     const unfollowed =
         lineUsers.filter(
-            user => user.is_following !== true,
+            user =>
+                user.is_following !== true,
         ).length;
 
-    followingCount.textContent = following;
-    completedCount.textContent = completed;
-    incompleteCount.textContent = incomplete;
-    unfollowedCount.textContent = unfollowed;
+    followingCount.textContent =
+        String(following);
+
+    completedCount.textContent =
+        String(completed);
+
+    incompleteCount.textContent =
+        String(incomplete);
+
+    unfollowedCount.textContent =
+        String(unfollowed);
 }
+
+
+/* ==========================================
+   5. 絞り込み
+========================================== */
 
 function getFilteredUsers() {
 
     const keyword =
-        searchInput.value.trim().toLowerCase();
+        searchInput.value
+            .trim()
+            .toLowerCase();
 
     const district =
         districtFilter.value;
@@ -126,6 +265,7 @@ function getFilteredUsers() {
             .join(" ")
             .toLowerCase();
 
+        // キーワード検索
         if (
             keyword
             && !searchText.includes(keyword)
@@ -133,6 +273,7 @@ function getFilteredUsers() {
             return false;
         }
 
+        // 地区
         if (
             district
             && user.district_name !== district
@@ -140,6 +281,7 @@ function getFilteredUsers() {
             return false;
         }
 
+        // 住民登録状況
         if (
             registration === "completed"
             && user.registration_completed !== true
@@ -154,6 +296,7 @@ function getFilteredUsers() {
             return false;
         }
 
+        // 友だち状態
         if (
             following === "following"
             && user.is_following !== true
@@ -172,6 +315,147 @@ function getFilteredUsers() {
     });
 }
 
+
+/* ==========================================
+   6. 配信対象選択
+========================================== */
+
+function updateSelectedCount() {
+
+    selectedCount.textContent =
+        String(selectedUserIds.size);
+
+    deliveryButton.disabled =
+        selectedUserIds.size === 0;
+}
+
+
+/**
+ * 現在表示中の配信可能者が
+ * 全員選択されているか確認します。
+ */
+function updateSelectAllCheckbox() {
+
+    const deliverableUsers =
+        getFilteredUsers()
+            .filter(canDeliverToUser);
+
+    if (deliverableUsers.length === 0) {
+
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+        selectAllCheckbox.disabled = true;
+
+        return;
+    }
+
+    selectAllCheckbox.disabled = false;
+
+    const selectedInCurrentView =
+        deliverableUsers.filter(
+            user =>
+                selectedUserIds.has(
+                    user.line_user_id,
+                ),
+        ).length;
+
+    selectAllCheckbox.checked =
+        selectedInCurrentView
+        === deliverableUsers.length;
+
+    selectAllCheckbox.indeterminate =
+        selectedInCurrentView > 0
+        && selectedInCurrentView
+        < deliverableUsers.length;
+}
+
+
+/**
+ * 表示中の配信可能者をすべて選択します。
+ */
+function selectFilteredUsers() {
+
+    const filteredUsers =
+        getFilteredUsers();
+
+    for (const user of filteredUsers) {
+
+        if (canDeliverToUser(user)) {
+
+            selectedUserIds.add(
+                user.line_user_id,
+            );
+        }
+    }
+
+    renderLineUsers();
+}
+
+
+/**
+ * 表示中の登録者だけ選択解除します。
+ */
+function deselectFilteredUsers() {
+
+    const filteredUsers =
+        getFilteredUsers();
+
+    for (const user of filteredUsers) {
+
+        if (user.line_user_id) {
+
+            selectedUserIds.delete(
+                user.line_user_id,
+            );
+        }
+    }
+
+    renderLineUsers();
+}
+
+
+/**
+ * 全選択を解除します。
+ */
+function clearSelection() {
+
+    selectedUserIds.clear();
+
+    renderLineUsers();
+}
+
+
+/**
+ * 再読み込みで存在しなくなったIDを
+ * 選択リストから削除します。
+ */
+function cleanupSelectedUserIds() {
+
+    const existingIds =
+        new Set(
+            lineUsers
+                .filter(canDeliverToUser)
+                .map(
+                    user => user.line_user_id,
+                ),
+        );
+
+    for (const lineUserId of selectedUserIds) {
+
+        if (!existingIds.has(lineUserId)) {
+
+            selectedUserIds.delete(
+                lineUserId,
+            );
+        }
+    }
+}
+
+
+/* ==========================================
+   7. 一覧表示
+========================================== */
+
 function renderLineUsers() {
 
     const filteredUsers =
@@ -183,7 +467,10 @@ function renderLineUsers() {
 
         lineUsersBody.innerHTML = `
             <tr>
-                <td colspan="6" class="admin-empty-cell">
+                <td
+                    colspan="7"
+                    class="admin-empty-cell"
+                >
                     条件に一致する登録者はいません。
                 </td>
             </tr>
@@ -192,6 +479,9 @@ function renderLineUsers() {
         statusMessage.textContent =
             "0件を表示しています。";
 
+        updateSelectedCount();
+        updateSelectAllCheckbox();
+
         return;
     }
 
@@ -199,6 +489,15 @@ function renderLineUsers() {
 
         const row =
             document.createElement("tr");
+
+        const canDeliver =
+            canDeliverToUser(user);
+
+        const isChecked =
+            canDeliver
+            && selectedUserIds.has(
+                user.line_user_id,
+            );
 
         const pictureHtml =
             user.picture_url
@@ -210,44 +509,106 @@ function renderLineUsers() {
                     >
                 `
                 : `
-                    <span class="line-user-picture-placeholder">
+                    <span
+                        class="line-user-picture-placeholder"
+                        aria-hidden="true"
+                    >
                         LINE
                     </span>
                 `;
 
         const registrationBadge =
             user.registration_completed === true
-                ? `<span class="status-badge completed">登録済み</span>`
-                : `<span class="status-badge incomplete">未登録</span>`;
+                ? `
+                    <span class="status-badge completed">
+                        登録済み
+                    </span>
+                `
+                : `
+                    <span class="status-badge incomplete">
+                        未登録
+                    </span>
+                `;
 
         const followingBadge =
             user.is_following === true
-                ? `<span class="status-badge following">友だち</span>`
-                : `<span class="status-badge unfollowed">解除済み</span>`;
+                ? `
+                    <span class="status-badge following">
+                        友だち
+                    </span>
+                `
+                : `
+                    <span class="status-badge unfollowed">
+                        解除済み
+                    </span>
+                `;
 
         row.innerHTML = `
             <td>
+                <input
+                    type="checkbox"
+                    class="line-user-checkbox"
+                    data-line-user-id="${escapeHtml(
+            user.line_user_id || "",
+        )
+            }"
+                    ${isChecked
+                ? "checked"
+                : ""
+            }
+                    ${canDeliver
+                ? ""
+                : "disabled"
+            }
+                    aria-label="${escapeHtml(
+                user.display_name
+                || user.registered_name
+                || "LINE利用者",
+            )
+            }を選択"
+                >
+            </td>
+
+            <td>
                 <div class="line-user-profile">
+
                     ${pictureHtml}
 
                     <div>
                         <strong>
-                            ${escapeHtml(user.display_name || "名称なし")}
+                            ${escapeHtml(
+                user.display_name
+                || "名称なし",
+            )
+            }
                         </strong>
 
                         <small>
-                            ${escapeHtml(user.status_message || "")}
+                            ${escapeHtml(
+                user.status_message
+                || "",
+            )
+            }
                         </small>
                     </div>
+
                 </div>
             </td>
 
             <td>
-                ${escapeHtml(user.registered_name || "-")}
+                ${escapeHtml(
+                user.registered_name
+                || "-",
+            )
+            }
             </td>
 
             <td>
-                ${escapeHtml(user.district_name || "-")}
+                ${escapeHtml(
+                user.district_name
+                || "-",
+            )
+            }
             </td>
 
             <td>
@@ -259,16 +620,67 @@ function renderLineUsers() {
             </td>
 
             <td>
-                ${escapeHtml(formatDate(user.created_at))}
+                ${escapeHtml(
+                formatDate(
+                    user.created_at,
+                ),
+            )
+            }
             </td>
         `;
+
+        const checkbox =
+            row.querySelector(
+                ".line-user-checkbox",
+            );
+
+        if (checkbox) {
+
+            checkbox.addEventListener(
+                "change",
+                () => {
+
+                    const lineUserId =
+                        checkbox.dataset
+                            .lineUserId;
+
+                    if (!lineUserId) {
+                        return;
+                    }
+
+                    if (checkbox.checked) {
+
+                        selectedUserIds.add(
+                            lineUserId,
+                        );
+
+                    } else {
+
+                        selectedUserIds.delete(
+                            lineUserId,
+                        );
+                    }
+
+                    updateSelectedCount();
+                    updateSelectAllCheckbox();
+                },
+            );
+        }
 
         lineUsersBody.appendChild(row);
     }
 
     statusMessage.textContent =
         `${filteredUsers.length}件を表示しています。`;
+
+    updateSelectedCount();
+    updateSelectAllCheckbox();
 }
+
+
+/* ==========================================
+   8. Supabaseから取得
+========================================== */
 
 async function loadLineUsers() {
 
@@ -284,6 +696,7 @@ async function loadLineUsers() {
                 .from("line_users")
                 .select(`
                     id,
+                    line_user_id,
                     display_name,
                     picture_url,
                     status_message,
@@ -310,6 +723,7 @@ async function loadLineUsers() {
                 ? data
                 : [];
 
+        cleanupSelectedUserIds();
         updateSummary();
         renderLineUsers();
 
@@ -325,11 +739,21 @@ async function loadLineUsers() {
 
         lineUsersBody.innerHTML = `
             <tr>
-                <td colspan="6" class="admin-empty-cell">
+                <td
+                    colspan="7"
+                    class="admin-empty-cell"
+                >
                     データを取得できませんでした。
                 </td>
             </tr>
         `;
+
+        lineUsers = [];
+        selectedUserIds.clear();
+
+        updateSummary();
+        updateSelectedCount();
+        updateSelectAllCheckbox();
 
     } finally {
 
@@ -337,29 +761,426 @@ async function loadLineUsers() {
     }
 }
 
+/* ==========================================
+   9. LINE配信
+========================================== */
+
+/**
+ * 配信プレビューを作成します。
+ */
+function updateDeliveryPreview() {
+
+    const title =
+        deliveryTitleInput.value.trim();
+
+    const body =
+        deliveryBodyInput.value
+            .replace(/\s+/g, " ")
+            .trim()
+            .slice(0, 300);
+
+    const detailUrl =
+        deliveryUrlInput.value.trim();
+
+    const parts = [
+        "📢 一箕地区からのお知らせ",
+        "",
+        title || "配信タイトル",
+    ];
+
+    if (body) {
+        parts.push(
+            "",
+            body,
+        );
+    }
+
+    if (detailUrl) {
+        parts.push(
+            "",
+            "詳しくはこちら",
+            detailUrl,
+        );
+    }
+
+    parts.push(
+        "",
+        "一箕地区ポータル【公式】",
+    );
+
+    deliveryPreviewText.textContent =
+        parts.join("\n");
+}
+
+
+/**
+ * 配信ダイアログを開きます。
+ */
+function openDeliveryModal() {
+
+    if (selectedUserIds.size === 0) {
+
+        alert(
+            "配信対象者を選択してください。",
+        );
+
+        return;
+    }
+
+    deliveryTargetCount.textContent =
+        String(selectedUserIds.size);
+
+    deliveryFormMessage.textContent = "";
+    deliveryFormMessage.className =
+        "delivery-form-message";
+
+    updateDeliveryPreview();
+
+    deliveryModal.hidden = false;
+
+    document.body.classList.add(
+        "delivery-modal-open",
+    );
+
+    window.setTimeout(
+        () => {
+            deliveryTitleInput.focus();
+        },
+        50,
+    );
+}
+
+
+/**
+ * 配信ダイアログを閉じます。
+ */
+function closeDeliveryModal() {
+
+    if (deliverySubmitButton.disabled) {
+        return;
+    }
+
+    deliveryModal.hidden = true;
+
+    document.body.classList.remove(
+        "delivery-modal-open",
+    );
+}
+
+
+/**
+ * 選択者へLINE配信します。
+ */
+async function sendLineMessage(event) {
+
+    event.preventDefault();
+
+    const title =
+        deliveryTitleInput.value.trim();
+
+    const body =
+        deliveryBodyInput.value.trim();
+
+    const detailUrl =
+        deliveryUrlInput.value.trim();
+
+    if (!title) {
+
+        deliveryFormMessage.textContent =
+            "配信タイトルを入力してください。";
+
+        deliveryFormMessage.className =
+            "delivery-form-message error";
+
+        deliveryTitleInput.focus();
+
+        return;
+    }
+
+    if (
+        detailUrl
+        && !/^https:\/\/.+/i.test(detailUrl)
+    ) {
+
+        deliveryFormMessage.textContent =
+            "リンクURLはhttps://から入力してください。";
+
+        deliveryFormMessage.className =
+            "delivery-form-message error";
+
+        deliveryUrlInput.focus();
+
+        return;
+    }
+
+    const targetCount =
+        selectedUserIds.size;
+
+    const confirmed =
+        window.confirm(
+            `${targetCount}名へLINE配信します。\n\n`
+            + "配信後は取り消せません。\n"
+            + "本当に送信しますか？",
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    deliverySubmitButton.disabled = true;
+    deliverySubmitButton.textContent =
+        "送信しています";
+
+    deliveryFormMessage.textContent =
+        "LINEへ配信しています。";
+
+    deliveryFormMessage.className =
+        "delivery-form-message";
+
+    try {
+
+        /*
+         * ログインセッション確認
+         */
+        const {
+            data: sessionData,
+            error: sessionError,
+        } =
+            await supabaseClient.auth
+                .getSession();
+
+        if (
+            sessionError
+            || !sessionData.session
+        ) {
+
+            throw new Error(
+                "管理者ログインを確認できません。"
+                + "もう一度ログインしてください。",
+            );
+        }
+
+        /*
+         * Supabase Edge Function呼び出し
+         *
+         * ログイン中のJWTは
+         * functions.invokeが自動送信します。
+         */
+        const {
+            data,
+            error,
+        } =
+            await supabaseClient.functions
+                .invoke(
+                    "line-send-news",
+                    {
+                        body: {
+                            title,
+                            body,
+                            detailUrl,
+                            userIds:
+                                Array.from(
+                                    selectedUserIds,
+                                ),
+                        },
+                    },
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data?.ok) {
+
+            throw new Error(
+                data?.error
+                || "LINE配信に失敗しました。",
+            );
+        }
+
+        const deliveredCount =
+            data.deliveredCount
+            ?? targetCount;
+
+        deliveryFormMessage.textContent =
+            `${deliveredCount}名へのLINE配信が完了しました。`;
+
+        deliveryFormMessage.className =
+            "delivery-form-message success";
+
+        alert(
+            `${deliveredCount}名へのLINE配信が完了しました。`,
+        );
+
+        /*
+         * 送信成功後に入力と選択を解除
+         */
+        deliveryForm.reset();
+
+        selectedUserIds.clear();
+
+        renderLineUsers();
+
+        updateDeliveryPreview();
+
+        window.setTimeout(
+            () => {
+                closeDeliveryModal();
+            },
+            500,
+        );
+
+    } catch (error) {
+
+        console.error(
+            "LINE delivery error:",
+            error,
+        );
+
+        deliveryFormMessage.textContent =
+            error instanceof Error
+                ? error.message
+                : "LINE配信に失敗しました。";
+
+        deliveryFormMessage.className =
+            "delivery-form-message error";
+
+    } finally {
+
+        deliverySubmitButton.disabled = false;
+        deliverySubmitButton.textContent =
+            "選択した方へ送信";
+    }
+}
+
+/* ==========================================
+   10. イベント
+========================================== */
+
+// 検索
 searchInput.addEventListener(
     "input",
     renderLineUsers,
 );
 
+// 地区
 districtFilter.addEventListener(
     "change",
     renderLineUsers,
 );
 
+// 登録状況
 registrationFilter.addEventListener(
     "change",
     renderLineUsers,
 );
 
+// 友だち状態
 followingFilter.addEventListener(
     "change",
     renderLineUsers,
 );
 
+// 再読み込み
 refreshButton.addEventListener(
     "click",
     loadLineUsers,
 );
+
+// 表示中をすべて選択
+selectFilteredButton.addEventListener(
+    "click",
+    selectFilteredUsers,
+);
+
+// 全選択解除
+clearSelectionButton.addEventListener(
+    "click",
+    clearSelection,
+);
+
+// 表示中の一括チェック
+selectAllCheckbox.addEventListener(
+    "change",
+    () => {
+
+        if (selectAllCheckbox.checked) {
+
+            selectFilteredUsers();
+
+        } else {
+
+            deselectFilteredUsers();
+        }
+    },
+);
+
+// 配信ボタン
+deliveryButton.addEventListener(
+    "click",
+    openDeliveryModal,
+);
+
+
+deliveryForm.addEventListener(
+    "submit",
+    sendLineMessage,
+);
+
+deliveryModalClose.addEventListener(
+    "click",
+    closeDeliveryModal,
+);
+
+deliveryCancelButton.addEventListener(
+    "click",
+    closeDeliveryModal,
+);
+
+deliveryTitleInput.addEventListener(
+    "input",
+    updateDeliveryPreview,
+);
+
+deliveryBodyInput.addEventListener(
+    "input",
+    updateDeliveryPreview,
+);
+
+deliveryUrlInput.addEventListener(
+    "input",
+    updateDeliveryPreview,
+);
+
+deliveryModal.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target.matches(
+                "[data-close-delivery-modal]",
+            )
+        ) {
+            closeDeliveryModal();
+        }
+    },
+);
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape"
+            && !deliveryModal.hidden
+        ) {
+            closeDeliveryModal();
+        }
+    },
+);
+
+/* ==========================================
+   11. 初期表示
+========================================== */
 
 loadLineUsers();

@@ -110,9 +110,56 @@
 
             </div>
 
+            <div class="line-delivery-panel">
+
+                <div>
+                    <h2>LINE配信対象</h2>
+
+                    <p>
+                        友だち状態が有効で、住民登録済みの方を選択します。
+                    </p>
+                </div>
+
+                <div class="line-delivery-actions">
+
+                    <button type="button" id="select-filtered-button" class="admin-button">
+                        表示中をすべて選択
+                    </button>
+
+                    <button type="button" id="clear-selection-button" class="admin-button secondary">
+                        選択解除
+                    </button>
+
+                    <strong class="selected-count">
+                        選択中：
+                        <span id="selected-count">0</span>名
+                    </strong>
+
+                    <button type="button" id="delivery-button" class="admin-button delivery" disabled>
+                        選択した方へ配信
+                    </button>
+
+                </div>
+
+            </div>
+
             <p id="status-message" class="admin-status-message">
                 LINE登録者を読み込んでいます。
             </p>
+
+            <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" id="select-all-checkbox" aria-label="表示中の登録者をすべて選択">
+                    </th>
+                    <th>LINE</th>
+                    <th>登録氏名</th>
+                    <th>地区</th>
+                    <th>登録状況</th>
+                    <th>友だち状態</th>
+                    <th>登録日時</th>
+                </tr>
+            </thead>
 
             <div class="admin-table-wrap">
 
@@ -138,6 +185,102 @@
         </section>
 
     </main>
+
+    <!-- ==========================================
+     LINE配信ダイアログ
+========================================== -->
+
+    <div id="delivery-modal" class="delivery-modal" hidden>
+        <div class="delivery-modal-backdrop" data-close-delivery-modal></div>
+
+        <section class="delivery-modal-card" role="dialog" aria-modal="true" aria-labelledby="delivery-modal-title">
+            <div class="delivery-modal-header">
+
+                <div>
+                    <p class="delivery-modal-label">
+                        一箕地区ポータル【公式】
+                    </p>
+
+                    <h2 id="delivery-modal-title">
+                        LINE配信
+                    </h2>
+                </div>
+
+                <button type="button" id="delivery-modal-close" class="delivery-modal-close" aria-label="配信画面を閉じる">
+                    ×
+                </button>
+
+            </div>
+
+            <p class="delivery-target-message">
+                選択した
+                <strong id="delivery-target-count">0</strong>
+                名へ配信します。
+            </p>
+
+            <form id="delivery-form">
+
+                <div class="delivery-form-group">
+
+                    <label for="delivery-title">
+                        配信タイトル
+                        <span class="required-mark">必須</span>
+                    </label>
+
+                    <input type="text" id="delivery-title" maxlength="100" placeholder="例：夏祭り開催のお知らせ" required>
+
+                </div>
+
+                <div class="delivery-form-group">
+
+                    <label for="delivery-body">
+                        配信本文
+                    </label>
+
+                    <textarea id="delivery-body" rows="7" maxlength="1000" placeholder="配信する内容を入力してください。"></textarea>
+
+                    <p class="delivery-input-note">
+                        LINEでは本文の先頭300文字を配信します。
+                    </p>
+
+                </div>
+
+                <div class="delivery-form-group">
+
+                    <label for="delivery-url">
+                        詳細ページURL
+                    </label>
+
+                    <input type="url" id="delivery-url" placeholder="https://ikki-portal.com/...">
+
+                </div>
+
+                <div class="delivery-preview">
+
+                    <h3>配信内容の確認</h3>
+
+                    <pre id="delivery-preview-text"></pre>
+
+                </div>
+
+                <p id="delivery-form-message" class="delivery-form-message" aria-live="polite"></p>
+
+                <div class="delivery-modal-actions">
+
+                    <button type="button" id="delivery-cancel-button" class="admin-button secondary">
+                        キャンセル
+                    </button>
+
+                    <button type="submit" id="delivery-submit-button" class="admin-button delivery">
+                        選択した方へ送信
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
