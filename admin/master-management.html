@@ -19,8 +19,8 @@
 
     <main class="container">
         <section class="notice">
-            <strong>Ver1.33</strong>
-            <span>地区・町内会・所属団体を管理できます。CSVによる一括登録・出力にも対応しています。</span>
+            <strong>Ver1.34</strong>
+            <span>安全なCSV取込、テンプレート出力、使用停止、LINE登録者連携に対応しています。</span>
         </section>
 
         <section class="summary-grid" aria-label="登録件数">
@@ -51,6 +51,7 @@
                     CSV取込
                     <input id="csv-file-input" type="file" accept=".csv,text/csv" hidden>
                 </label>
+                <button id="csv-template-button" class="secondary-button" type="button">CSVテンプレート</button>
                 <button id="csv-export-button" class="secondary-button" type="button">CSV出力</button>
             </div>
 
@@ -126,10 +127,6 @@
         </section>
     </div>
 
-    <!--
-      既存のSupabase設定ファイル名に合わせて変更してください。
-      このファイル内で window.supabaseClient が作成されている必要があります。
-    -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
     <script src="./master-management.js"></script>

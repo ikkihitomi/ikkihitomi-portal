@@ -1,34 +1,26 @@
 "use strict";
 
-/* ==========================================
-   一箕地区ポータル
-   マスター管理 Ver1.33
-========================================== */
-
 (() => {
     const CONFIG = {
         district: {
             table: "district_master",
             label: "地区",
             csvName: "district_master.csv",
+            templateName: "district_master_template.csv",
             columns: ["code", "name", "sort_order", "is_active"],
         },
         neighborhood: {
             table: "neighborhood_master",
             label: "町内会",
             csvName: "neighborhood_master.csv",
-            columns: [
-                "code",
-                "name",
-                "district_code",
-                "sort_order",
-                "is_active",
-            ],
+            templateName: "neighborhood_master_template.csv",
+            columns: ["code", "name", "district_code", "sort_order", "is_active"],
         },
         organization: {
             table: "organization_master",
             label: "所属団体",
             csvName: "organization_master.csv",
+            templateName: "organization_master_template.csv",
             columns: ["code", "name", "sort_order", "is_active"],
         },
     };
@@ -36,61 +28,49 @@
     let activeMaster = "district";
     let rows = [];
     let districtRows = [];
+    const el = {};
 
-    const elements = {};
-
-    function cacheElements() {
-        elements.tabs = [...document.querySelectorAll(".tab-button")];
-        elements.addButton = document.getElementById("add-button");
-        elements.csvFileInput = document.getElementById("csv-file-input");
-        elements.csvExportButton =
-            document.getElementById("csv-export-button");
-        elements.search = document.getElementById("master-search");
-        elements.activeFilter =
-            document.getElementById("active-filter");
-        elements.message = document.getElementById("page-message");
-        elements.tableHead =
-            document.getElementById("master-table-head");
-        elements.tableBody =
-            document.getElementById("master-table-body");
-
-        elements.modal = document.getElementById("edit-modal");
-        elements.modalTitle = document.getElementById("modal-title");
-        elements.form = document.getElementById("master-form");
-        elements.editId = document.getElementById("edit-id");
-        elements.editCode = document.getElementById("edit-code");
-        elements.editName = document.getElementById("edit-name");
-        elements.districtField =
-            document.getElementById("district-code-field");
-        elements.editDistrictCode =
-            document.getElementById("edit-district-code");
-        elements.editSortOrder =
-            document.getElementById("edit-sort-order");
-        elements.editIsActive =
-            document.getElementById("edit-is-active");
-        elements.formMessage =
-            document.getElementById("form-message");
-        elements.saveButton = document.getElementById("save-button");
-
-        elements.districtCount =
-            document.getElementById("district-count");
-        elements.neighborhoodCount =
-            document.getElementById("neighborhood-count");
-        elements.organizationCount =
-            document.getElementById("organization-count");
+    function cache() {
+        el.tabs = [...document.querySelectorAll(".tab-button")];
+        el.addButton = document.getElementById("add-button");
+        el.csvFileInput = document.getElementById("csv-file-input");
+        el.csvTemplateButton = document.getElementById("csv-template-button");
+        el.csvExportButton = document.getElementById("csv-export-button");
+        el.search = document.getElementById("master-search");
+        el.activeFilter = document.getElementById("active-filter");
+        el.message = document.getElementById("page-message");
+        el.tableHead = document.getElementById("master-table-head");
+        el.tableBody = document.getElementById("master-table-body");
+        el.modal = document.getElementById("edit-modal");
+        el.modalTitle = document.getElementById("modal-title");
+        el.form = document.getElementById("master-form");
+        el.editId = document.getElementById("edit-id");
+        el.editCode = document.getElementById("edit-code");
+        el.editName = document.getElementById("edit-name");
+        el.districtField = document.getElementById("district-code-field");
+        el.editDistrictCode = document.getElementById("edit-district-code");
+        el.editSortOrder = document.getElementById("edit-sort-order");
+        el.editIsActive = document.getElementById("edit-is-active");
+        el.formMessage = document.getElementById("form-message");
+        el.saveButton = document.getElementById("save-button");
+        el.districtCount = document.getElementById("district-count");
+        el.neighborhoodCount = document.getElementById("neighborhood-count");
+        el.organizationCount = document.getElementById("organization-count");
     }
 
+    const config = () => CONFIG[activeMaster];
+
     function setMessage(text = "", isError = false) {
-        elements.message.textContent = text;
-        elements.message.classList.toggle("is-error", isError);
+        el.message.textContent = text;
+        el.message.classList.toggle("is-error", isError);
     }
 
     function setFormMessage(text = "", isError = false) {
-        elements.formMessage.textContent = text;
-        elements.formMessage.classList.toggle("is-error", isError);
+        el.formMessage.textContent = text;
+        el.formMessage.classList.toggle("is-error", isError);
     }
 
-    function escapeHtml(value) {
+    function esc(value) {
         return String(value ?? "")
             .replaceAll("&", "&amp;")
             .replaceAll("<", "&lt;")
@@ -99,331 +79,240 @@
             .replaceAll("'", "&#039;");
     }
 
-    function currentConfig() {
-        return CONFIG[activeMaster];
-    }
-
-    async function fetchRows(masterKey) {
-        const config = CONFIG[masterKey];
-
+    async function fetchRows(key) {
         const { data, error } = await supabaseClient
-            .from(config.table)
+            .from(CONFIG[key].table)
             .select("*")
             .order("sort_order", { ascending: true })
             .order("name", { ascending: true });
 
-        if (error) {
-            throw error;
-        }
-
+        if (error) throw error;
         return Array.isArray(data) ? data : [];
     }
 
     async function loadCounts() {
-        const keys = Object.keys(CONFIG);
-        const results = await Promise.all(
-            keys.map(async key => {
+        const entries = await Promise.all(
+            Object.keys(CONFIG).map(async key => {
                 const { count, error } = await supabaseClient
                     .from(CONFIG[key].table)
-                    .select("id", {
-                        count: "exact",
-                        head: true,
-                    });
-
-                if (error) {
-                    throw error;
-                }
-
+                    .select("id", { count: "exact", head: true });
+                if (error) throw error;
                 return [key, count ?? 0];
             }),
         );
-
-        const counts = Object.fromEntries(results);
-        elements.districtCount.textContent = counts.district;
-        elements.neighborhoodCount.textContent =
-            counts.neighborhood;
-        elements.organizationCount.textContent =
-            counts.organization;
+        const counts = Object.fromEntries(entries);
+        el.districtCount.textContent = counts.district;
+        el.neighborhoodCount.textContent = counts.neighborhood;
+        el.organizationCount.textContent = counts.organization;
     }
 
-    async function loadDistrictRows() {
+    async function loadDistricts() {
         districtRows = await fetchRows("district");
         populateDistrictOptions();
     }
 
-    async function loadActiveMaster() {
+    async function load() {
         setMessage("データを読み込んでいます。");
-
         try {
             rows = await fetchRows(activeMaster);
-
             if (activeMaster !== "district" && districtRows.length === 0) {
-                await loadDistrictRows();
+                await loadDistricts();
             }
-
-            renderTable();
+            render();
             await loadCounts();
             setMessage("");
         } catch (error) {
             console.error(error);
-            setMessage(
-                `マスターの読込に失敗しました：${error.message}`,
-                true,
-            );
+            setMessage(`読込に失敗しました：${error.message}`, true);
         }
     }
 
-    function filteredRows() {
-        const keyword = elements.search.value.trim().toLowerCase();
-        const activeFilter = elements.activeFilter.value;
-
+    function filtered() {
+        const keyword = el.search.value.trim().toLowerCase();
+        const filter = el.activeFilter.value;
         return rows.filter(row => {
-            const matchesKeyword =
-                !keyword
+            const keywordOk = !keyword
                 || String(row.code ?? "").toLowerCase().includes(keyword)
                 || String(row.name ?? "").toLowerCase().includes(keyword);
-
-            const matchesActive =
-                activeFilter === "all"
-                || String(Boolean(row.is_active)) === activeFilter;
-
-            return matchesKeyword && matchesActive;
+            const activeOk = filter === "all"
+                || String(Boolean(row.is_active)) === filter;
+            return keywordOk && activeOk;
         });
     }
 
-    function districtName(code) {
-        return districtRows.find(row => row.code === code)?.name ?? "";
-    }
+    const districtName = code =>
+        districtRows.find(row => row.code === code)?.name ?? "";
 
-    function renderTableHead() {
-        const districtColumn =
-            activeMaster === "neighborhood"
-                ? "<th>所属地区</th>"
-                : "";
+    function render() {
+        const hasDistrict = activeMaster === "neighborhood";
+        el.tableHead.innerHTML = `<tr>
+            <th>コード</th><th>名称</th>
+            ${hasDistrict ? "<th>所属地区</th>" : ""}
+            <th>表示順</th><th>状態</th><th>操作</th>
+        </tr>`;
 
-        elements.tableHead.innerHTML = `
+        const visible = filtered();
+        if (!visible.length) {
+            el.tableBody.innerHTML = `<tr><td class="empty-cell" colspan="${hasDistrict ? 6 : 5}">登録データがありません。</td></tr>`;
+            return;
+        }
+
+        el.tableBody.innerHTML = visible.map(row => `
             <tr>
-                <th>コード</th>
-                <th>名称</th>
-                ${districtColumn}
-                <th>表示順</th>
-                <th>状態</th>
-                <th>操作</th>
+                <td>${esc(row.code)}</td>
+                <td>${esc(row.name)}</td>
+                ${hasDistrict ? `<td>${esc(districtName(row.district_code) || row.district_code || "未設定")}</td>` : ""}
+                <td>${Number(row.sort_order ?? 0)}</td>
+                <td><span class="status-badge ${row.is_active ? "is-active" : "is-inactive"}">${row.is_active ? "使用中" : "停止中"}</span></td>
+                <td><div class="row-actions">
+                    <button class="small-button" type="button" data-action="edit" data-id="${row.id}">編集</button>
+                    <button class="small-button warning" type="button" data-action="toggle" data-id="${row.id}">${row.is_active ? "停止" : "再開"}</button>
+                    <button class="small-button danger" type="button" data-action="delete" data-id="${row.id}">削除</button>
+                </div></td>
             </tr>
-        `;
+        `).join("");
     }
 
-    function renderTable() {
-        renderTableHead();
-
-        const currentRows = filteredRows();
-
-        if (currentRows.length === 0) {
-            const colspan = activeMaster === "neighborhood" ? 6 : 5;
-            elements.tableBody.innerHTML = `
-                <tr>
-                    <td class="empty-cell" colspan="${colspan}">
-                        登録データがありません。
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-
-        elements.tableBody.innerHTML = currentRows
-            .map(row => {
-                const districtCell =
-                    activeMaster === "neighborhood"
-                        ? `<td>${escapeHtml(
-                            districtName(row.district_code)
-                            || row.district_code
-                            || "未設定",
-                        )}</td>`
-                        : "";
-
-                return `
-                    <tr>
-                        <td>${escapeHtml(row.code)}</td>
-                        <td>${escapeHtml(row.name)}</td>
-                        ${districtCell}
-                        <td>${Number(row.sort_order ?? 0)}</td>
-                        <td>
-                            <span class="status-badge ${row.is_active
-                        ? "is-active"
-                        : "is-inactive"
-                    }">
-                                ${row.is_active ? "使用中" : "停止中"}
-                            </span>
-                        </td>
-                        <td>
-                            <div class="row-actions">
-                                <button
-                                    class="small-button"
-                                    type="button"
-                                    data-action="edit"
-                                    data-id="${row.id}">
-                                    編集
-                                </button>
-                                <button
-                                    class="small-button danger"
-                                    type="button"
-                                    data-action="delete"
-                                    data-id="${row.id}">
-                                    削除
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            })
-            .join("");
-    }
-
-    function populateDistrictOptions(selectedCode = "") {
-        if (!elements.editDistrictCode) {
-            return;
-        }
-
-        elements.editDistrictCode.innerHTML =
-            '<option value="">所属地区を選択してください</option>';
-
-        for (const district of districtRows.filter(row => row.is_active)) {
+    function populateDistrictOptions(selected = "") {
+        if (!el.editDistrictCode) return;
+        el.editDistrictCode.innerHTML = '<option value="">所属地区を選択してください</option>';
+        for (const row of districtRows.filter(item => item.is_active || item.code === selected)) {
             const option = document.createElement("option");
-            option.value = district.code;
-            option.textContent = district.name;
-            option.selected = district.code === selectedCode;
-            elements.editDistrictCode.appendChild(option);
+            option.value = row.code;
+            option.textContent = row.name + (row.is_active ? "" : "（停止中）");
+            option.selected = row.code === selected;
+            el.editDistrictCode.appendChild(option);
         }
     }
 
     function openModal(row = null) {
-        const config = currentConfig();
-
-        elements.form.reset();
-        elements.editId.value = row?.id ?? "";
-        elements.editCode.value = row?.code ?? "";
-        elements.editName.value = row?.name ?? "";
-        elements.editSortOrder.value =
-            Number(row?.sort_order ?? 0);
-        elements.editIsActive.checked =
-            row?.is_active ?? true;
-
-        elements.districtField.hidden =
-            activeMaster !== "neighborhood";
-
-        if (activeMaster === "neighborhood") {
-            populateDistrictOptions(row?.district_code ?? "");
-        }
-
-        elements.modalTitle.textContent = row
-            ? `${config.label}を編集`
-            : `${config.label}を追加`;
-
+        el.form.reset();
+        el.editId.value = row?.id ?? "";
+        el.editCode.value = row?.code ?? "";
+        el.editName.value = row?.name ?? "";
+        el.editSortOrder.value = Number(row?.sort_order ?? 0);
+        el.editIsActive.checked = row?.is_active ?? true;
+        el.districtField.hidden = activeMaster !== "neighborhood";
+        if (activeMaster === "neighborhood") populateDistrictOptions(row?.district_code ?? "");
+        el.modalTitle.textContent = row ? `${config().label}を編集` : `${config().label}を追加`;
         setFormMessage("");
-        elements.modal.hidden = false;
-        elements.editCode.focus();
+        el.modal.hidden = false;
+        el.editCode.focus();
     }
 
     function closeModal() {
-        elements.modal.hidden = true;
+        el.modal.hidden = true;
         setFormMessage("");
     }
 
-    async function saveForm(event) {
+    async function save(event) {
         event.preventDefault();
+        const id = el.editId.value;
+        const payload = {
+            code: el.editCode.value.trim(),
+            name: el.editName.value.trim(),
+            sort_order: Number(el.editSortOrder.value) || 0,
+            is_active: el.editIsActive.checked,
+        };
 
-        const config = currentConfig();
-        const id = elements.editId.value;
-        const code = elements.editCode.value.trim();
-        const name = elements.editName.value.trim();
-
-        if (!code || !name) {
+        if (!payload.code || !payload.name) {
             setFormMessage("コードと名称を入力してください。", true);
             return;
         }
 
-        const payload = {
-            code,
-            name,
-            sort_order:
-                Number(elements.editSortOrder.value) || 0,
-            is_active: elements.editIsActive.checked,
-        };
-
         if (activeMaster === "neighborhood") {
-            payload.district_code =
-                elements.editDistrictCode.value || null;
+            payload.district_code = el.editDistrictCode.value || null;
         }
 
-        elements.saveButton.disabled = true;
+        el.saveButton.disabled = true;
         setFormMessage("保存しています。");
 
         try {
-            let query = supabaseClient.from(config.table);
-
-            if (id) {
-                query = query.update(payload).eq("id", id);
-            } else {
-                query = query.insert(payload);
-            }
-
+            let query = supabaseClient.from(config().table);
+            query = id ? query.update(payload).eq("id", id) : query.insert(payload);
             const { error } = await query;
-
-            if (error) {
-                throw error;
-            }
+            if (error) throw error;
 
             closeModal();
-            await loadDistrictRows();
-            await loadActiveMaster();
-            setMessage(`${config.label}を保存しました。`);
+            await loadDistricts();
+            await load();
+            setMessage(`${config().label}を保存しました。`);
         } catch (error) {
             console.error(error);
-            setFormMessage(
-                `保存に失敗しました：${error.message}`,
-                true,
-            );
+            setFormMessage(`保存に失敗しました：${error.message}`, true);
         } finally {
-            elements.saveButton.disabled = false;
+            el.saveButton.disabled = false;
         }
     }
 
-    async function deleteRow(id) {
-        const config = currentConfig();
-        const row = rows.find(item => String(item.id) === String(id));
+    async function toggleActive(row) {
+        const next = !row.is_active;
+        const action = next ? "再開" : "停止";
+        if (!confirm(`${config().label}「${row.name}」を${action}しますか？`)) return;
 
-        if (!row) {
+        const { error } = await supabaseClient
+            .from(config().table)
+            .update({ is_active: next })
+            .eq("id", row.id);
+
+        if (error) {
+            setMessage(`${action}に失敗しました：${error.message}`, true);
             return;
         }
 
-        const confirmed = window.confirm(
-            `${config.label}「${row.name}」を削除しますか？\n`
-            + "停止中に切り替える運用もおすすめです。",
-        );
+        await loadDistricts();
+        await load();
+        setMessage(`${config().label}を${action}しました。`);
+    }
 
-        if (!confirmed) {
-            return;
+    async function usageCount(row) {
+        if (activeMaster === "district") {
+            const { count, error } = await supabaseClient
+                .from("neighborhood_master")
+                .select("id", { count: "exact", head: true })
+                .eq("district_code", row.code);
+            if (error) throw error;
+            return count ?? 0;
         }
 
+        const column = activeMaster === "neighborhood"
+            ? "neighborhood_name"
+            : "organization_name";
+
+        const { count, error } = await supabaseClient
+            .from("line_users")
+            .select("id", { count: "exact", head: true })
+            .eq(column, row.name);
+
+        if (error) throw error;
+        return count ?? 0;
+    }
+
+    async function remove(row) {
         try {
-            const { error } = await supabaseClient
-                .from(config.table)
-                .delete()
-                .eq("id", row.id);
-
-            if (error) {
-                throw error;
+            const count = await usageCount(row);
+            if (count > 0) {
+                setMessage(
+                    `${config().label}「${row.name}」は${count}件で使用中のため削除できません。「停止」を使用してください。`,
+                    true,
+                );
+                return;
             }
 
-            await loadDistrictRows();
-            await loadActiveMaster();
-            setMessage(`${config.label}を削除しました。`);
+            if (!confirm(`${config().label}「${row.name}」を完全削除しますか？\n通常は「停止」をおすすめします。`)) return;
+
+            const { error } = await supabaseClient
+                .from(config().table)
+                .delete()
+                .eq("id", row.id);
+            if (error) throw error;
+
+            await loadDistricts();
+            await load();
+            setMessage(`${config().label}を削除しました。`);
         } catch (error) {
             console.error(error);
-            setMessage(
-                `削除に失敗しました：${error.message}`,
-                true,
-            );
+            setMessage(`削除確認に失敗しました：${error.message}`, true);
         }
     }
 
@@ -431,270 +320,176 @@
         const values = [];
         let value = "";
         let quoted = false;
-
         for (let i = 0; i < line.length; i += 1) {
             const char = line[i];
             const next = line[i + 1];
-
             if (char === '"' && quoted && next === '"') {
-                value += '"';
-                i += 1;
+                value += '"'; i += 1;
             } else if (char === '"') {
                 quoted = !quoted;
             } else if (char === "," && !quoted) {
-                values.push(value);
-                value = "";
+                values.push(value); value = "";
             } else {
                 value += char;
             }
         }
-
         values.push(value);
-        return values.map(item => item.trim());
+        return values.map(v => v.trim());
     }
 
-    function csvToObjects(text) {
-        const lines = text
-            .replace(/^\uFEFF/, "")
-            .split(/\r?\n/)
-            .filter(line => line.trim() !== "");
-
-        if (lines.length < 2) {
-            return [];
-        }
-
+    function csvObjects(text) {
+        const lines = text.replace(/^\uFEFF/, "").split(/\r?\n/).filter(line => line.trim());
+        if (!lines.length) return [];
         const headers = parseCsvLine(lines[0]);
-
         return lines.slice(1).map(line => {
             const values = parseCsvLine(line);
-            return Object.fromEntries(
-                headers.map((header, index) => [
-                    header,
-                    values[index] ?? "",
-                ]),
-            );
+            return Object.fromEntries(headers.map((h, i) => [h, values[i] ?? ""]));
         });
     }
 
-    function normalizeCsvRows(csvRows) {
-        const config = currentConfig();
+    function validateCsv(rawRows) {
+        const required = activeMaster === "neighborhood"
+            ? ["code", "name", "district_code", "sort_order", "is_active"]
+            : ["code", "name", "sort_order", "is_active"];
 
-        return csvRows.map((row, index) => {
+        if (!rawRows.length) throw new Error("登録データがありません。");
+
+        const headers = Object.keys(rawRows[0]);
+        const missing = required.filter(name => !headers.includes(name));
+        if (missing.length) throw new Error(`必須列がありません：${missing.join(", ")}`);
+
+        const seen = new Set();
+        return rawRows.map((row, index) => {
+            const line = index + 2;
             const code = String(row.code ?? "").trim();
             const name = String(row.name ?? "").trim();
-
-            if (!code || !name) {
-                throw new Error(
-                    `${index + 2}行目：codeとnameは必須です。`,
-                );
-            }
+            if (!code || !name) throw new Error(`${line}行目：codeとnameは必須です。`);
+            if (seen.has(code)) throw new Error(`${line}行目：code「${code}」がCSV内で重複しています。`);
+            seen.add(code);
 
             const normalized = {
                 code,
                 name,
                 sort_order: Number(row.sort_order) || 0,
-                is_active:
-                    String(row.is_active).toLowerCase() !== "false",
+                is_active: String(row.is_active).trim().toLowerCase() !== "false",
             };
 
             if (activeMaster === "neighborhood") {
-                normalized.district_code =
-                    String(row.district_code ?? "").trim() || null;
+                const districtCode = String(row.district_code ?? "").trim();
+                if (districtCode && !districtRows.some(d => d.code === districtCode)) {
+                    throw new Error(`${line}行目：地区コード「${districtCode}」が地区マスターにありません。`);
+                }
+                normalized.district_code = districtCode || null;
             }
-
             return normalized;
         });
     }
 
     async function importCsv(file) {
-        if (!file) {
-            return;
-        }
-
-        const config = currentConfig();
-        setMessage(`${config.label}CSVを読み込んでいます。`);
-
+        if (!file) return;
         try {
-            const text = await file.text();
-            const csvRows = csvToObjects(text);
-            const payload = normalizeCsvRows(csvRows);
-
-            if (payload.length === 0) {
-                throw new Error("登録するデータがありません。");
+            const payload = validateCsv(csvObjects(await file.text()));
+            if (!confirm(`${config().label}を${payload.length}件取り込みます。\n同じコードは更新されます。よろしいですか？`)) {
+                el.csvFileInput.value = "";
+                return;
             }
 
+            setMessage("CSVを取り込んでいます。");
             const { error } = await supabaseClient
-                .from(config.table)
-                .upsert(payload, {
-                    onConflict: "code",
-                });
+                .from(config().table)
+                .upsert(payload, { onConflict: "code" });
+            if (error) throw error;
 
-            if (error) {
-                throw error;
-            }
-
-            elements.csvFileInput.value = "";
-            await loadDistrictRows();
-            await loadActiveMaster();
-            setMessage(
-                `${config.label}を${payload.length}件取り込みました。`,
-            );
+            el.csvFileInput.value = "";
+            await loadDistricts();
+            await load();
+            setMessage(`${config().label}を${payload.length}件取り込みました。`);
         } catch (error) {
             console.error(error);
-            setMessage(
-                `CSV取込に失敗しました：${error.message}`,
-                true,
-            );
+            el.csvFileInput.value = "";
+            setMessage(`CSV取込に失敗しました：${error.message}`, true);
         }
     }
 
     function csvEscape(value) {
-        const stringValue = String(value ?? "");
+        const text = String(value ?? "");
+        return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+    }
 
-        if (
-            stringValue.includes(",")
-            || stringValue.includes('"')
-            || stringValue.includes("\n")
-        ) {
-            return `"${stringValue.replaceAll('"', '""')}"`;
-        }
-
-        return stringValue;
+    function downloadCsv(filename, columns, sourceRows) {
+        const lines = [
+            columns.join(","),
+            ...sourceRows.map(row => columns.map(col => csvEscape(row[col])).join(",")),
+        ];
+        const blob = new Blob(["\uFEFF" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
     }
 
     function exportCsv() {
-        const config = currentConfig();
-        const headers = config.columns;
-
-        const lines = [
-            headers.join(","),
-            ...rows.map(row =>
-                headers
-                    .map(header => csvEscape(row[header]))
-                    .join(","),
-            ),
-        ];
-
-        const blob = new Blob(
-            ["\uFEFF" + lines.join("\r\n")],
-            { type: "text/csv;charset=utf-8" },
-        );
-
-        const url = URL.createObjectURL(blob);
-        const anchor = document.createElement("a");
-        anchor.href = url;
-        anchor.download = config.csvName;
-        document.body.appendChild(anchor);
-        anchor.click();
-        anchor.remove();
-        URL.revokeObjectURL(url);
-
-        setMessage(`${config.label}CSVを出力しました。`);
+        downloadCsv(config().csvName, config().columns, rows);
+        setMessage(`${config().label}CSVを出力しました。`);
     }
 
-    async function switchMaster(masterKey) {
-        activeMaster = masterKey;
+    function exportTemplate() {
+        const sample = activeMaster === "neighborhood"
+            ? [{ code: "", name: "", district_code: "", sort_order: "", is_active: "true" }]
+            : [{ code: "", name: "", sort_order: "", is_active: "true" }];
+        downloadCsv(config().templateName, config().columns, sample);
+        setMessage(`${config().label}CSVテンプレートを出力しました。`);
+    }
 
-        for (const tab of elements.tabs) {
-            tab.classList.toggle(
-                "is-active",
-                tab.dataset.master === masterKey,
-            );
-        }
-
-        elements.search.value = "";
-        elements.activeFilter.value = "all";
-        await loadActiveMaster();
+    async function switchMaster(key) {
+        activeMaster = key;
+        el.tabs.forEach(tab => tab.classList.toggle("is-active", tab.dataset.master === key));
+        el.search.value = "";
+        el.activeFilter.value = "all";
+        await load();
     }
 
     function installEvents() {
-        for (const tab of elements.tabs) {
-            tab.addEventListener("click", () => {
-                switchMaster(tab.dataset.master);
-            });
-        }
+        el.tabs.forEach(tab => tab.addEventListener("click", () => switchMaster(tab.dataset.master)));
+        el.addButton.addEventListener("click", () => openModal());
+        el.form.addEventListener("submit", save);
+        el.search.addEventListener("input", render);
+        el.activeFilter.addEventListener("change", render);
+        el.csvFileInput.addEventListener("change", event => importCsv(event.target.files?.[0]));
+        el.csvTemplateButton.addEventListener("click", exportTemplate);
+        el.csvExportButton.addEventListener("click", exportCsv);
 
-        elements.addButton.addEventListener("click", () => openModal());
-        elements.form.addEventListener("submit", saveForm);
-
-        elements.search.addEventListener("input", renderTable);
-        elements.activeFilter.addEventListener("change", renderTable);
-
-        elements.csvFileInput.addEventListener("change", event => {
-            importCsv(event.target.files?.[0]);
-        });
-
-        elements.csvExportButton.addEventListener(
-            "click",
-            exportCsv,
-        );
-
-        elements.tableBody.addEventListener("click", event => {
+        el.tableBody.addEventListener("click", event => {
             const button = event.target.closest("button[data-action]");
-
-            if (!button) {
-                return;
-            }
-
-            const row = rows.find(
-                item => String(item.id) === button.dataset.id,
-            );
-
-            if (button.dataset.action === "edit") {
-                openModal(row);
-            } else if (button.dataset.action === "delete") {
-                deleteRow(button.dataset.id);
-            }
+            if (!button) return;
+            const row = rows.find(item => String(item.id) === button.dataset.id);
+            if (!row) return;
+            if (button.dataset.action === "edit") openModal(row);
+            if (button.dataset.action === "toggle") toggleActive(row);
+            if (button.dataset.action === "delete") remove(row);
         });
 
-        document.querySelectorAll("[data-close-modal]")
-            .forEach(element => {
-                element.addEventListener("click", closeModal);
-            });
-
+        document.querySelectorAll("[data-close-modal]").forEach(node => node.addEventListener("click", closeModal));
         document.addEventListener("keydown", event => {
-            if (event.key === "Escape" && !elements.modal.hidden) {
-                closeModal();
-            }
+            if (event.key === "Escape" && !el.modal.hidden) closeModal();
         });
     }
 
-    async function initialize() {
-        cacheElements();
-
-        if (
-            typeof supabaseClient === "undefined"
-            || !supabaseClient
-        ) {
-            setMessage(
-                "Supabase設定を読み込めませんでした。"
-                + " supabase-config.js のパスを確認してください。",
-                true,
-            );
+    async function init() {
+        cache();
+        if (typeof supabaseClient === "undefined" || !supabaseClient) {
+            setMessage("Supabase設定を読み込めませんでした。supabase-config.jsを確認してください。", true);
             return;
         }
-
         installEvents();
-
-        try {
-            await loadDistrictRows();
-            await loadActiveMaster();
-        } catch (error) {
-            console.error(error);
-            setMessage(
-                `初期化に失敗しました：${error.message}`,
-                true,
-            );
-        }
+        await loadDistricts();
+        await load();
     }
 
     if (document.readyState === "loading") {
-        document.addEventListener(
-            "DOMContentLoaded",
-            initialize,
-            { once: true },
-        );
+        document.addEventListener("DOMContentLoaded", init, { once: true });
     } else {
-        initialize();
+        init();
     }
 })();

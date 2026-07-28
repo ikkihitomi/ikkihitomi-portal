@@ -1,368 +1,140 @@
 "use strict";
 
-/* ==========================================
-   一箕地区ポータル
-   LINE登録者管理 Ver1.33
-
-   マスター連携アドオン
-   ・町内会マスターをプルダウン表示
-   ・町内会選択時に7地区を自動設定
-   ・所属団体マスターをプルダウン表示
-   ・マスター未登録時も既存値を保持
-========================================== */
+/* LINE登録者管理 Ver1.34 マスター連携
+   編集モーダルを開くたびに最新マスターを再取得します。 */
 
 (() => {
-    const MASTER_TABLES = {
-        districts: "district_master",
-        neighborhoods: "neighborhood_master",
-        organizations: "organization_master",
-    };
+    let districts = [];
+    let neighborhoods = [];
+    let organizations = [];
+    let loading = false;
 
-    let districtMasters = [];
-    let neighborhoodMasters = [];
-    let organizationMasters = [];
-    let mastersLoaded = false;
+    const byId = id => document.getElementById(id);
 
-    function getElement(id) {
-        return document.getElementById(id);
-    }
-
-    function createSelectFromInput(input, options = {}) {
-        if (!input) {
-            return null;
-        }
-
-        if (input.tagName === "SELECT") {
-            return input;
-        }
-
-        const select = document.createElement("select");
-
-        for (const attribute of input.attributes) {
-            if (attribute.name === "type" || attribute.name === "value") {
-                continue;
-            }
-            select.setAttribute(attribute.name, attribute.value);
-        }
-
-        select.className = input.className;
-        select.required = input.required;
-        select.disabled = input.disabled;
-
-        if (options.readOnly === true) {
-            select.setAttribute("aria-readonly", "true");
-            select.dataset.readOnly = "true";
-        }
-
-        input.replaceWith(select);
-        return select;
-    }
-
-    function addOption(select, value, label, selected = false) {
-        const option = document.createElement("option");
-        option.value = value ?? "";
-        option.textContent = label ?? "";
-        option.selected = selected;
-        select.appendChild(option);
-    }
-
-    function sortMasters(rows) {
-        return [...rows].sort((a, b) => {
-            const orderA = Number(a.sort_order ?? 0);
-            const orderB = Number(b.sort_order ?? 0);
-
-            if (orderA !== orderB) {
-                return orderA - orderB;
-            }
-
-            return String(a.name ?? "").localeCompare(
-                String(b.name ?? ""),
-                "ja",
-            );
-        });
-    }
-
-    async function fetchMaster(table, columns) {
+    async function fetchRows(table, columns) {
         const { data, error } = await supabaseClient
             .from(table)
             .select(columns)
             .eq("is_active", true)
             .order("sort_order", { ascending: true })
             .order("name", { ascending: true });
-
-        if (error) {
-            throw error;
-        }
-
-        return Array.isArray(data) ? data : [];
+        if (error) throw error;
+        return data ?? [];
     }
 
     async function loadMasters() {
-        const [districts, neighborhoods, organizations] =
-            await Promise.all([
-                fetchMaster(
-                    MASTER_TABLES.districts,
-                    "code,name,sort_order,is_active",
-                ),
-                fetchMaster(
-                    MASTER_TABLES.neighborhoods,
-                    "code,name,district_code,sort_order,is_active",
-                ),
-                fetchMaster(
-                    MASTER_TABLES.organizations,
-                    "code,name,sort_order,is_active",
-                ),
+        if (loading) return;
+        loading = true;
+        try {
+            [districts, neighborhoods, organizations] = await Promise.all([
+                fetchRows("district_master", "code,name,sort_order,is_active"),
+                fetchRows("neighborhood_master", "code,name,district_code,sort_order,is_active"),
+                fetchRows("organization_master", "code,name,sort_order,is_active"),
             ]);
-
-        districtMasters = sortMasters(districts);
-        neighborhoodMasters = sortMasters(neighborhoods);
-        organizationMasters = sortMasters(organizations);
-        mastersLoaded = true;
+        } finally {
+            loading = false;
+        }
     }
 
-    function preserveExistingValue(select, currentValue) {
-        if (!currentValue) {
-            return;
-        }
+    function toSelect(element) {
+        if (!element) return null;
+        if (element.tagName === "SELECT") return element;
+        const select = document.createElement("select");
+        [...element.attributes].forEach(attr => {
+            if (!["type", "value"].includes(attr.name)) {
+                select.setAttribute(attr.name, attr.value);
+            }
+        });
+        select.className = element.className;
+        element.replaceWith(select);
+        return select;
+    }
 
-        const exists = [...select.options].some(
-            option => option.value === currentValue,
-        );
+    function addOption(select, value, text, selected = false) {
+        const option = document.createElement("option");
+        option.value = value ?? "";
+        option.textContent = text;
+        option.selected = selected;
+        select.appendChild(option);
+    }
 
-        if (!exists) {
-            addOption(
-                select,
-                currentValue,
-                `${currentValue}（既存データ）`,
-                true,
-            );
+    function keepExisting(select, value) {
+        if (!value) return;
+        if (![...select.options].some(option => option.value === value)) {
+            addOption(select, value, `${value}（既存データ）`, true);
         } else {
-            select.value = currentValue;
+            select.value = value;
         }
     }
 
-    function populateDistrictSelect(currentValue = "") {
-        const input = getElement("edit-district-group");
-        const select = createSelectFromInput(input, { readOnly: true });
+    function fillControls() {
+        const oldNeighborhood = byId("edit-neighborhood-name")?.value ?? "";
+        const oldDistrict = byId("edit-district-group")?.value ?? "";
+        const oldOrganization = byId("edit-organization-name")?.value ?? "";
 
-        if (!select) {
-            return null;
+        const n = toSelect(byId("edit-neighborhood-name"));
+        const d = toSelect(byId("edit-district-group"));
+        const o = toSelect(byId("edit-organization-name"));
+
+        if (n) {
+            n.innerHTML = "";
+            addOption(n, "", neighborhoods.length ? "町内会を選択してください" : "町内会マスターは未登録です");
+            neighborhoods.forEach(row => addOption(n, row.name, row.name));
+            keepExisting(n, oldNeighborhood);
         }
 
-        select.innerHTML = "";
-        addOption(select, "", "町内会を選択すると自動設定されます");
-
-        for (const district of districtMasters) {
-            addOption(select, district.name, district.name);
+        if (d) {
+            d.innerHTML = "";
+            addOption(d, "", "町内会を選択すると自動設定されます");
+            districts.forEach(row => addOption(d, row.name, row.name));
+            keepExisting(d, oldDistrict);
         }
 
-        preserveExistingValue(select, currentValue);
-        return select;
+        if (o) {
+            o.innerHTML = "";
+            addOption(o, "", organizations.length ? "所属団体を選択してください" : "所属団体マスターは未登録です");
+            organizations.forEach(row => addOption(o, row.name, row.name));
+            keepExisting(o, oldOrganization);
+        }
+
+        if (n && n.dataset.masterChangeInstalled !== "true") {
+            n.addEventListener("change", () => {
+                const neighborhood = neighborhoods.find(row => row.name === n.value);
+                const district = districts.find(row => row.code === neighborhood?.district_code);
+                if (d) d.value = district?.name ?? "";
+            });
+            n.dataset.masterChangeInstalled = "true";
+        }
     }
 
-    function populateNeighborhoodSelect(currentValue = "") {
-        const input = getElement("edit-neighborhood-name");
-        const select = createSelectFromInput(input);
-
-        if (!select) {
-            return null;
-        }
-
-        select.innerHTML = "";
-        addOption(
-            select,
-            "",
-            neighborhoodMasters.length > 0
-                ? "町内会を選択してください"
-                : "町内会マスターは未登録です",
-        );
-
-        for (const neighborhood of neighborhoodMasters) {
-            addOption(
-                select,
-                neighborhood.name,
-                neighborhood.name,
-            );
-        }
-
-        preserveExistingValue(select, currentValue);
-        return select;
-    }
-
-    function populateOrganizationSelect(currentValue = "") {
-        const input = getElement("edit-organization-name");
-        const select = createSelectFromInput(input);
-
-        if (!select) {
-            return null;
-        }
-
-        select.innerHTML = "";
-        addOption(
-            select,
-            "",
-            organizationMasters.length > 0
-                ? "所属団体を選択してください"
-                : "所属団体マスターは未登録です",
-        );
-
-        for (const organization of organizationMasters) {
-            addOption(
-                select,
-                organization.name,
-                organization.name,
-            );
-        }
-
-        preserveExistingValue(select, currentValue);
-        return select;
-    }
-
-    function findDistrictNameByNeighborhood(neighborhoodName) {
-        const neighborhood = neighborhoodMasters.find(
-            item => item.name === neighborhoodName,
-        );
-
-        if (!neighborhood?.district_code) {
-            return "";
-        }
-
-        const district = districtMasters.find(
-            item => item.code === neighborhood.district_code,
-        );
-
-        return district?.name ?? "";
-    }
-
-    function updateDistrictFromNeighborhood() {
-        const neighborhoodSelect =
-            getElement("edit-neighborhood-name");
-        const districtSelect =
-            getElement("edit-district-group");
-
-        if (!neighborhoodSelect || !districtSelect) {
-            return;
-        }
-
-        const districtName =
-            findDistrictNameByNeighborhood(neighborhoodSelect.value);
-
-        districtSelect.value = districtName;
-
-        if (
-            districtName
-            && districtSelect.value !== districtName
-        ) {
-            addOption(
-                districtSelect,
-                districtName,
-                districtName,
-                true,
-            );
-        }
-
-        districtSelect.dispatchEvent(
-            new Event("change", { bubbles: true }),
-        );
-    }
-
-    function installChangeHandlers() {
-        const neighborhoodSelect =
-            getElement("edit-neighborhood-name");
-
-        if (
-            !neighborhoodSelect
-            || neighborhoodSelect.dataset.masterHandlerInstalled === "true"
-        ) {
-            return;
-        }
-
-        neighborhoodSelect.addEventListener(
-            "change",
-            updateDistrictFromNeighborhood,
-        );
-
-        neighborhoodSelect.dataset.masterHandlerInstalled = "true";
-    }
-
-    function refreshEditControls() {
-        const currentNeighborhood =
-            getElement("edit-neighborhood-name")?.value ?? "";
-        const currentDistrict =
-            getElement("edit-district-group")?.value ?? "";
-        const currentOrganization =
-            getElement("edit-organization-name")?.value ?? "";
-
-        populateNeighborhoodSelect(currentNeighborhood);
-        populateDistrictSelect(currentDistrict);
-        populateOrganizationSelect(currentOrganization);
-        installChangeHandlers();
-    }
-
-    function observeEditModal() {
-        const modal = getElement("user-edit-modal");
-
-        if (!modal) {
-            return;
-        }
-
-        const observer = new MutationObserver(() => {
-            if (modal.hidden) {
-                return;
-            }
-
-            refreshEditControls();
-
-            const neighborhoodValue =
-                getElement("edit-neighborhood-name")?.value ?? "";
-            const districtValue =
-                getElement("edit-district-group")?.value ?? "";
-
-            if (neighborhoodValue && !districtValue) {
-                updateDistrictFromNeighborhood();
-            }
-        });
-
-        observer.observe(modal, {
-            attributes: true,
-            attributeFilter: ["hidden"],
-        });
-    }
-
-    async function initializeMasterAddon() {
+    async function refreshForModal() {
         try {
             await loadMasters();
-            refreshEditControls();
-            observeEditModal();
-
-            console.info(
-                "Ver1.33 master addon loaded:",
-                {
-                    districts: districtMasters.length,
-                    neighborhoods: neighborhoodMasters.length,
-                    organizations: organizationMasters.length,
-                },
-            );
+            fillControls();
         } catch (error) {
-            console.error(
-                "Ver1.33 master load error:",
-                error,
-            );
-
-            /*
-             * マスター読込に失敗しても、
-             * Ver1.32の自由入力機能はそのまま利用できます。
-             */
+            console.error("Ver1.34 master linkage error:", error);
         }
+    }
+
+    function observeModal() {
+        const modal = byId("user-edit-modal");
+        if (!modal) return;
+        const observer = new MutationObserver(() => {
+            if (!modal.hidden) {
+                setTimeout(refreshForModal, 0);
+            }
+        });
+        observer.observe(modal, { attributes: true, attributeFilter: ["hidden"] });
+    }
+
+    async function init() {
+        await refreshForModal();
+        observeModal();
     }
 
     if (document.readyState === "loading") {
-        document.addEventListener(
-            "DOMContentLoaded",
-            initializeMasterAddon,
-            { once: true },
-        );
+        document.addEventListener("DOMContentLoaded", init, { once: true });
     } else {
-        initializeMasterAddon();
+        init();
     }
 })();
