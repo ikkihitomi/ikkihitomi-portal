@@ -199,7 +199,7 @@ closeButton.addEventListener(
         }
 
         window.location.href =
-            "https://ikki-portal.com/";
+            "https://ikkihitomi-portal.vercel.app/";
     },
 );
 
