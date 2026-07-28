@@ -338,24 +338,80 @@ async function savePost() {
 
     let result;
 
+    /*
+     * 保存後に記事IDを確実に取得するため、
+     * select().single()を追加します。
+     */
     if (id) {
+
         result = await supabaseClient
             .from("posts")
             .update(postData)
-            .eq("id", id);
+            .eq("id", id)
+            .select("id, title, body, status, post_type")
+            .single();
+
     } else {
+
         result = await supabaseClient
             .from("posts")
-            .insert(postData);
+            .insert(postData)
+            .select("id, title, body, status, post_type")
+            .single();
     }
 
     if (result.error) {
-        message.textContent = "記事を保存できませんでした。";
-        console.error(result.error);
+
+        message.textContent =
+            "記事を保存できませんでした。";
+
+        console.error(
+            "Post save error:",
+            result.error,
+        );
+
         return;
     }
 
-    message.textContent = id ? "記事を更新しました。" : "記事を保存しました。";
+    const savedPost =
+        result.data;
+
+    message.textContent =
+        id
+            ? "記事を更新しました。"
+            : "記事を保存しました。";
+
+    /*
+     * 公開記事の場合だけ、
+     * LINE配信画面へ進むか確認します。
+     */
+    if (
+        savedPost
+        && savedPost.status === "published"
+    ) {
+
+        const goToLineDelivery =
+            window.confirm(
+                "記事を公開しました。\n\n"
+                + "この記事をLINE配信しますか？",
+            );
+
+        if (goToLineDelivery) {
+
+            /*
+             * 投稿IDをURLパラメータで渡します。
+             */
+            const query =
+                new URLSearchParams({
+                    post: savedPost.id,
+                });
+
+            window.location.href =
+                `./line-users.html?${query.toString()}`;
+
+            return;
+        }
+    }
 
     resetForm();
     await loadPosts();
@@ -481,57 +537,52 @@ function resetForm() {
     saveBtn.textContent = "記事を保存";
 }
 
-//======================================
-// LINE配信準備
-//======================================
+// ======================================
+// LINE配信画面へ移動
+// ======================================
 async function prepareLinePost(id) {
 
-    const { data, error } = await supabaseClient
-        .from("posts")
-        .select(`
-            id,
-            title,
-            body,
-            status,
-            post_type,
-            eyecatch_url
-        `)
-        .eq("id", id)
-        .single();
+    const post =
+        postsCache.find(
+            item => item.id === id,
+        );
 
-    if (error) {
-        alert("記事を取得できません。");
-        console.error(error);
+    if (!post) {
+
+        alert(
+            "記事が見つかりませんでした。",
+        );
+
         return;
     }
 
-    const detailUrl =
-        `${location.origin}/news/detail.html?id=${data.id}`;
+    if (post.status !== "published") {
 
-    const message =
-        `この内容をLINE配信しますか？
+        alert(
+            "下書きの記事はLINE配信できません。\n"
+            + "記事を公開してから配信してください。",
+        );
 
-----------------------------
-タイトル：
-${data.title}
-
-公開状態：
-${data.status}
-
-詳細URL：
-${detailUrl}
-
-配信先：
-一箕地区公式LINE
-----------------------------
-
-※次の段階で実際のLINE送信処理へ進みます。`;
-
-    if (!confirm(message)) {
         return;
     }
 
-    alert("確認できました。次はLINE送信用 Edge Function を作成します。");
+    const confirmed =
+        window.confirm(
+            "この記事のLINE配信画面へ進みますか？\n\n"
+            + `タイトル：${post.title}`,
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    const query =
+        new URLSearchParams({
+            post: post.id,
+        });
+
+    window.location.href =
+        `./line-users.html?${query.toString()}`;
 }
 
 saveBtn.addEventListener("click", savePost);

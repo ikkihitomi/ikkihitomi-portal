@@ -106,6 +106,19 @@ const deliveryFormMessage =
 const deliverySubmitButton =
     document.getElementById("delivery-submit-button");
 
+/* ==========================================
+  Ver1.31
+  記事からLINE配信内容を引き継ぐ
+========================================== */
+
+const pageParameters =
+    new URLSearchParams(
+        window.location.search,
+    );
+
+const sourcePostId =
+    pageParameters.get("post");
+
 
 /* ==========================================
    2. データ保持
@@ -766,6 +779,93 @@ async function loadLineUsers() {
 ========================================== */
 
 /**
+ * 投稿管理画面から渡された記事を取得し、
+ * LINE配信フォームへ自動入力します。
+ */
+async function loadSourcePost() {
+
+    if (!sourcePostId) {
+        return false;
+    }
+
+    try {
+
+        const {
+            data: post,
+            error,
+        } =
+            await supabaseClient
+                .from("posts")
+                .select(`
+                    id,
+                    title,
+                    body,
+                    status,
+                    post_type
+                `)
+                .eq(
+                    "id",
+                    sourcePostId,
+                )
+                .single();
+
+        if (error) {
+            throw error;
+        }
+
+        if (!post) {
+
+            throw new Error(
+                "記事が見つかりませんでした。",
+            );
+        }
+
+        if (post.status !== "published") {
+
+            throw new Error(
+                "公開されていない記事はLINE配信できません。",
+            );
+        }
+
+        /*
+         * 配信フォームへ自動入力
+         */
+        deliveryTitleInput.value =
+            post.title || "";
+
+        deliveryBodyInput.value =
+            post.body || "";
+
+        /*
+         * 公開記事URL
+         */
+        deliveryUrlInput.value =
+            `${window.location.origin}`
+            + `/news/detail.html?id=${encodeURIComponent(post.id)}`;
+
+        updateDeliveryPreview();
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "Source post load error:",
+            error,
+        );
+
+        alert(
+            error instanceof Error
+                ? error.message
+                : "記事情報を取得できませんでした。",
+        );
+
+        return false;
+    }
+}
+
+
+/**
  * 配信プレビューを作成します。
  */
 function updateDeliveryPreview() {
@@ -1183,4 +1283,37 @@ document.addEventListener(
    11. 初期表示
 ========================================== */
 
-loadLineUsers();
+/* ==========================================
+   初期表示
+========================================== */
+
+async function initializeLineUsersPage() {
+
+    /*
+     * 最初にLINE登録者を読み込みます。
+     */
+    await loadLineUsers();
+
+    /*
+     * 投稿管理画面から記事IDが渡された場合、
+     * 記事情報を自動入力します。
+     */
+    const postLoaded =
+        await loadSourcePost();
+
+    /*
+     * 記事を取得できた場合は、
+     * 配信可能者を自動選択します。
+     *
+     * ただし、実送信前には
+     * 必ず確認ダイアログが表示されます。
+     */
+    if (postLoaded) {
+
+        selectFilteredUsers();
+
+        openDeliveryModal();
+    }
+}
+
+initializeLineUsersPage();
