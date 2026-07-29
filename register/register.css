@@ -1,0 +1,224 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    font-family:
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        "Meiryo",
+        sans-serif;
+    color: #243029;
+    background: #f3f7f4;
+}
+
+body {
+    margin: 0;
+    min-width: 320px;
+}
+
+.registration-page {
+    min-height: 100vh;
+    padding: 24px 14px 48px;
+}
+
+.registration-card {
+    width: min(100%, 680px);
+    margin: 0 auto;
+    padding: 28px;
+    background: #ffffff;
+    border: 1px solid #dce7df;
+    border-radius: 20px;
+    box-shadow: 0 12px 34px rgba(31, 74, 51, 0.10);
+}
+
+.registration-header {
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.site-label {
+    margin: 0 0 6px;
+    color: #2f6f4e;
+    font-weight: 700;
+}
+
+.registration-header h1 {
+    margin: 0 0 12px;
+    font-size: clamp(1.8rem, 6vw, 2.4rem);
+}
+
+.registration-header p {
+    margin: 0;
+    color: #5c6a61;
+    line-height: 1.8;
+}
+
+.page-message,
+.form-message {
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: #eef5f0;
+    line-height: 1.6;
+}
+
+.page-message.error,
+.form-message.error {
+    color: #8d2424;
+    background: #fff0f0;
+}
+
+.form-message.success {
+    color: #1f6844;
+    background: #edf8f1;
+}
+
+.resident-form {
+    display: grid;
+    gap: 18px;
+}
+
+.profile-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: #f7faf8;
+    border-radius: 12px;
+}
+
+.line-picture {
+    width: 52px;
+    height: 52px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.profile-box span {
+    display: block;
+    margin-bottom: 4px;
+    color: #657268;
+    font-size: 0.85rem;
+}
+
+.form-field {
+    display: grid;
+    gap: 8px;
+}
+
+.form-field span {
+    font-weight: 700;
+}
+
+.form-field b {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 2px 6px;
+    color: #ffffff;
+    background: #b94747;
+    border-radius: 4px;
+    font-size: 0.72rem;
+}
+
+input,
+select,
+button {
+    font: inherit;
+}
+
+.form-field input,
+.form-field select {
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 12px;
+    color: #243029;
+    background: #ffffff;
+    border: 1px solid #bfcfc4;
+    border-radius: 9px;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+    outline: 3px solid rgba(47, 111, 78, 0.18);
+    border-color: #2f6f4e;
+}
+
+.form-field input[readonly] {
+    background: #edf2ee;
+}
+
+.agreement-field {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px;
+    background: #f7faf8;
+    border-radius: 10px;
+    line-height: 1.7;
+}
+
+.agreement-field input {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+}
+
+.submit-button,
+.secondary-button {
+    min-height: 52px;
+    padding: 12px 20px;
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.submit-button {
+    color: #ffffff;
+    background: #2f6f4e;
+}
+
+.submit-button:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
+.secondary-button {
+    color: #2f6f4e;
+    background: #eaf2ed;
+}
+
+.complete-panel {
+    text-align: center;
+}
+
+.complete-icon {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    color: #ffffff;
+    background: #2f6f4e;
+    border-radius: 50%;
+    font-size: 2rem;
+}
+
+.resident-code {
+    display: block;
+    margin: 10px 0 20px;
+    font-size: 2rem;
+    letter-spacing: 0.14em;
+}
+
+.complete-note {
+    color: #5c6a61;
+    line-height: 1.8;
+}
+
+@media (max-width: 520px) {
+    .registration-card {
+        padding: 22px 16px;
+        border-radius: 14px;
+    }
+}

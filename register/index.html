@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2f6f4e">
+    <title>住民登録｜一箕地区ポータル</title>
+    <link rel="stylesheet" href="./register.css">
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+
+<body>
+    <main class="registration-page">
+        <section class="registration-card">
+            <header class="registration-header">
+                <p class="site-label">一箕地区ポータル【公式】</p>
+                <h1>住民登録</h1>
+                <p>
+                    お名前と町内会などをご登録ください。
+                    7地区は、選択した町内会から自動設定されます。
+                </p>
+            </header>
+
+            <div id="page-message" class="page-message" role="status" aria-live="polite">
+                LINEとの接続を確認しています。
+            </div>
+
+            <form id="resident-form" class="resident-form" hidden>
+                <input type="hidden" id="line-user-id" name="line_user_id">
+                <input type="hidden" id="district-code" name="district_code">
+                <input type="hidden" id="neighborhood-code" name="neighborhood_code">
+                <input type="hidden" id="organization-code" name="organization_code">
+
+                <div class="profile-box">
+                    <img id="line-picture" class="line-picture" alt="" hidden>
+                    <div>
+                        <span>LINE表示名</span>
+                        <strong id="line-display-name">確認中</strong>
+                    </div>
+                </div>
+
+                <label class="form-field">
+                    <span>お名前 <b>必須</b></span>
+                    <input type="text" id="registered-name" name="registered_name" maxlength="80" autocomplete="name"
+                        required>
+                </label>
+
+                <label class="form-field">
+                    <span>ふりがな</span>
+                    <input type="text" id="furigana" name="furigana" maxlength="100" placeholder="例：いっき たろう">
+                </label>
+
+                <label class="form-field">
+                    <span>町内会 <b>必須</b></span>
+                    <select id="neighborhood-name" required>
+                        <option value="">読み込み中です</option>
+                    </select>
+                </label>
+
+                <label class="form-field">
+                    <span>7地区</span>
+                    <input type="text" id="district-name" value="" readonly placeholder="町内会を選択すると自動表示されます">
+                </label>
+
+                <label class="form-field">
+                    <span>所属団体</span>
+                    <select id="organization-name">
+                        <option value="">所属団体なし・未選択</option>
+                    </select>
+                </label>
+
+                <label class="form-field">
+                    <span>メールアドレス</span>
+                    <input type="email" id="email" name="email" maxlength="254" autocomplete="email" inputmode="email">
+                </label>
+
+                <label class="form-field">
+                    <span>電話番号</span>
+                    <input type="tel" id="phone" name="phone" maxlength="30" autocomplete="tel" inputmode="tel"
+                        placeholder="例：090-1234-5678">
+                </label>
+
+                <label class="agreement-field">
+                    <input type="checkbox" id="privacy-agreement" required>
+                    <span>
+                        登録情報を一箕地区ポータルの運営、連絡、地域活動の案内に
+                        使用することに同意します。
+                    </span>
+                </label>
+
+                <p id="form-message" class="form-message" role="status" aria-live="polite"></p>
+
+                <button id="submit-button" class="submit-button" type="submit">
+                    登録する
+                </button>
+            </form>
+
+            <section id="complete-panel" class="complete-panel" hidden>
+                <div class="complete-icon">✓</div>
+                <h2>登録が完了しました</h2>
+                <p>住民コード</p>
+                <strong id="resident-code" class="resident-code">------</strong>
+                <p class="complete-note">
+                    ご登録ありがとうございました。画面を閉じてLINEへお戻りください。
+                </p>
+                <button id="close-liff-button" class="secondary-button" type="button">
+                    LINEへ戻る
+                </button>
+            </section>
+        </section>
+    </main>
+
+    <script src="./register-config.js"></script>
+    <script src="./register.js"></script>
+</body>
+
+</html>
