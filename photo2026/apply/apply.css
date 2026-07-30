@@ -1,0 +1,278 @@
+:root {
+    --green: #2f6f4e;
+    --dark: #214f39;
+    --soft: #eaf4ee;
+    --text: #333;
+    --muted: #68716c;
+    --border: #d8dfdb;
+    --danger: #b3261e;
+    --white: #fff;
+    --shadow: 0 10px 30px rgba(0, 0, 0, .09)
+}
+
+* {
+    box-sizing: border-box
+}
+
+body {
+    margin: 0;
+    background: linear-gradient(180deg, #f1f8f3, #fff);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Yu Gothic", "Meiryo", sans-serif;
+    line-height: 1.7
+}
+
+.header {
+    background: #fff;
+    border-bottom: 1px solid var(--border)
+}
+
+.header-inner {
+    width: min(920px, calc(100% - 32px));
+    min-height: 62px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+
+.header a {
+    text-decoration: none;
+    color: var(--dark);
+    font-weight: 800
+}
+
+.main {
+    width: min(820px, calc(100% - 28px));
+    margin: 34px auto 70px
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 28px
+}
+
+.title h1 {
+    margin: 0;
+    color: var(--dark);
+    font-size: clamp(28px, 5vw, 40px)
+}
+
+.title p {
+    margin: 8px 0 0;
+    color: var(--muted)
+}
+
+.panel {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    padding: 28px;
+    margin-bottom: 22px
+}
+
+.panel h2 {
+    margin: 0 0 18px;
+    color: var(--dark);
+    font-size: 22px
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px
+}
+
+.field {
+    margin-bottom: 18px
+}
+
+.field:last-child {
+    margin-bottom: 0
+}
+
+label {
+    display: block;
+    margin-bottom: 7px;
+    font-weight: 800
+}
+
+.required {
+    color: var(--danger);
+    font-size: 12px;
+    margin-left: 6px
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #bac5bf;
+    border-radius: 10px;
+    background: #fff;
+    font: inherit;
+    color: inherit
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: 3px solid rgba(47, 111, 78, .14);
+    border-color: var(--green)
+}
+
+input[readonly] {
+    background: #f4f6f5;
+    color: #555
+}
+
+textarea {
+    min-height: 130px;
+    resize: vertical
+}
+
+.help {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 13px
+}
+
+.profile-row {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    border-bottom: 1px solid #edf0ee;
+    padding: 10px 0
+}
+
+.profile-row:last-child {
+    border-bottom: 0
+}
+
+.profile-label {
+    font-weight: 800;
+    color: var(--dark)
+}
+
+.preview-wrap {
+    display: none;
+    margin-top: 14px
+}
+
+.preview-wrap img {
+    display: block;
+    max-height: 420px;
+    margin: auto;
+    border-radius: 12px;
+    box-shadow: var(--shadow)
+}
+
+.agree {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px
+}
+
+.agree input {
+    width: auto;
+    margin-top: 6px
+}
+
+.submit {
+    width: 100%;
+    min-height: 58px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--green);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 8px 22px rgba(47, 111, 78, .26)
+}
+
+.submit:disabled {
+    opacity: .55;
+    cursor: not-allowed
+}
+
+.message {
+    display: none;
+    padding: 15px 18px;
+    border-radius: 12px;
+    margin-bottom: 20px
+}
+
+.message.info {
+    display: block;
+    background: #eef6ff;
+    color: #214f70
+}
+
+.message.error {
+    display: block;
+    background: #fff0ef;
+    color: #8b1e18
+}
+
+.message.success {
+    display: block;
+    background: #ebf8ef;
+    color: #205d35
+}
+
+.loading {
+    display: none;
+    text-align: center;
+    padding: 20px
+}
+
+.success-card {
+    display: none;
+    text-align: center;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 34px;
+    box-shadow: var(--shadow)
+}
+
+.entry-no {
+    font-size: 30px;
+    color: var(--green);
+    font-weight: 900;
+    letter-spacing: .05em
+}
+
+.btn-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 10px 22px;
+    border-radius: 999px;
+    background: var(--green);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 800
+}
+
+@media(max-width:650px) {
+    .grid {
+        grid-template-columns: 1fr
+    }
+
+    .panel {
+        padding: 22px 18px
+    }
+
+    .profile-row {
+        grid-template-columns: 1fr;
+        gap: 2px
+    }
+
+    .main {
+        margin-top: 24px
+    }
+}

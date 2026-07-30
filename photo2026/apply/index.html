@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#2f6f4e">
+    <title>写真応募｜一箕地区フォトコンテスト2026</title>
+    <link rel="stylesheet" href="./apply.css">
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <a href="../">← フォトコンテスト2026</a>
+            <a href="../../">一箕地区ポータル</a>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="title">
+            <h1>写真応募フォーム</h1>
+            <p>一箕地区フォトコンテスト2026</p>
+        </div>
+
+        <div id="message" class="message"></div>
+        <div id="loading" class="loading">応募者情報を確認しています…</div>
+
+        <form id="entry-form" hidden novalidate>
+            <section class="panel">
+                <h2>応募者情報</h2>
+                <div class="profile-row">
+                    <div class="profile-label">氏名</div>
+                    <div id="resident-name">―</div>
+                </div>
+                <div class="profile-row">
+                    <div class="profile-label">7地区</div>
+                    <div id="district-name">―</div>
+                </div>
+                <div class="profile-row">
+                    <div class="profile-label">町内会</div>
+                    <div id="neighborhood-name">―</div>
+                </div>
+                <p class="help">応募者情報は住民マイページの登録内容から自動取得します。</p>
+            </section>
+
+            <section class="panel">
+                <h2>作品情報</h2>
+                <div class="field"><label for="title">作品タイトル<span class="required">必須</span></label><input id="title"
+                        name="title" type="text" maxlength="60" required></div>
+                <div class="grid">
+                    <div class="field"><label for="location">撮影場所<span class="required">必須</span></label><input
+                            id="location" name="location" type="text" maxlength="100" required></div>
+                    <div class="field"><label for="shooting-date">撮影日<span class="required">必須</span></label><input
+                            id="shooting-date" name="shooting_date" type="date" required></div>
+                </div>
+                <div class="field"><label for="comment">作品コメント<span class="required">必須</span></label><textarea
+                        id="comment" name="comment" maxlength="500" required></textarea>
+                    <p class="help">500文字以内</p>
+                </div>
+                <div class="field"><label for="photo">写真<span class="required">必須</span></label><input id="photo"
+                        name="photo" type="file" accept="image/jpeg,image/png,image/webp" required>
+                    <p class="help">10MBまで。JPEG推奨です。</p>
+                    <div id="preview-wrap" class="preview-wrap"><img id="preview" alt="応募写真プレビュー"></div>
+                </div>
+            </section>
+
+            <section class="panel">
+                <h2>応募規約</h2>
+                <ul>
+                    <li>応募作品は応募者本人が撮影した未発表作品に限ります。</li>
+                    <li>人物が写っている場合は、被写体の承諾を得てください。</li>
+                    <li>主催者は展示、広報、Web掲載等に応募作品を無償使用できるものとします。</li>
+                    <li>お一人につき5作品まで応募できます。</li>
+                </ul>
+                <label class="agree"><input id="agree" type="checkbox"
+                        required><span>上記の応募規約と個人情報の取扱いに同意します。</span></label>
+            </section>
+
+            <button id="submit-button" class="submit" type="submit">この内容で応募する</button>
+        </form>
+
+        <section id="success-card" class="success-card">
+            <h2>ご応募ありがとうございました</h2>
+            <p>応募番号</p>
+            <div id="entry-no" class="entry-no">―</div>
+            <p>審査結果や展示については、一箕地区ポータルでお知らせします。</p>
+            <a class="btn-link" href="../">フォトコンテストページへ戻る</a>
+        </section>
+    </main>
+
+    <script src="../config.js"></script>
+    <script src="./apply.js"></script>
+</body>
+
+</html>

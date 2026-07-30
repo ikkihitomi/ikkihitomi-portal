@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>フォトコンテスト応募管理</title>
+    <link rel="stylesheet" href="./photo.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+    <main class="wrap">
+        <div class="top">
+            <h1>フォトコンテスト応募管理</h1><a href="./index.html">管理トップへ戻る</a>
+        </div>
+        <div id="message" class="message"></div>
+        <div class="controls">
+            <select id="status-filter">
+                <option value="">全ステータス</option>
+                <option value="received">受付</option>
+                <option value="reviewing">審査中</option>
+                <option value="selected">入賞</option>
+                <option value="not_selected">選外</option>
+                <option value="withdrawn">取消</option>
+            </select>
+            <input id="keyword" type="search" placeholder="応募番号・氏名・作品名">
+            <button id="reload">再読み込み</button>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>写真</th>
+                        <th>応募番号</th>
+                        <th>作品名</th>
+                        <th>氏名</th>
+                        <th>地区・町内会</th>
+                        <th>撮影場所</th>
+                        <th>応募日時</th>
+                        <th>状態</th>
+                    </tr>
+                </thead>
+                <tbody id="rows"></tbody>
+            </table>
+        </div>
+    </main>
+    <script src="./supabase-config.js"></script>
+    <script src="./photo.js"></script>
+</body>
+
+</html>
