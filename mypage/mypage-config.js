@@ -6,7 +6,7 @@
 window.MY_PAGE_CONFIG = {
 
   LIFF_ID:
-    "2010907704-F4ozTamF",
+    "2010870639-eYA9wx4i",
 
   SUPABASE_URL:
     "https://aeafysrkqtwgufmhwwdb.supabase.co",
