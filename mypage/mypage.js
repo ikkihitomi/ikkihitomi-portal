@@ -581,12 +581,11 @@ function renderDistrict(districtCode) {
         districtCode || "",
     );
 
-    setText(
+    setValue(
         dom.districtName,
-        district?.name || "－",
+        district?.name || "",
     );
 }
-
 
 // =========================================================
 // 町内会変更時の7地区自動表示
