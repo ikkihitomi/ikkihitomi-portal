@@ -3,59 +3,312 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#2f6f4e">
-    <title>住民マイページ｜一箕地区ポータル</title>
+
+    <title>
+        住民マイページ｜一箕地区ポータル
+    </title>
+
     <link rel="stylesheet" href="./mypage.css">
+
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 
 <body>
-    <main class="mypage">
+
+    <main id="mypage" class="mypage" aria-busy="true">
+
         <section class="card">
+
+            <!-- ========================================= -->
+            <!-- ヘッダー -->
+            <!-- ========================================= -->
+
             <header>
-                <p>一箕地区ポータル【公式】</p>
-                <h1>住民マイページ</h1><span>登録内容の確認と変更ができます。</span>
+                <p>
+                    一箕地区ポータル【公式】
+                </p>
+
+                <h1>
+                    住民マイページ
+                </h1>
+
+                <span>
+                    登録内容の確認と変更ができます。
+                </span>
             </header>
-            <div id="page-message" class="message">LINEとの接続を確認しています。</div>
-            <section id="profile-section" hidden>
-                <div class="line-profile"><img id="line-picture" alt="" hidden>
-                    <div><small>LINE表示名</small><strong id="line-display-name">確認中</strong></div>
-                </div>
-                <div class="summary">
-                    <div><small>住民コード</small><strong id="resident-code">------</strong></div>
-                    <div><small>登録状態</small><strong id="registration-status">利用中</strong></div>
-                </div>
-                <form id="profile-form"><input type="hidden" id="neighborhood-code"><input type="hidden"
-                        id="district-code"><input type="hidden" id="organization-code"><label>お名前 <b>必須</b><input
-                            id="registered-name" maxlength="80" required></label><label>ふりがな<input id="furigana"
-                            maxlength="100"></label><label>町内会 <b>必須</b><select id="neighborhood-name" required>
-                            <option>読み込み中です</option>
-                        </select></label><label>7地区<input id="district-name" readonly></label><label>所属団体<select
-                            id="organization-name">
-                            <option value="">所属団体なし・未選択</option>
-                        </select></label><label>メールアドレス<input id="email" type="email"
-                            maxlength="254"></label><label>電話番号<input id="phone" type="tel" maxlength="30"></label>
-                    <div class="dates">
-                        <p>登録日：<span id="created-at">-</span></p>
-                        <p>最終更新：<span id="updated-at">-</span></p>
+
+
+            <!-- ========================================= -->
+            <!-- ローディング表示 -->
+            <!-- ========================================= -->
+
+            <div id="loading" class="message">
+                LINEとの接続を確認しています。
+            </div>
+
+
+            <!-- ========================================= -->
+            <!-- 完了メッセージ -->
+            <!-- ========================================= -->
+
+            <div id="message" class="message" hidden></div>
+
+
+            <!-- ========================================= -->
+            <!-- エラーメッセージ -->
+            <!-- ========================================= -->
+
+            <div id="error-message" class="message" hidden></div>
+
+
+            <!-- ========================================= -->
+            <!-- 住民マイページ本体 -->
+            <!-- ========================================= -->
+
+            <section id="mypage-content" hidden>
+
+                <!-- LINEプロフィール -->
+
+                <div class="line-profile">
+
+                    <img id="line-picture" alt="" hidden>
+
+                    <div>
+                        <small>
+                            LINE表示名
+                        </small>
+
+                        <strong id="line-display-name">
+                            確認中
+                        </strong>
                     </div>
-                    <p id="form-message" class="message compact"></p><button id="save-button" class="primary"
-                        type="submit">登録内容を更新する</button>
+
+                </div>
+
+
+                <!-- 住民コード・登録状態 -->
+
+                <div class="summary">
+
+                    <div>
+                        <small>
+                            住民コード
+                        </small>
+
+                        <strong id="resident-code">
+                            ------
+                        </strong>
+                    </div>
+
+                    <div>
+                        <small>
+                            登録状態
+                        </small>
+
+                        <strong id="registration-status">
+                            確認中
+                        </strong>
+                    </div>
+
+                </div>
+
+
+                <!-- ===================================== -->
+                <!-- 住民情報フォーム -->
+                <!-- ===================================== -->
+
+                <form id="mypage-form">
+
+                    <input type="hidden" id="district-code">
+
+
+                    <!-- お名前 -->
+
+                    <label>
+                        お名前
+                        <b>必須</b>
+
+                        <input id="registered-name" type="text" maxlength="100" required>
+                    </label>
+
+
+                    <!-- ふりがな -->
+
+                    <label>
+                        ふりがな
+
+                        <input id="furigana" type="text" maxlength="100">
+                    </label>
+
+
+                    <!-- 町内会 -->
+
+                    <label>
+                        町内会
+                        <b>必須</b>
+
+                        <select id="neighborhood-code" required>
+                            <option value="">
+                                読み込み中です
+                            </option>
+                        </select>
+                    </label>
+
+
+                    <!-- 7地区 -->
+
+                    <label>
+                        7地区
+
+                        <input id="district-name" type="text" readonly>
+                    </label>
+
+
+                    <!-- 所属団体 -->
+
+                    <label>
+                        所属団体
+
+                        <select id="organization-code">
+                            <option value="">
+                                所属団体なし・未選択
+                            </option>
+                        </select>
+                    </label>
+
+
+                    <!-- メールアドレス -->
+
+                    <label>
+                        メールアドレス
+
+                        <input id="email" type="email" maxlength="254" autocomplete="email">
+                    </label>
+
+
+                    <!-- 電話番号 -->
+
+                    <label>
+                        電話番号
+
+                        <input id="phone" type="tel" maxlength="30" autocomplete="tel">
+                    </label>
+
+
+                    <!-- 日時情報 -->
+
+                    <div class="dates">
+
+                        <p>
+                            登録日：
+                            <span id="created-at">
+                                -
+                            </span>
+                        </p>
+
+                        <p>
+                            最終更新：
+                            <span id="updated-at">
+                                -
+                            </span>
+                        </p>
+
+                        <p>
+                            プロフィール更新：
+                            <span id="profile-updated-at">
+                                -
+                            </span>
+                        </p>
+
+                    </div>
+
+
+                    <!-- 更新ボタン -->
+
+                    <button id="save-button" class="primary" type="submit">
+                        登録内容を更新
+                    </button>
+
                 </form>
+
+
+                <!-- ===================================== -->
+                <!-- 今後追加予定 -->
+                <!-- ===================================== -->
+
                 <section class="future">
-                    <h2>今後追加予定</h2><button disabled>イベント申込履歴</button><button disabled>フォトコン応募履歴</button><button
-                        disabled>LINE配信設定</button>
-                </section><button id="close-button" class="secondary" type="button">LINEへ戻る</button>
+
+                    <h2>
+                        今後追加予定
+                    </h2>
+
+                    <button type="button" disabled>
+                        イベント申込履歴
+                    </button>
+
+                    <button type="button" disabled>
+                        フォトコン応募履歴
+                    </button>
+
+                    <button type="button" disabled>
+                        LINE配信設定
+                    </button>
+
+                </section>
+
+
+                <!-- LINEへ戻る -->
+
+                <button id="close-button" class="secondary" type="button">
+                    LINEへ戻る
+                </button>
+
             </section>
+
+
+            <!-- ========================================= -->
+            <!-- 未登録表示 -->
+            <!-- ========================================= -->
+
             <section id="not-registered-panel" hidden>
-                <h2>住民登録が見つかりません</h2>
-                <p>先に住民登録を行ってください。</p><a class="primary link" href="../register/">住民登録へ進む</a>
+
+                <h2>
+                    住民登録が見つかりません
+                </h2>
+
+                <p>
+                    先に住民登録を行ってください。
+                </p>
+
+                <a id="register-link" class="primary link" href="../register/">
+                    住民登録へ進む
+                </a>
+
             </section>
+
+
+            <!-- ========================================= -->
+            <!-- 再読み込み -->
+            <!-- ========================================= -->
+
+            <button id="retry-button" class="secondary" type="button" hidden>
+                再読み込み
+            </button>
+
         </section>
+
     </main>
+
+
+    <!-- ================================================ -->
+    <!-- JavaScript -->
+    <!-- ================================================ -->
+
     <script src="./mypage-config.js"></script>
     <script src="./mypage.js"></script>
+
 </body>
 
 </html>
