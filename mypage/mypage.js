@@ -1149,3 +1149,34 @@ function formatDateTime(value) {
         },
     ).format(date);
 }
+
+// ============================================
+// LINEへ戻る
+// ============================================
+
+const closeButton =
+    document.getElementById("close-button");
+
+if (closeButton) {
+
+    closeButton.addEventListener(
+        "click",
+        () => {
+
+            if (
+                typeof liff !== "undefined"
+                && liff.isInClient()
+            ) {
+
+                liff.closeWindow();
+
+            } else {
+
+                window.history.back();
+
+            }
+
+        }
+    );
+
+}
