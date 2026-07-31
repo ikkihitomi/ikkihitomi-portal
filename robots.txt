@@ -1,0 +1,11 @@
+# ========================================
+# 一箕地区ポータル
+# robots.txt
+# Version 1.00
+# ========================================
+
+User-agent: *
+
+Allow: /
+
+Sitemap: https://ikki-portal.com/sitemap.xml
