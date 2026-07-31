@@ -2,176 +2,1081 @@
 <html lang="ja">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>更新履歴｜一箕地区ポータル</title>
-    <meta name="description" content="一箕地区ポータルおよび一箕CMSの更新履歴です。" />
 
-    <link rel="stylesheet" href="../css/style.css" />
+    <meta name="description" content="一箕地区ポータルおよび一箕CMSの正式リリース情報、開発・改善の記録をご案内します。">
+
+    <link rel="stylesheet" href="../css/style.css">
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0CWC2N1T7C"></script>
+
     <script>
         window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
 
-        gtag('config', 'G-0CWC2N1T7C');
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag("js", new Date());
+        gtag("config", "G-0CWC2N1T7C");
     </script>
 </head>
 
 <body>
+
+    <!-- ========================================
+         ヘッダー
+    ========================================= -->
     <header class="site-header">
+
         <div class="site-header-inner">
-            <h1>一箕地区ポータル</h1>
-            <p>会津若松市一箕地区の地域情報ポータルサイト</p>
+
+            <div class="site-title">
+
+                <h1>
+                    一箕地区ポータル
+                </h1>
+
+                <p>
+                    会津若松市一箕地区の地域情報ポータルサイト
+                </p>
+
+            </div>
+
+            <nav class="global-nav" aria-label="メインメニュー">
+
+                <a href="/">
+                    🏠 ホーム
+                </a>
+
+                <a href="/news/">
+                    📢 お知らせ
+                </a>
+
+                <a href="/event/">
+                    📅 行事予定
+                </a>
+
+                <a href="/blog/neighborhood/">
+                    🏘️ 町内会
+                </a>
+
+                <a href="/facility/">
+                    🏢 施設予約
+                </a>
+
+                <a href="/disaster/">
+                    🚨 防災情報
+                </a>
+
+                <a href="/line/">
+                    LINE 公式LINE
+                </a>
+
+                <a href="/blog/">
+                    ✏️ 地域ブログ
+                </a>
+
+                <a href="/photo2026/">
+                    📷 フォトコンテスト
+                </a>
+
+            </nav>
+
         </div>
+
     </header>
 
+
+    <!-- ========================================
+         メインコンテンツ
+    ========================================= -->
     <main class="page-container">
+
+        <!-- ページタイトル -->
         <section class="page-hero">
-            <h2>更新履歴</h2>
-            <p>一箕地区ポータルと一箕CMSの開発・改善の記録です。</p>
+
+            <p class="section-label">
+                RELEASE HISTORY
+            </p>
+
+            <h2>
+                更新履歴
+            </h2>
+
+            <p>
+                一箕地区ポータルと一箕CMSの
+                開発・改善・運用の記録です。
+            </p>
+
         </section>
 
-        <section class="content-card">
-            <h3>一箕CMS Ver1.00</h3>
-            <p class="release-date">2026年7月</p>
 
-            <h4>概要</h4>
+        <!-- ========================================
+             正式リリース
+        ========================================= -->
+        <section class="content-card">
+
+            <p class="section-label">
+                OFFICIAL RELEASE
+            </p>
+
+            <h3>
+                一箕地区ポータル Ver1.00 正式リリース
+            </h3>
+
+            <p class="release-date">
+                2026年8月1日
+            </p>
+
+            <h4>
+                概要
+            </h4>
+
+            <p>
+                2026年8月1日、
+                一箕地区ポータル Ver1.00を正式公開し、
+                運用を開始しました。
+            </p>
+
+            <p>
+                「人と人、地域と未来をつなぐ」を基本理念として、
+                一箕地区の行事予定、お知らせ、防災情報、
+                町内会紹介、地域ブログなどを集約した、
+                地域情報の新しい窓口としてスタートしました。
+            </p>
+
+            <p>
+                本サイトは、単に地域情報を掲載するだけでなく、
+                公式LINE、住民登録、フォトコンテスト応募、
+                WordPress、Supabaseを連携させた、
+                地域運営のための情報基盤として構築しています。
+            </p>
+
+            <h4>
+                主な公開機能
+            </h4>
+
+            <ul class="info-list">
+
+                <li>
+                    地域のお知らせ掲載
+                </li>
+
+                <li>
+                    行事予定・イベント情報掲載
+                </li>
+
+                <li>
+                    町内会紹介
+                </li>
+
+                <li>
+                    地域団体紹介
+                </li>
+
+                <li>
+                    地域ブログ
+                </li>
+
+                <li>
+                    防災情報
+                </li>
+
+                <li>
+                    施設予約案内
+                </li>
+
+                <li>
+                    公式LINE友だち追加
+                </li>
+
+                <li>
+                    LIFFによる住民登録
+                </li>
+
+                <li>
+                    一箕地区フォトコンテスト2026
+                </li>
+
+                <li>
+                    フォトコンテストWeb応募
+                </li>
+
+                <li>
+                    Google Analyticsによるアクセス解析
+                </li>
+
+                <li>
+                    Google Search Console対応
+                </li>
+
+            </ul>
+
+            <h4>
+                システム構成
+            </h4>
+
+            <ul class="info-list">
+
+                <li>
+                    GitHubによるソースコード・バージョン管理
+                </li>
+
+                <li>
+                    Vercelによる公開環境・自動デプロイ
+                </li>
+
+                <li>
+                    Supabase Database
+                </li>
+
+                <li>
+                    Supabase Authentication
+                </li>
+
+                <li>
+                    Supabase Storage
+                </li>
+
+                <li>
+                    Supabase Edge Functions
+                </li>
+
+                <li>
+                    WordPressによる地域ブログ・町内会紹介
+                </li>
+
+                <li>
+                    LINE Messaging API
+                </li>
+
+                <li>
+                    LIFFによる住民登録・フォトコン応募
+                </li>
+
+                <li>
+                    Google Analytics 4
+                </li>
+
+                <li>
+                    Google Search Console
+                </li>
+
+            </ul>
+
+            <div class="site-message">
+
+                <strong>
+                    2026年8月1日、正式運用開始
+                </strong>
+
+                <p>
+                    一箕地区ポータルは、この日を新たな出発点として、
+                    地域の皆さまとともに育てていく
+                    地域情報基盤として正式に運用を開始しました。
+                </p>
+
+                <p>
+                    今後も住民の皆さまから寄せられるご意見やご要望を
+                    一つひとつ検討しながら、
+                    継続的な改善と機能拡張を進めてまいります。
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================
+             一箕CMS Ver1.00
+        ========================================= -->
+        <section class="content-card">
+
+            <p class="section-label">
+                CMS RELEASE
+            </p>
+
+            <h3>
+                一箕CMS Ver1.00
+            </h3>
+
+            <p class="release-date">
+                2026年7月
+            </p>
+
+            <h4>
+                概要
+            </h4>
+
             <p>
                 一箕地区ポータルの管理者向け運営システムとして、
                 「一箕CMS Ver1.00」を構築しました。
-                記事の作成・編集・削除、カテゴリ管理、公開状態管理、
-                アイキャッチ画像の登録まで対応しました。
             </p>
-
-            <h4>主な機能</h4>
-            <ul>
-                <li>Supabase Authentication による管理者ログイン</li>
-                <li>管理者権限管理</li>
-                <li>記事の新規作成</li>
-                <li>記事の編集・更新</li>
-                <li>記事の削除</li>
-                <li>カテゴリ選択</li>
-                <li>下書き・公開状態の管理</li>
-                <li>Supabase Storage によるアイキャッチ画像アップロード</li>
-                <li>記事一覧でのサムネイル表示</li>
-            </ul>
-
-            <h4>技術基盤</h4>
-            <ul>
-                <li>GitHub によるバージョン管理</li>
-                <li>Vercel による公開環境</li>
-                <li>Supabase Database</li>
-                <li>Supabase Authentication</li>
-                <li>Supabase Storage</li>
-            </ul>
-
-            <h4>今後の予定</h4>
-            <ul>
-                <li>PDF・JPG等の添付ファイル機能</li>
-                <li>記事種類別入力画面</li>
-                <li>イベント・カレンダー表示</li>
-                <li>LINE登録者への配信機能</li>
-                <li>トップページへの記事自動表示</li>
-            </ul>
-        </section>
-
-        <section class="content-card">
-            <h3>一箕地区ポータル Ver1.00</h3>
-            <p class="release-date">2026年7月</p>
 
             <p>
-                GitHub・Vercelによる公開基盤を整備し、
-                運営ページを作成しました。
+                地域のお知らせ、行事予定、活動報告、
+                防災情報、募集情報などを、
+                管理者が継続的に登録・編集できる
+                運用環境を整備しました。
             </p>
 
-            <ul>
-                <li>About ページ</li>
-                <li>Release Notes ページ</li>
-                <li>サイトマップ</li>
-                <li>利用規約</li>
-                <li>プライバシーポリシー</li>
-                <li>お問い合わせページ</li>
+            <h4>
+                主な機能
+            </h4>
+
+            <ul class="info-list">
+
+                <li>
+                    Supabase Authenticationによる管理者ログイン
+                </li>
+
+                <li>
+                    管理者権限管理
+                </li>
+
+                <li>
+                    記事の新規作成
+                </li>
+
+                <li>
+                    記事の編集・更新
+                </li>
+
+                <li>
+                    記事の削除
+                </li>
+
+                <li>
+                    記事カテゴリー選択
+                </li>
+
+                <li>
+                    主催者・運営団体選択
+                </li>
+
+                <li>
+                    下書き・公開状態の管理
+                </li>
+
+                <li>
+                    イベント日時・受付時間管理
+                </li>
+
+                <li>
+                    会場・地図URL管理
+                </li>
+
+                <li>
+                    定員・参加費・締切管理
+                </li>
+
+                <li>
+                    持ち物・講師・申込方法管理
+                </li>
+
+                <li>
+                    Supabase Storageによる
+                    アイキャッチ画像アップロード
+                </li>
+
+                <li>
+                    記事一覧でのサムネイル表示
+                </li>
+
+                <li>
+                    公式LINEへの記事配信
+                </li>
+
+                <li>
+                    お問い合わせ管理
+                </li>
+
+                <li>
+                    更新履歴管理
+                </li>
+
+                <li>
+                    サイト設定
+                </li>
+
+                <li>
+                    マスター管理
+                </li>
+
             </ul>
+
+            <h4>
+                管理対象
+            </h4>
+
+            <ul class="info-list">
+
+                <li>
+                    記事管理
+                </li>
+
+                <li>
+                    住民マスター
+                </li>
+
+                <li>
+                    地区マスター
+                </li>
+
+                <li>
+                    町内会マスター
+                </li>
+
+                <li>
+                    地域団体マスター
+                </li>
+
+                <li>
+                    主催者マスター
+                </li>
+
+                <li>
+                    LINEユーザー管理
+                </li>
+
+            </ul>
+
         </section>
 
-        <section class="content-section">
-            <div class="content-card">
-                <h3>Ver0.80　開発基盤・運営系ページ整備</h3>
+
+        <!-- ========================================
+             LINE・住民登録
+        ========================================= -->
+        <section class="content-card">
+
+            <p class="section-label">
+                LINE INTEGRATION
+            </p>
+
+            <h3>
+                公式LINE・住民登録機能
+            </h3>
+
+            <p class="release-date">
+                2026年7月
+            </p>
+
+            <p>
+                一箕地区ポータル【公式】LINEを開設し、
+                LINE Messaging API、LIFF、
+                Supabaseを連携しました。
+            </p>
+
+            <ul class="info-list">
+
+                <li>
+                    LINE公式アカウント友だち追加
+                </li>
+
+                <li>
+                    WebhookによるLINEユーザー自動登録
+                </li>
+
+                <li>
+                    LINEプロフィール情報取得
+                </li>
+
+                <li>
+                    友だち追加・ブロック解除の管理
+                </li>
+
+                <li>
+                    友だち解除・ブロック状態の管理
+                </li>
+
+                <li>
+                    LIFFによる住民登録
+                </li>
+
+                <li>
+                    氏名・ふりがな登録
+                </li>
+
+                <li>
+                    地区・町内会登録
+                </li>
+
+                <li>
+                    所属団体登録
+                </li>
+
+                <li>
+                    電話番号・メールアドレス登録
+                </li>
+
+                <li>
+                    住民コードの自動発行
+                </li>
+
+                <li>
+                    住民マスターへの自動登録
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- ========================================
+             フォトコンテスト
+        ========================================= -->
+        <section class="content-card">
+
+            <p class="section-label">
+                PHOTO CONTEST
+            </p>
+
+            <h3>
+                一箕地区フォトコンテスト2026
+            </h3>
+
+            <p class="release-date">
+                2026年8月1日 応募受付開始
+            </p>
+
+            <p>
+                一箕地区の魅力ある風景や地域の活動を
+                写真で発信するため、
+                フォトコンテスト応募システムを構築しました。
+            </p>
+
+            <ul class="info-list">
+
+                <li>
+                    LINE登録者向け応募フォーム
+                </li>
+
+                <li>
+                    住民マスターとの連携
+                </li>
+
+                <li>
+                    氏名・地区・町内会の自動表示
+                </li>
+
+                <li>
+                    作品タイトル入力
+                </li>
+
+                <li>
+                    撮影場所・撮影日入力
+                </li>
+
+                <li>
+                    作品コメント入力
+                </li>
+
+                <li>
+                    写真ファイルアップロード
+                </li>
+
+                <li>
+                    Supabase Storageへの写真保存
+                </li>
+
+                <li>
+                    応募番号の自動発行
+                </li>
+
+                <li>
+                    応募完了画面への登録番号表示
+                </li>
+
+                <li>
+                    Googleフォームから新応募ページへの誘導
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- ========================================
+             WordPress連携
+        ========================================= -->
+        <section class="content-card">
+
+            <p class="section-label">
+                WORDPRESS
+            </p>
+
+            <h3>
+                WordPress連携
+            </h3>
+
+            <p class="release-date">
+                2026年7月
+            </p>
+
+            <p>
+                一箕地区ポータル内の地域ブログ、
+                町内会紹介、地域団体紹介を
+                WordPressで運用できるよう整備しました。
+            </p>
+
+            <ul class="info-list">
+
+                <li>
+                    WordPressを
+                    <code>/blog/</code>
+                    に導入
+                </li>
+
+                <li>
+                    Cocoonテーマ導入
+                </li>
+
+                <li>
+                    地域ブログ運用
+                </li>
+
+                <li>
+                    町内会紹介カスタム投稿タイプ
+                </li>
+
+                <li>
+                    地域団体紹介カスタム投稿タイプ
+                </li>
+
+                <li>
+                    運営スタッフ紹介
+                </li>
+
+                <li>
+                    WordPress REST API連携
+                </li>
+
+                <li>
+                    トップページへの最新記事表示
+                </li>
+
+                <li>
+                    町内会紹介一覧ページ
+                </li>
+
+                <li>
+                    地域団体紹介一覧ページ
+                </li>
+
+                <li>
+                    アイキャッチ画像対応
+                </li>
+
+                <li>
+                    スマートフォン表示対応
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- ========================================
+             Ver0.80
+        ========================================= -->
+        <section class="content-card">
+
+            <p class="section-label">
+                DEVELOPMENT HISTORY
+            </p>
+
+            <h3>
+                Ver0.80
+                開発基盤・運営系ページ整備
+            </h3>
+
+            <p class="release-date">
+                2026年7月
+            </p>
+
+            <p>
+                一箕地区ポータルサイトの
+                開発基盤と運営情報ページを整備しました。
+            </p>
+
+            <ul class="info-list">
+
+                <li>
+                    GitHubリポジトリを整備
+                </li>
+
+                <li>
+                    GitHub Pagesによる公開確認
+                </li>
+
+                <li>
+                    VercelとGitHubを連携
+                </li>
+
+                <li>
+                    Vercelによる自動デプロイ確認
+                </li>
+
+                <li>
+                    Supabaseプロジェクト作成
+                </li>
+
+                <li>
+                    運営情報ページ作成
+                </li>
+
+                <li>
+                    運営系ページ用テンプレート整備
+                </li>
+
+                <li>
+                    共通ヘッダー・共通フッターの方向性整理
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- ========================================
+             Ver0.70
+        ========================================= -->
+        <section class="content-card">
+
+            <h3>
+                Ver0.70
+                フォトコンテスト・サブページ整備
+            </h3>
+
+            <p class="release-date">
+                2026年7月
+            </p>
+
+            <p>
+                フォトコンテストページを追加し、
+                サブページ全体の構成を整えました。
+            </p>
+
+            <ul class="info-list">
+
+                <li>
+                    フォトコンテストページ追加
+                </li>
+
+                <li>
+                    サブページ用テンプレート整備
+                </li>
+
+                <li>
+                    共通フッターを各サブページへ追加
+                </li>
+
+                <li>
+                    ページ間の導線整理
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- ========================================
+             Ver0.50
+        ========================================= -->
+        <section class="content-card">
+
+            <h3>
+                Ver0.50
+                トップページ基本デザイン
+            </h3>
+
+            <p class="release-date">
+                2026年6月
+            </p>
+
+            <p>
+                一箕地区ポータルサイトの
+                トップページ基本デザインを作成しました。
+            </p>
+
+            <ul class="info-list">
+
+                <li>
+                    トップページのレイアウト作成
+                </li>
+
+                <li>
+                    ヒーロー画像スライダー実装
+                </li>
+
+                <li>
+                    お知らせ表示エリア作成
+                </li>
+
+                <li>
+                    行事予定表示エリア作成
+                </li>
+
+                <li>
+                    主なメニューカード作成
+                </li>
+
+                <li>
+                    スマートフォン対応の方向性整理
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- ========================================
+             Ver0.30
+        ========================================= -->
+        <section class="content-card">
+
+            <h3>
+                Ver0.30
+                最初のマイルストーン
+            </h3>
+
+            <p class="release-date">
+                2026年6月
+            </p>
+
+            <p>
+                一箕地区ポータルサイトの基本構想を整理し、
+                最初のマイルストーンとしました。
+            </p>
+
+            <ul class="info-list">
+
+                <li>
+                    サイト構成案作成
+                </li>
+
+                <li>
+                    お知らせページ構成検討
+                </li>
+
+                <li>
+                    行事予定ページ構成検討
+                </li>
+
+                <li>
+                    町内会紹介ページ構成検討
+                </li>
+
+                <li>
+                    施設予約ページ構成検討
+                </li>
+
+                <li>
+                    防災情報ページ構成検討
+                </li>
+
+                <li>
+                    GitHub管理を前提とした開発方針整理
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- ========================================
+             今後の予定
+        ========================================= -->
+        <section class="content-card">
+
+            <p class="section-label">
+                ROADMAP
+            </p>
+
+            <h3>
+                今後の予定
+            </h3>
+
+            <p>
+                正式公開後は、住民の皆さまから寄せられる
+                ご意見やご要望を整理し、
+                優先順位を決めながら段階的に改善します。
+            </p>
+
+            <ul class="info-list">
+
+                <li>
+                    マスター管理画面の改善
+                </li>
+
+                <li>
+                    住民検索機能の強化
+                </li>
+
+                <li>
+                    CSV出力機能
+                </li>
+
+                <li>
+                    LINE配信履歴管理
+                </li>
+
+                <li>
+                    管理ダッシュボード
+                </li>
+
+                <li>
+                    施設予約機能の拡張
+                </li>
+
+                <li>
+                    イベント申込機能
+                </li>
+
+                <li>
+                    防災通知機能
+                </li>
+
+                <li>
+                    電子回覧板機能
+                </li>
+
+                <li>
+                    アンケート機能
+                </li>
+
+                <li>
+                    町内会・地域団体情報の充実
+                </li>
+
+                <li>
+                    フォトコンテスト審査・公開機能
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- ========================================
+             締めのメッセージ
+        ========================================= -->
+        <section class="content-card">
+
+            <div class="site-message">
+
+                <strong>
+                    人と人、地域と未来をつなぐ。
+                </strong>
+
                 <p>
-                    公開日：2026年7月<br>
-                    マイルストーン：一箕地区ポータルサイトの開発基盤を整備しました。
+                    この更新履歴は、
+                    一箕地区ポータルがどのように生まれ、
+                    どのように成長してきたかを記録するページです。
                 </p>
-                <ul class="info-list">
-                    <li>GitHubリポジトリを整備</li>
-                    <li>GitHub Pagesによる公開を確認</li>
-                    <li>VercelとGitHubを連携</li>
-                    <li>Vercelによる自動デプロイを確認</li>
-                    <li>Supabaseプロジェクトを作成</li>
-                    <li>運営情報ページを作成</li>
-                    <li>運営系ページ用テンプレート page1-template.html を整備</li>
-                    <li>共通ヘッダー・共通フッターの方向性を整理</li>
-                </ul>
-                <h3>Ver0.70　フォトコンテスト・サブページ整備</h3>
+
                 <p>
-                    フォトコンテストページを追加し、サブページ全体の構成を整えました。
+                    2026年8月1日の正式公開を新たな出発点として、
+                    一箕地区の情報基盤を、
+                    地域の皆さまとともに育ててまいります。
                 </p>
-                <ul class="info-list">
-                    <li>フォトコンテストページを追加</li>
-                    <li>サブページ用テンプレートを整備</li>
-                    <li>共通フッターを各サブページに追加</li>
-                </ul>
-                <h3>Ver0.50　トップページ基本デザイン</h3>
-                <p>
-                    一箕地区ポータルサイトのトップページ基本デザインを作成しました。
-                </p>
-                <ul class="info-list">
-                    <li>トップページのレイアウト作成</li>
-                    <li>ヒーロー画像スライダーを実装</li>
-                    <li>お知らせ・行事予定エリアを作成</li>
-                    <li>スマートフォン対応の方向性を整理</li>
-                </ul>
-                <h3>Ver0.30　最初のマイルストーン</h3>
-                <p>
-                    一箕地区ポータルサイトの基本構想を整理し、最初のマイルストーンとしました。
-                </p>
-                <ul class="info-list">
-                    <li>サイト構成案を作成</li>
-                    <li>お知らせ・行事予定・町内会・施設予約・防災情報のページ構成を検討</li>
-                    <li>GitHub管理を前提とした開発方針を整理</li>
-                </ul>
-                <h3>今後の予定</h3>
-                <ul class="info-list">
-                    <li>サイトマップページの作成</li>
-                    <li>利用規約ページの作成</li>
-                    <li>プライバシーポリシーページの作成</li>
-                    <li>お問い合わせページの作成</li>
-                    <li>Supabaseとの接続確認</li>
-                    <li>お知らせ・行事予定のデータベース化</li>
-                    <li>WordPress連携の検討</li>
-                </ul>
-                <div class="site-message">
-                    <strong>人と人、地域と未来をつなぐ。</strong>
-                    <p>
-                        この更新履歴は、一箕地区ポータルサイトがどのように育ってきたかを記録するページです。
-                        地域の情報基盤として、少しずつ機能を積み上げていきます。
-                    </p>
-                </div>
+
             </div>
+
         </section>
 
 
         <p class="back-link">
-            <a href="../index.html">トップページへ戻る</a>
+
+            <a href="/">
+                トップページへ戻る
+            </a>
+
         </p>
+
     </main>
 
+
+    <!-- ========================================
+         フッター
+    ========================================= -->
     <footer class="site-footer">
-        <p>&copy; 一箕地区ポータル</p>
+
+        <nav class="footer-nav" aria-label="フッターメニュー">
+
+            <a href="/">
+                ホーム
+            </a>
+
+            <a href="/news/">
+                お知らせ
+            </a>
+
+            <a href="/event/">
+                行事予定
+            </a>
+
+            <a href="/blog/neighborhood/">
+                町内会紹介
+            </a>
+
+            <a href="/facility/">
+                施設予約
+            </a>
+
+            <a href="/disaster/">
+                防災情報
+            </a>
+
+            <a href="/line/">
+                公式LINE
+            </a>
+
+            <a href="/blog/">
+                地域ブログ
+            </a>
+
+            <a href="/photo2026/">
+                フォトコンテスト
+            </a>
+
+            <a href="/about/">
+                一箕地区について
+            </a>
+
+            <a href="/sitemap/">
+                サイトマップ
+            </a>
+
+            <a href="/terms/">
+                利用規約
+            </a>
+
+            <a href="/privacy/">
+                プライバシーポリシー
+            </a>
+
+            <a href="/contact/">
+                お問い合わせ
+            </a>
+
+            <a href="/release/">
+                更新履歴
+            </a>
+
+        </nav>
+
+        <p>
+            &copy; 2026 一箕地区ポータル
+        </p>
+
     </footer>
+
 </body>
 
 </html>
