@@ -477,30 +477,46 @@ function editPost(id) {
 // 削除
 // ==============================
 async function deletePost(id) {
+    if (!id) {
+        message.textContent = "削除対象の記事IDを取得できませんでした。";
+        console.error("削除対象IDがありません。", id);
+        return;
+    }
+
     const ok = confirm("この記事を削除しますか？");
 
     if (!ok) return;
 
-    const { error } = await supabaseClient
+    message.textContent = "記事を削除しています...";
+
+    console.log("削除対象ID:", id);
+
+    const { data, error } = await supabaseClient
         .from("posts")
         .delete()
-        .eq("id", id);
+        .eq("id", id)
+        .select("id");
 
     if (error) {
-        message.textContent = "記事を削除できませんでした。";
-        console.error(error);
+        message.textContent =
+            `記事を削除できませんでした：${error.message}`;
+
+        console.error("記事削除エラー:", error);
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        message.textContent =
+            "記事を削除できませんでした。削除権限またはログイン状態を確認してください。";
+
+        console.error("削除対象が0件でした。ID:", id);
         return;
     }
 
     message.textContent = "記事を削除しました。";
+
     await loadPosts();
 }
-
-function formatTime(value) {
-    if (!value) return "";
-    return value.slice(0, 5);
-}
-
 // ==============================
 // フォームリセット
 // ==============================
