@@ -433,13 +433,22 @@ a {
 ========================================== */
 
 @media (max-width: 1000px) {
+
     .hero-buttons {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
     }
 
+    /* 3つ目のボタンを横いっぱいに */
     .hero-buttons .btn-outline {
         grid-column: 1 / -1;
+    }
+
+    /* ボタンをセルいっぱいに広げる */
+    .hero-buttons .btn {
+        width: 100%;
+        min-width: 0;
     }
 }
 
@@ -449,16 +458,14 @@ a {
 ========================================== */
 
 @media (max-width: 600px) {
+
     .hero-buttons {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
         gap: 12px;
     }
 
-    .hero-buttons .btn-outline {
-        grid-column: auto;
-    }
-
     .hero-buttons .btn {
-        font-size: 15px;
+        width: 100%;
     }
 }
