@@ -2,7 +2,7 @@
 
 window.PHOTO_ENTRIES_ADMIN_CONFIG = {
     supabaseUrl:
-        "https://aeafysrkqtwgufmhwvdb.supabase.co",
+        "https://aeafysrkqtwgufmhwwdb.supabase.co",
 
     // Supabase Project Settings → API → anon public
     supabaseAnonKey:

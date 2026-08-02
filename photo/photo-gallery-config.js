@@ -2,7 +2,7 @@
 
 window.PHOTO_GALLERY_CONFIG = {
     supabaseUrl:
-        "https://aeafysrkqtwgufmhwvdb.supabase.co",
+        "https://aeafysrkqtwgufmhwwdb.supabase.co",
 
     functionName:
         "photo-gallery-public",
