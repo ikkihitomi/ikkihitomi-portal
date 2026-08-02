@@ -1,38 +1,152 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>フォトコンテスト｜一箕地区ポータルサイト</title>
-  <link rel="stylesheet" href="../css/style.css">
+
+  <title>
+    応募作品一覧｜一箕地区フォトコンテスト2026
+  </title>
+
+  <meta name="description" content="一箕地区フォトコンテスト2026の公開承認済み応募作品をご紹介します。">
+
+  <link rel="icon" href="../images/favicon.ico" sizes="any">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32x32.png">
+
+  <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16x16.png">
+
+  <link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+
+  <link rel="stylesheet" href="photo-gallery.css">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0CWC2N1T7C"></script>
+
+  <script>
+    window.dataLayer =
+      window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag("js", new Date());
+
+    gtag(
+      "config",
+      "G-0CWC2N1T7C",
+    );
+  </script>
+
+  <script src="photo-gallery-config.js?v=20260802-1"></script>
+
+  <script src="photo-gallery.js?v=20260802-1" defer></script>
 </head>
 
 <body>
+  <div id="commonHeader"></div>
 
-<div id="commonHeader"></div>
+  <main>
+    <section class="photo-hero">
+      <div class="photo-hero-inner">
+        <p class="eyebrow">
+          IKKI PHOTO CONTEST 2026
+        </p>
 
-<main>
-  <section class="sub-page-hero">
-    <div class="section-inner">
-      <p class="sub-label">Photo Contest 2025</p>
-      <h2>フォトコンテスト</h2>
-      <p>一箕地区の魅力を写した応募作品を紹介します。</p>
-    </div>
-  </section>
+        <h1>
+          現在の応募作品
+        </h1>
 
-  <section class="section light">
-    <div class="section-inner">
-      <h2 class="section-title">準備中</h2>
-      <p class="page-text">
-        フォトコンテスト2025の応募作品を掲載する準備を進めています。
-      </p>
-    </div>
-  </section>
-</main>
+        <p>
+          管理者が内容を確認し、公開を承認した作品を順次ご紹介しています。
+        </p>
 
-<div id="commonFooter"></div>
+        <a id="application-link" class="primary-link" href="../photo2026/">
+          写真を応募する
+        </a>
+      </div>
+    </section>
 
-<script src="../js/common.js"></script>
+    <section class="gallery-section">
+      <div class="gallery-inner">
+        <section class="summary-panel">
+          <div class="public-count-box">
+            <span>
+              公開作品数
+            </span>
 
+            <strong id="public-count">
+              0
+            </strong>
+          </div>
+
+          <div class="filters">
+            <label>
+              キーワード検索
+
+              <input id="gallery-search" type="search" placeholder="作品名・撮影場所・町内会">
+            </label>
+
+            <label>
+              並び順
+
+              <select id="gallery-sort">
+                <option value="new">
+                  新着順
+                </option>
+
+                <option value="shooting">
+                  撮影日が新しい順
+                </option>
+
+                <option value="title">
+                  作品名順
+                </option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <p id="gallery-message" class="gallery-message" aria-live="polite">
+          応募作品を読み込んでいます。
+        </p>
+
+        <section id="gallery-grid" class="gallery-grid"></section>
+
+        <div id="gallery-empty" class="gallery-empty" hidden>
+          公開中の作品はまだありません。
+          公開承認後、順次掲載します。
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="photo-dialog" class="photo-dialog">
+    <form method="dialog">
+      <button class="dialog-close" value="cancel" aria-label="閉じる">
+        ×
+      </button>
+
+      <img id="dialog-image" alt="">
+
+      <div class="dialog-content">
+        <p id="dialog-entry-no" class="entry-no"></p>
+
+        <h2 id="dialog-title"></h2>
+
+        <dl id="dialog-details"></dl>
+
+        <p id="dialog-comment" class="dialog-comment"></p>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="commonFooter"></div>
+
+  <script src="../js/common.js"></script>
 </body>
+
 </html>

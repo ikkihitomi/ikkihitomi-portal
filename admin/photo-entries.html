@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>フォトコン応募管理｜一箕CMS</title>
+    <meta name="robots" content="noindex,nofollow">
+
+    <link rel="stylesheet" href="photo-entries.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="photo-entries-config.js?v=20260802-1"></script>
+
+    <script src="photo-entries.js?v=20260802-1" defer></script>
+</head>
+
+<body>
+    <header class="admin-header">
+        <div>
+            <p class="eyebrow">
+                IKKI CMS Ver1.50
+            </p>
+
+            <h1>
+                フォトコン応募管理
+            </h1>
+
+            <p>
+                応募作品を確認し、公開・非承認・削除を管理します。
+            </p>
+        </div>
+
+        <nav class="header-actions" aria-label="管理画面ナビゲーション">
+            <a href="./index.html">
+                管理トップ
+            </a>
+
+            <a id="gallery-link" href="../photo/" target="_blank" rel="noopener">
+                公開ギャラリー
+            </a>
+
+            <button id="reload-button" type="button">
+                再読み込み
+            </button>
+        </nav>
+    </header>
+
+    <main class="admin-main">
+        <p id="page-message" class="page-message" aria-live="polite">
+            応募作品を読み込んでいます。
+        </p>
+
+        <section class="stats-grid" aria-label="応募状況">
+            <article class="stat-card">
+                <span>応募総数</span>
+                <strong id="stat-total">0</strong>
+            </article>
+
+            <article class="stat-card">
+                <span>未確認</span>
+                <strong id="stat-received">0</strong>
+            </article>
+
+            <article class="stat-card">
+                <span>公開中</span>
+                <strong id="stat-public">0</strong>
+            </article>
+
+            <article class="stat-card">
+                <span>非承認</span>
+                <strong id="stat-rejected">0</strong>
+            </article>
+        </section>
+
+        <section class="filter-panel">
+            <div class="field">
+                <label for="search-input">
+                    検索
+                </label>
+
+                <input id="search-input" type="search" placeholder="応募番号・作品名・氏名・町内会・撮影場所">
+            </div>
+
+            <div class="field">
+                <label for="status-filter">
+                    状態
+                </label>
+
+                <select id="status-filter">
+                    <option value="">すべて</option>
+                    <option value="received">応募受付</option>
+                    <option value="reviewing">確認中</option>
+                    <option value="approved">公開承認</option>
+                    <option value="rejected">非承認</option>
+                    <option value="hidden">公開停止</option>
+                    <option value="winner">入賞</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="public-filter">
+                    公開状態
+                </label>
+
+                <select id="public-filter">
+                    <option value="">すべて</option>
+                    <option value="true">公開中</option>
+                    <option value="false">非公開</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="year-filter">
+                    年度
+                </label>
+
+                <input id="year-filter" type="number" value="2026" min="2026" max="2100">
+            </div>
+        </section>
+
+        <section>
+            <div class="section-heading">
+                <h2>
+                    応募作品一覧
+                </h2>
+
+                <span id="result-count">
+                    0件
+                </span>
+            </div>
+
+            <div id="entries-grid" class="entries-grid"></div>
+
+            <div id="empty-panel" class="empty-panel" hidden>
+                条件に該当する応募作品はありません。
+            </div>
+        </section>
+    </main>
+
+    <dialog id="detail-dialog" class="detail-dialog">
+        <form method="dialog" class="dialog-shell">
+            <div class="dialog-header">
+                <div>
+                    <p class="eyebrow">
+                        PHOTO ENTRY
+                    </p>
+
+                    <h2 id="detail-title">
+                        応募作品詳細
+                    </h2>
+                </div>
+
+                <button class="icon-button" value="cancel" aria-label="閉じる">
+                    ×
+                </button>
+            </div>
+
+            <div class="detail-layout">
+                <div class="detail-image-wrap">
+                    <img id="detail-image" alt="">
+                </div>
+
+                <div class="detail-content">
+                    <dl id="detail-list" class="detail-list"></dl>
+
+                    <div class="field">
+                        <label for="detail-admin-note">
+                            管理者メモ
+                        </label>
+
+                        <textarea id="detail-admin-note" rows="5"></textarea>
+                    </div>
+
+                    <div class="field">
+                        <label for="detail-award-name">
+                            賞名
+                        </label>
+
+                        <input id="detail-award-name" type="text" placeholder="例：最優秀賞">
+                    </div>
+                </div>
+            </div>
+
+            <div class="dialog-actions">
+                <button id="save-note-button" type="button" class="button neutral">
+                    メモ保存
+                </button>
+
+                <button id="review-button" type="button" class="button warning">
+                    確認中
+                </button>
+
+                <button id="approve-button" type="button" class="button success">
+                    公開承認
+                </button>
+
+                <button id="winner-button" type="button" class="button accent">
+                    入賞・公開
+                </button>
+
+                <button id="hide-button" type="button" class="button neutral">
+                    公開停止
+                </button>
+
+                <button id="reject-button" type="button" class="button danger-outline">
+                    非承認
+                </button>
+
+                <button id="delete-button" type="button" class="button danger">
+                    完全削除
+                </button>
+            </div>
+
+            <p id="dialog-message" class="dialog-message" aria-live="polite"></p>
+        </form>
+    </dialog>
+</body>
+
+</html>
