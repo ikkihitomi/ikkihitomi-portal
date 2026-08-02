@@ -1,29 +1,73 @@
+/* ==========================================
+   一箕地区ポータル Ver1.50
+   フォトコンテスト応募管理
+========================================== */
+
+
+/* ==========================================
+   基本変数
+========================================== */
+
 :root {
     color-scheme: light;
-    --bg: #f3f6f5;
-    --panel: #ffffff;
-    --text: #17322a;
-    --muted: #66756f;
-    --line: #d9e2de;
-    --green: #1f7a4c;
-    --green-dark: #145b38;
-    --amber: #b56b00;
-    --red: #b62c2c;
-    --purple: #7253b4;
-    --shadow: 0 12px 30px rgba(21, 54, 43, 0.08);
+
+    --admin-bg: #f3f6f5;
+    --admin-panel: #ffffff;
+
+    --admin-text: #17322a;
+    --admin-muted: #66756f;
+
+    --admin-line: #d9e2de;
+    --admin-input-line: #b9c7c1;
+
+    --admin-green: #1f7a4c;
+    --admin-green-dark: #145b38;
+    --admin-green-light: #dff1e7;
+
+    --admin-amber: #b56b00;
+    --admin-amber-light: #fff2d8;
+
+    --admin-red: #b62c2c;
+    --admin-red-light: #fde7e7;
+
+    --admin-purple: #7253b4;
+    --admin-gray: #666666;
+
+    --admin-shadow:
+        0 12px 30px rgba(21, 54, 43, 0.08);
+
+    --admin-shadow-hover:
+        0 18px 40px rgba(21, 54, 43, 0.14);
+
+    --admin-radius: 18px;
 }
+
+
+/* ==========================================
+   基本設定
+========================================== */
 
 * {
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     margin: 0;
+
+    color: var(--admin-text);
+    background: var(--admin-bg);
+
     font-family:
-        -apple-system, BlinkMacSystemFont, "Segoe UI",
-        "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
-    color: var(--text);
-    background: var(--bg);
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        sans-serif;
 }
 
 button,
@@ -33,104 +77,217 @@ textarea {
     font: inherit;
 }
 
+button,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+/* ==========================================
+   管理画面ヘッダー
+========================================== */
+
 .admin-header {
     display: flex;
     justify-content: space-between;
-    gap: 24px;
     align-items: center;
-    padding: 28px clamp(20px, 5vw, 70px);
-    color: #fff;
+    gap: 24px;
+
+    padding:
+        28px clamp(20px, 5vw, 70px);
+
+    color: #ffffff;
+
     background:
-        linear-gradient(135deg, #15472e, #247a4d);
+        linear-gradient(135deg,
+            #15472e,
+            #247a4d);
 }
 
 .admin-header h1 {
     margin: 4px 0 8px;
-    font-size: clamp(1.7rem, 3vw, 2.4rem);
+
+    font-size:
+        clamp(1.7rem,
+            3vw,
+            2.4rem);
+
+    line-height: 1.3;
 }
 
 .admin-header p {
     margin: 0;
+
+    line-height: 1.7;
 }
 
 .eyebrow {
     font-size: 0.75rem;
-    letter-spacing: 0.18em;
     font-weight: 700;
-    opacity: 0.8;
+    letter-spacing: 0.18em;
+
+    opacity: 0.82;
 }
+
+
+/* ==========================================
+   ヘッダー操作ボタン
+========================================== */
 
 .header-actions {
     display: flex;
-    gap: 10px;
     flex-wrap: wrap;
+    gap: 10px;
 }
 
 .header-actions a,
 .header-actions button {
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
-    border-radius: 10px;
     padding: 10px 14px;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.4);
+
+    border-radius: 10px;
+
+    color: #ffffff;
+    background:
+        rgba(255, 255, 255, 0.12);
+
     text-decoration: none;
+
     cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        border-color 0.2s ease;
 }
 
+.header-actions a:hover,
+.header-actions button:hover {
+    border-color:
+        rgba(255, 255, 255, 0.7);
+
+    background:
+        rgba(255, 255, 255, 0.22);
+
+    transform: translateY(-1px);
+}
+
+.header-actions a:focus-visible,
+.header-actions button:focus-visible {
+    outline: 3px solid rgba(255, 255, 255, 0.55);
+    outline-offset: 3px;
+}
+
+
+/* ==========================================
+   メイン領域
+========================================== */
+
 .admin-main {
-    width: min(1400px, calc(100% - 32px));
+    width:
+        min(1400px,
+            calc(100% - 32px));
+
     margin: 28px auto 70px;
 }
+
+
+/* ==========================================
+   メッセージ
+========================================== */
 
 .page-message,
 .dialog-message {
     min-height: 1.5em;
-    color: var(--muted);
+
+    color: var(--admin-muted);
+
+    line-height: 1.6;
+}
+
+.page-message {
+    margin: 0 0 14px;
 }
 
 .page-message.error,
 .dialog-message.error {
-    color: var(--red);
+    color: var(--admin-red);
 }
 
 .page-message.success,
 .dialog-message.success {
-    color: var(--green);
+    color: var(--admin-green);
 }
+
+
+/* ==========================================
+   集計カード
+========================================== */
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns:
+        repeat(4,
+            minmax(0, 1fr));
+
     gap: 16px;
+
     margin: 20px 0;
 }
 
 .stat-card {
     padding: 20px;
+
+    border:
+        1px solid rgba(217, 226, 222, 0.7);
+
     border-radius: 16px;
-    background: var(--panel);
-    box-shadow: var(--shadow);
+
+    background: var(--admin-panel);
+    box-shadow: var(--admin-shadow);
 }
 
 .stat-card span {
     display: block;
-    color: var(--muted);
+
+    color: var(--admin-muted);
+
+    font-size: 0.95rem;
 }
 
 .stat-card strong {
     display: block;
+
     margin-top: 6px;
+
+    color: var(--admin-text);
+
     font-size: 2rem;
+    line-height: 1.2;
 }
+
+
+/* ==========================================
+   検索・絞り込み
+========================================== */
 
 .filter-panel {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 0.7fr;
+    grid-template-columns:
+        minmax(260px, 2fr) minmax(160px, 1fr) minmax(160px, 1fr) minmax(120px, 0.7fr);
+
     gap: 14px;
+
     padding: 18px;
-    border: 1px solid var(--line);
+
+    border:
+        1px solid var(--admin-line);
+
     border-radius: 16px;
-    background: var(--panel);
+
+    background: var(--admin-panel);
 }
 
 .field {
@@ -139,6 +296,8 @@ textarea {
 }
 
 .field label {
+    color: var(--admin-text);
+
     font-size: 0.86rem;
     font-weight: 700;
 }
@@ -147,291 +306,658 @@ textarea {
 .field select,
 .field textarea {
     width: 100%;
-    border: 1px solid #b9c7c1;
-    border-radius: 10px;
+
     padding: 11px 12px;
-    background: #fff;
+
+    border:
+        1px solid var(--admin-input-line);
+
+    border-radius: 10px;
+
+    color: var(--admin-text);
+    background: #ffffff;
 }
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+    border-color: var(--admin-green);
+
+    outline:
+        3px solid rgba(31, 122, 76, 0.12);
+}
+
+.field textarea {
+    resize: vertical;
+}
+
+
+/* ==========================================
+   一覧見出し
+========================================== */
 
 .section-heading {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 28px 0 16px;
+    gap: 20px;
+
+    margin: 32px 0 16px;
 }
+
+.section-heading h2 {
+    margin: 0;
+
+    font-size: 1.35rem;
+}
+
+.section-heading span {
+    color: var(--admin-muted);
+}
+
+
+/* ==========================================
+   応募作品一覧
+========================================== */
 
 .entries-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    grid-template-columns:
+        repeat(auto-fit,
+            minmax(290px, 1fr));
+
     gap: 18px;
 }
 
+
+/* ==========================================
+   応募作品カード
+========================================== */
+
 .entry-card {
+    display: flex;
+    flex-direction: column;
+
     overflow: hidden;
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    background: var(--panel);
-    box-shadow: var(--shadow);
+
+    min-width: 0;
+
+    border:
+        1px solid var(--admin-line);
+
+    border-radius: var(--admin-radius);
+
+    background: var(--admin-panel);
+    box-shadow: var(--admin-shadow);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
+
+.entry-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--admin-shadow-hover);
+}
+
+
+/* ==========================================
+   応募作品画像
+========================================== */
 
 .entry-image-button {
     display: block;
+
     width: 100%;
     padding: 0;
+
+    overflow: hidden;
+
     border: 0;
+
     background: #dfe7e3;
+
     cursor: pointer;
 }
 
 .entry-image {
     display: block;
+
     width: 100%;
     aspect-ratio: 4 / 3;
+
     object-fit: cover;
+
+    transition: transform 0.35s ease;
 }
 
+.entry-image-button:hover .entry-image {
+    transform: scale(1.025);
+}
+
+.entry-image-button:focus-visible {
+    outline:
+        4px solid rgba(31, 122, 76, 0.5);
+
+    outline-offset: -4px;
+}
+
+
+/* ==========================================
+   カード本文
+========================================== */
+
 .entry-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
     padding: 18px;
 }
 
 .entry-meta {
     display: flex;
-    gap: 8px;
     align-items: center;
     flex-wrap: wrap;
+    gap: 8px;
+
     margin-bottom: 10px;
 }
 
 .entry-no {
+    color: var(--admin-text);
+
     font-weight: 800;
-}
-
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 999px;
-    padding: 5px 9px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    background: #e9efec;
-}
-
-.status-approved,
-.status-winner {
-    color: #fff;
-    background: var(--green);
-}
-
-.status-rejected {
-    color: #fff;
-    background: var(--red);
-}
-
-.status-reviewing {
-    color: #fff;
-    background: var(--amber);
-}
-
-.status-hidden {
-    color: #fff;
-    background: #666;
-}
-
-.status-winner {
-    background: var(--purple);
+    letter-spacing: 0.02em;
 }
 
 .entry-body h3 {
     margin: 0 0 8px;
+
+    color: var(--admin-text);
+
     font-size: 1.15rem;
+    line-height: 1.45;
 }
 
 .entry-body p {
     margin: 5px 0;
-    color: var(--muted);
+
+    color: var(--admin-muted);
+
+    line-height: 1.55;
 }
+
+
+/* ==========================================
+   状態バッジ
+========================================== */
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 5px 9px;
+
+    border-radius: 999px;
+
+    color: var(--admin-text);
+    background: #e9efec;
+
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.status-received {
+    color: #755000;
+    background: var(--admin-amber-light);
+}
+
+.status-reviewing {
+    color: #ffffff;
+    background: var(--admin-amber);
+}
+
+.status-approved {
+    color: #ffffff;
+    background: var(--admin-green);
+}
+
+.status-rejected {
+    color: #ffffff;
+    background: var(--admin-red);
+}
+
+.status-hidden {
+    color: #ffffff;
+    background: var(--admin-gray);
+}
+
+.status-winner {
+    color: #ffffff;
+    background: var(--admin-purple);
+}
+
+
+/* ==========================================
+   カード操作
+========================================== */
 
 .card-actions {
     display: flex;
     gap: 8px;
-    margin-top: 14px;
+
+    margin-top: auto;
+    padding-top: 16px;
 }
 
 .card-actions button {
     flex: 1;
+
+    min-height: 42px;
+    padding: 10px 12px;
+
     border: 0;
     border-radius: 10px;
-    padding: 10px;
+
+    font-weight: 700;
+
     cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.card-actions button:hover {
+    transform: translateY(-1px);
+}
+
+.card-actions button:focus-visible {
+    outline:
+        3px solid rgba(31, 122, 76, 0.25);
+
+    outline-offset: 2px;
 }
 
 .view-button {
-    color: #fff;
-    background: var(--green);
+    color: #ffffff;
+    background: var(--admin-green);
+}
+
+.view-button:hover {
+    background: var(--admin-green-dark);
 }
 
 .quick-approve-button {
-    color: var(--green-dark);
-    background: #dff1e7;
+    color: var(--admin-green-dark);
+    background: var(--admin-green-light);
 }
+
+.quick-approve-button:hover {
+    background: #c9e7d6;
+}
+
+
+/* ==========================================
+   応募作品なし
+========================================== */
 
 .empty-panel {
     padding: 50px 20px;
+
     text-align: center;
-    color: var(--muted);
-    border: 1px dashed #aebeb7;
+
+    color: var(--admin-muted);
+
+    border:
+        1px dashed #aebeb7;
+
     border-radius: 16px;
-    background: var(--panel);
+
+    background: var(--admin-panel);
 }
 
+
+/* ==========================================
+   詳細ダイアログ
+========================================== */
+
 .detail-dialog {
-    width: min(1100px, calc(100% - 28px));
-    max-height: calc(100vh - 30px);
+    width:
+        min(1100px,
+            calc(100% - 28px));
+
+    max-height:
+        calc(100vh - 30px);
+
     padding: 0;
+
+    overflow: auto;
+
     border: 0;
-    border-radius: 18px;
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
+    border-radius: var(--admin-radius);
+
+    background: var(--admin-panel);
+
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.28);
 }
 
 .detail-dialog::backdrop {
-    background: rgba(11, 29, 23, 0.72);
+    background:
+        rgba(11, 29, 23, 0.72);
 }
 
 .dialog-shell {
+    margin: 0;
     padding: 22px;
 }
+
+
+/* ==========================================
+   ダイアログヘッダー
+========================================== */
 
 .dialog-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 20px;
-    border-bottom: 1px solid var(--line);
+
     padding-bottom: 14px;
+
+    border-bottom:
+        1px solid var(--admin-line);
 }
 
 .dialog-header h2 {
     margin: 4px 0 0;
+
+    line-height: 1.4;
 }
 
 .icon-button {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+
     width: 42px;
     height: 42px;
-    border: 1px solid var(--line);
+
+    padding: 0;
+
+    border:
+        1px solid var(--admin-line);
+
     border-radius: 50%;
-    background: #fff;
+
+    color: var(--admin-text);
+    background: #ffffff;
+
     font-size: 1.5rem;
+    line-height: 1;
+
     cursor: pointer;
 }
 
+.icon-button:hover {
+    background: #edf2ef;
+}
+
+.icon-button:focus-visible {
+    outline:
+        3px solid rgba(31, 122, 76, 0.25);
+
+    outline-offset: 2px;
+}
+
+
+/* ==========================================
+   ダイアログ本文
+========================================== */
+
 .detail-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+
+    grid-template-columns:
+        minmax(0, 1.1fr) minmax(320px, 0.9fr);
+
     gap: 24px;
+
     margin-top: 20px;
 }
 
 .detail-image-wrap {
     display: grid;
     place-items: center;
+
     min-height: 360px;
+
+    overflow: hidden;
+
     border-radius: 14px;
+
     background: #e8eeeb;
 }
 
 .detail-image-wrap img {
+    display: block;
+
     max-width: 100%;
     max-height: 65vh;
+
     object-fit: contain;
+}
+
+.detail-content {
+    min-width: 0;
 }
 
 .detail-list {
     display: grid;
-    grid-template-columns: 120px 1fr;
+
+    grid-template-columns:
+        120px minmax(0, 1fr);
+
     gap: 8px 14px;
+
     margin: 0 0 20px;
 }
 
 .detail-list dt {
+    color: var(--admin-text);
+
     font-weight: 700;
 }
 
 .detail-list dd {
     margin: 0;
+
+    color: var(--admin-muted);
+
     overflow-wrap: anywhere;
 }
 
+
+/* ==========================================
+   ダイアログ操作
+========================================== */
+
 .dialog-actions {
     display: flex;
-    gap: 8px;
     flex-wrap: wrap;
+    gap: 8px;
+
     margin-top: 22px;
     padding-top: 18px;
-    border-top: 1px solid var(--line);
+
+    border-top:
+        1px solid var(--admin-line);
 }
 
 .button {
+    min-height: 42px;
+    padding: 11px 14px;
+
     border: 0;
     border-radius: 10px;
-    padding: 11px 14px;
+
+    font-weight: 700;
+
     cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.button:hover {
+    transform: translateY(-1px);
+}
+
+.button:focus-visible {
+    outline:
+        3px solid rgba(31, 122, 76, 0.25);
+
+    outline-offset: 2px;
 }
 
 .button.success {
-    color: #fff;
-    background: var(--green);
+    color: #ffffff;
+    background: var(--admin-green);
+}
+
+.button.success:hover {
+    background: var(--admin-green-dark);
 }
 
 .button.warning {
-    color: #fff;
-    background: var(--amber);
+    color: #ffffff;
+    background: var(--admin-amber);
 }
 
 .button.accent {
-    color: #fff;
-    background: var(--purple);
+    color: #ffffff;
+    background: var(--admin-purple);
 }
 
 .button.neutral {
-    color: var(--text);
+    color: var(--admin-text);
     background: #e7ece9;
 }
 
+.button.neutral:hover {
+    background: #d8e1dc;
+}
+
 .button.danger {
-    color: #fff;
-    background: var(--red);
+    color: #ffffff;
+    background: var(--admin-red);
+}
+
+.button.danger:hover {
+    background: #912020;
 }
 
 .button.danger-outline {
-    color: var(--red);
-    border: 1px solid var(--red);
-    background: #fff;
+    color: var(--admin-red);
+
+    border:
+        1px solid var(--admin-red);
+
+    background: #ffffff;
 }
 
+.button.danger-outline:hover {
+    background: var(--admin-red-light);
+}
+
+
+/* ==========================================
+   タブレット
+========================================== */
+
 @media (max-width: 980px) {
-    .entries-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    .stats-grid {
+        grid-template-columns:
+            repeat(2,
+                minmax(0, 1fr));
     }
 
     .filter-panel {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns:
+            repeat(2,
+                minmax(0, 1fr));
     }
 
     .detail-layout {
         grid-template-columns: 1fr;
     }
+
+    .detail-image-wrap {
+        min-height: 280px;
+    }
 }
 
+
+/* ==========================================
+   スマートフォン
+========================================== */
+
 @media (max-width: 640px) {
+
     .admin-header {
         align-items: flex-start;
         flex-direction: column;
     }
 
+    .header-actions {
+        width: 100%;
+    }
+
+    .header-actions a,
+    .header-actions button {
+        flex: 1;
+
+        text-align: center;
+    }
+
+    .admin-main {
+        width:
+            calc(100% - 20px);
+
+        margin-top: 20px;
+    }
+
     .stats-grid,
-    .entries-grid,
     .filter-panel {
         grid-template-columns: 1fr;
+    }
+
+    .entries-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-heading {
+        align-items: flex-start;
+    }
+
+    .detail-dialog {
+        width:
+            calc(100% - 14px);
+
+        max-height:
+            calc(100vh - 14px);
+    }
+
+    .dialog-shell {
+        padding: 16px;
     }
 
     .detail-list {
@@ -440,5 +966,36 @@ textarea {
 
     .detail-list dt {
         margin-top: 8px;
+    }
+
+    .dialog-actions {
+        display: grid;
+        grid-template-columns:
+            repeat(2,
+                minmax(0, 1fr));
+    }
+
+    .button.danger {
+        grid-column: 1 / -1;
+    }
+}
+
+
+/* ==========================================
+   小型スマートフォン
+========================================== */
+
+@media (max-width: 420px) {
+
+    .card-actions {
+        flex-direction: column;
+    }
+
+    .dialog-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .button.danger {
+        grid-column: auto;
     }
 }

@@ -1,14 +1,41 @@
+/* ==========================================
+   一箕地区ポータル Ver1.50
+   フォトコンテスト公開ギャラリー
+========================================== */
+
+
+/* ==========================================
+   基本変数
+========================================== */
+
 :root {
-    --bg: #f5f7f3;
-    --panel: #ffffff;
-    --text: #17382b;
-    --muted: #65736c;
-    --line: #d7e1db;
-    --green: #1f7547;
-    --green-dark: #125534;
-    --gold: #b38929;
-    --shadow: 0 14px 34px rgba(18, 56, 41, 0.09);
+    --photo-bg: #f5f7f3;
+    --photo-panel: #ffffff;
+
+    --photo-text: #17382b;
+    --photo-muted: #65736c;
+
+    --photo-line: #d7e1db;
+
+    --photo-green: #1f7547;
+    --photo-green-dark: #125534;
+
+    --photo-gold: #b38929;
+    --photo-error: #b52c2c;
+
+    --photo-shadow:
+        0 14px 34px rgba(18, 56, 41, 0.09);
+
+    --photo-shadow-large:
+        0 16px 38px rgba(18, 56, 41, 0.14);
+
+    --photo-radius: 18px;
 }
+
+
+/* ==========================================
+   基本設定
+========================================== */
 
 * {
     box-sizing: border-box;
@@ -16,106 +43,218 @@
 
 body {
     margin: 0;
+
+    color: var(--photo-text);
+    background: var(--photo-bg);
+
     font-family:
-        -apple-system, BlinkMacSystemFont, "Segoe UI",
-        "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
-    color: var(--text);
-    background: var(--bg);
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        sans-serif;
 }
 
 a {
     color: inherit;
 }
 
+
+/* ==========================================
+   フォトコンテスト・メイン画像
+========================================== */
+
 .photo-hero {
-    padding: 0 clamp(20px, 6vw, 90px) 70px;
-    color: #fff;
-    background:
-        linear-gradient(rgba(15, 69, 42, 0.82), rgba(15, 69, 42, 0.88)),
-        url("../images/photo-contest-hero.jpg") center / cover;
+    width: 100%;
+    padding: 28px 16px 0;
+
+    background: var(--photo-bg);
 }
 
-.top-nav-unused {
+.photo-hero-image-wrap {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+
+    overflow: hidden;
+
+    border-radius: 20px;
+    background: var(--photo-panel);
+    box-shadow: var(--photo-shadow-large);
+}
+
+.photo-hero-image {
+    display: block;
+
+    width: 100%;
+    height: auto;
+}
+
+
+/* ==========================================
+   応募作品ページ案内
+========================================== */
+
+.photo-intro {
+    padding: 26px 16px 54px;
+
+    background: var(--photo-bg);
+}
+
+.photo-intro-inner {
     display: flex;
     justify-content: space-between;
-    gap: 16px;
-    padding: 20px 0;
+    align-items: center;
+    gap: 30px;
+
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    padding: 28px 34px;
+
+    border: 1px solid var(--photo-line);
+    border-radius: var(--photo-radius);
+
+    background: var(--photo-panel);
+    box-shadow: var(--photo-shadow);
 }
 
-.top-nav-unused a {
-    text-decoration: none;
-}
+.photo-intro-label {
+    margin: 0 0 8px;
 
-.photo-hero-inner {
-    width: min(760px, 100%);
-    padding-top: 55px;
-}
+    color: var(--photo-green);
 
-.eyebrow {
-    margin: 0;
-    letter-spacing: 0.16em;
     font-size: 0.78rem;
     font-weight: 800;
-    opacity: 0.86;
+    letter-spacing: 0.15em;
 }
 
-.photo-hero-inner h1 {
-    margin: 12px 0;
-    font-size: clamp(2.2rem, 6vw, 4.4rem);
+.photo-intro h1 {
+    margin: 0 0 10px;
+
+    color: var(--photo-text);
+
+    font-size: clamp(1.8rem,
+            4vw,
+            2.8rem);
+    line-height: 1.25;
 }
 
-.photo-hero-inner>p:not(.eyebrow) {
-    max-width: 680px;
-    line-height: 1.9;
+.photo-intro p {
+    margin: 0;
+
+    color: var(--photo-muted);
+
+    line-height: 1.8;
 }
+
+
+/* ==========================================
+   応募ボタン
+========================================== */
 
 .primary-link {
     display: inline-flex;
-    margin-top: 18px;
-    padding: 13px 22px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+
+    padding: 13px 24px;
+
     border-radius: 999px;
-    color: var(--green-dark);
-    background: #fff;
+
+    color: #ffffff;
+    background: var(--photo-green);
+
     font-weight: 800;
     text-decoration: none;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.primary-link:hover {
+    background: var(--photo-green-dark);
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 8px 18px rgba(18, 56, 41, 0.18);
+}
+
+.primary-link:focus-visible {
+    outline: 3px solid rgba(31, 117, 71, 0.3);
+    outline-offset: 3px;
+}
+
+
+/* ==========================================
+   ギャラリー全体
+========================================== */
+
+.gallery-section {
+    padding: 0 0 70px;
+
+    background: var(--photo-bg);
 }
 
 .gallery-inner {
-    width: min(1280px, calc(100% - 32px));
-    margin: -28px auto 70px;
+    width: min(1100px,
+            calc(100% - 32px));
+    margin: 0 auto;
 }
+
+
+/* ==========================================
+   公開作品数・検索・並び順
+========================================== */
 
 .summary-panel {
     display: flex;
     justify-content: space-between;
-    gap: 24px;
     align-items: end;
+    gap: 24px;
+
     padding: 22px;
-    border-radius: 18px;
-    background: var(--panel);
-    box-shadow: var(--shadow);
+
+    border: 1px solid var(--photo-line);
+    border-radius: var(--photo-radius);
+
+    background: var(--photo-panel);
+    box-shadow: var(--photo-shadow);
 }
 
+.public-count-box span,
 .summary-panel>div:first-child span {
     display: block;
-    color: var(--muted);
+
+    color: var(--photo-muted);
 }
 
 .summary-panel strong {
     display: block;
+
     margin-top: 4px;
+
+    color: var(--photo-text);
+
     font-size: 2.4rem;
+    line-height: 1;
 }
 
 .filters {
     display: flex;
-    gap: 14px;
     flex-wrap: wrap;
+    gap: 14px;
 }
 
 .filters label {
     display: grid;
     gap: 6px;
+
+    color: var(--photo-text);
+
     font-size: 0.84rem;
     font-weight: 700;
 }
@@ -124,49 +263,99 @@ a {
 .filters select {
     min-width: 220px;
     padding: 10px 12px;
+
     border: 1px solid #b7c7bf;
     border-radius: 10px;
-    background: #fff;
+
+    color: var(--photo-text);
+    background: #ffffff;
 }
+
+.filters input:focus,
+.filters select:focus {
+    border-color: var(--photo-green);
+
+    outline: 3px solid rgba(31, 117, 71, 0.12);
+}
+
+
+/* ==========================================
+   読み込み・エラーメッセージ
+========================================== */
 
 .gallery-message {
     min-height: 1.5em;
-    color: var(--muted);
     margin: 24px 2px 14px;
+
+    color: var(--photo-muted);
 }
 
 .gallery-message.error {
-    color: #b52c2c;
+    color: var(--photo-error);
 }
+
+
+/* ==========================================
+   作品カード一覧
+========================================== */
 
 .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns:
+        repeat(3,
+            minmax(0, 1fr));
     gap: 20px;
 }
 
 .photo-card {
     overflow: hidden;
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    background: var(--panel);
-    box-shadow: var(--shadow);
+
+    border: 1px solid var(--photo-line);
+    border-radius: var(--photo-radius);
+
+    background: var(--photo-panel);
+    box-shadow: var(--photo-shadow);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
+
+.photo-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 18px 38px rgba(18, 56, 41, 0.14);
+}
+
+
+/* ==========================================
+   作品画像
+========================================== */
 
 .photo-button {
     display: block;
+
     width: 100%;
     padding: 0;
+
+    overflow: hidden;
+
     border: 0;
+
     background: #dbe5df;
+
     cursor: pointer;
 }
 
 .photo-button img {
     display: block;
+
     width: 100%;
     aspect-ratio: 4 / 3;
+
     object-fit: cover;
+
     transition: transform 0.35s ease;
 }
 
@@ -174,126 +363,244 @@ a {
     transform: scale(1.025);
 }
 
+.photo-button:focus-visible {
+    outline:
+        4px solid rgba(31, 117, 71, 0.45);
+    outline-offset: -4px;
+}
+
+
+/* ==========================================
+   作品情報
+========================================== */
+
 .photo-body {
     padding: 18px;
 }
 
 .photo-body .entry-no {
     margin: 0;
-    color: var(--green);
+
+    color: var(--photo-green);
+
     font-size: 0.78rem;
     font-weight: 800;
+    letter-spacing: 0.04em;
 }
 
 .photo-body h2 {
     margin: 7px 0 12px;
+
+    color: var(--photo-text);
+
     font-size: 1.2rem;
+    line-height: 1.45;
 }
 
 .photo-meta {
     display: grid;
     gap: 6px;
+
     margin: 0;
-    color: var(--muted);
+
+    color: var(--photo-muted);
+
+    font-size: 0.92rem;
+    line-height: 1.55;
 }
+
+
+/* ==========================================
+   入賞表示
+========================================== */
 
 .award-badge {
     display: inline-flex;
+
     margin-top: 12px;
     padding: 6px 10px;
+
     border-radius: 999px;
-    color: #fff;
-    background: var(--gold);
+
+    color: #ffffff;
+    background: var(--photo-gold);
+
     font-size: 0.78rem;
     font-weight: 800;
 }
 
+
+/* ==========================================
+   公開作品なし
+========================================== */
+
 .gallery-empty {
     padding: 60px 20px;
+
     text-align: center;
-    color: var(--muted);
-    border: 1px dashed #a9bbb2;
-    border-radius: 18px;
-    background: #fff;
+
+    color: var(--photo-muted);
+
+    border:
+        1px dashed #a9bbb2;
+    border-radius: var(--photo-radius);
+
+    background: var(--photo-panel);
 }
 
+
+/* ==========================================
+   写真拡大ダイアログ
+========================================== */
+
 .photo-dialog {
-    width: min(1000px, calc(100% - 26px));
-    max-height: calc(100vh - 28px);
+    width: min(1000px,
+            calc(100% - 26px));
+    max-height:
+        calc(100vh - 28px);
+
     padding: 0;
+
+    overflow: auto;
+
     border: 0;
-    border-radius: 18px;
-    box-shadow: 0 32px 90px rgba(0, 0, 0, 0.33);
+    border-radius: var(--photo-radius);
+
+    background: var(--photo-panel);
+
+    box-shadow:
+        0 32px 90px rgba(0, 0, 0, 0.33);
 }
 
 .photo-dialog::backdrop {
-    background: rgba(9, 29, 20, 0.76);
+    background:
+        rgba(9, 29, 20, 0.76);
 }
 
 .photo-dialog form {
     position: relative;
+
+    margin: 0;
 }
+
+
+/* ==========================================
+   ダイアログ閉じるボタン
+========================================== */
 
 .dialog-close {
     position: absolute;
     top: 12px;
     right: 12px;
     z-index: 2;
+
     width: 44px;
     height: 44px;
+
     border: 0;
     border-radius: 50%;
-    color: #fff;
-    background: rgba(0, 0, 0, 0.65);
+
+    color: #ffffff;
+    background:
+        rgba(0, 0, 0, 0.65);
+
     font-size: 1.6rem;
+    line-height: 1;
+
     cursor: pointer;
 }
 
+.dialog-close:hover {
+    background:
+        rgba(0, 0, 0, 0.82);
+}
+
+.dialog-close:focus-visible {
+    outline: 3px solid #ffffff;
+    outline-offset: 2px;
+}
+
+
+/* ==========================================
+   ダイアログ画像
+========================================== */
+
 .photo-dialog img {
     display: block;
+
     width: 100%;
     max-height: 68vh;
+
     object-fit: contain;
-    background: #111;
+
+    background: #111111;
 }
+
+
+/* ==========================================
+   ダイアログ本文
+========================================== */
 
 .dialog-content {
     padding: 22px;
 }
 
+.dialog-content .entry-no {
+    margin: 0;
+
+    color: var(--photo-green);
+
+    font-size: 0.82rem;
+    font-weight: 800;
+}
+
 .dialog-content h2 {
     margin: 6px 0 14px;
+
+    color: var(--photo-text);
 }
 
 .dialog-content dl {
     display: grid;
-    grid-template-columns: 100px 1fr;
+    grid-template-columns:
+        100px 1fr;
     gap: 8px 14px;
+
+    margin: 0 0 18px;
 }
 
 .dialog-content dt {
+    color: var(--photo-text);
+
     font-weight: 800;
 }
 
 .dialog-content dd {
     margin: 0;
+
+    color: var(--photo-muted);
 }
 
 .dialog-comment {
+    margin: 20px 0 0;
+
+    color: var(--photo-text);
+
     line-height: 1.9;
     white-space: pre-wrap;
 }
 
-.gallery-footer {
-    padding: 28px;
-    text-align: center;
-    color: #fff;
-    background: var(--green-dark);
-}
+
+/* ==========================================
+   タブレット
+========================================== */
 
 @media (max-width: 900px) {
+
     .gallery-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns:
+            repeat(2,
+                minmax(0, 1fr));
     }
 
     .summary-panel {
@@ -302,13 +609,62 @@ a {
     }
 }
 
+
+/* ==========================================
+   スマートフォン
+========================================== */
+
+@media (max-width: 700px) {
+
+    .photo-hero {
+        padding: 16px 10px 0;
+    }
+
+    .photo-hero-image-wrap {
+        border-radius: 12px;
+    }
+
+    .photo-intro {
+        padding: 18px 10px 38px;
+    }
+
+    .photo-intro-inner {
+        align-items: stretch;
+        flex-direction: column;
+
+        gap: 20px;
+
+        padding: 22px 20px;
+    }
+
+    .primary-link {
+        width: 100%;
+    }
+
+    .gallery-inner {
+        width:
+            calc(100% - 20px);
+    }
+}
+
+
 @media (max-width: 620px) {
+
     .gallery-grid {
         grid-template-columns: 1fr;
     }
 
+    .summary-panel {
+        padding: 18px;
+    }
+
     .filters {
         display: grid;
+        width: 100%;
+    }
+
+    .filters label {
+        width: 100%;
     }
 
     .filters input,
@@ -320,21 +676,8 @@ a {
     .dialog-content dl {
         grid-template-columns: 1fr;
     }
-}
 
-
-.gallery-section {
-    padding: 0 0 70px;
-}
-
-.gallery-inner {
-    width: min(1280px, calc(100% - 32px));
-    margin: -28px auto 0;
-}
-
-.photo-hero-inner {
-    width: min(1180px, calc(100% - 32px));
-    margin: 0 auto;
-    padding-top: 55px;
-    padding-bottom: 35px;
+    .dialog-content dt {
+        margin-top: 6px;
+    }
 }
