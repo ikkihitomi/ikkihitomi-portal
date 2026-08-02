@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "disaster",
       "line",
       "blog",
+      "photo2026",
       "photo",
       "about",
       "sitemap",
@@ -100,9 +101,8 @@ document.addEventListener("DOMContentLoaded", () => {
               📅 行事予定
             </a>
 
-            <a href="../community/"
-               ${getCurrentAttribute("community")}>
-              🏘️ 町内会
+            <a href="../blog/neighborhood/">
+              🏘️ 町内会紹介
             </a>
 
             <a href="../facility/"
@@ -125,8 +125,8 @@ document.addEventListener("DOMContentLoaded", () => {
               ✏️ 地域ブログ
             </a>
 
-            <a href="../photo/"
-               ${getCurrentAttribute("photo")}>
+            <a href="../photo2026/"
+              ${getCurrentAttribute("photo")}>
               📷 フォトコンテスト
             </a>
 
@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
               行事予定
             </a>
 
-            <a href="../community/">
+            <a href="../blog/neighborhood/">
               町内会紹介
             </a>
 
@@ -194,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
               地域ブログ
             </a>
 
-            <a href="../photo/">
+            <a href="../photo2026/">
               フォトコンテスト
             </a>
 
