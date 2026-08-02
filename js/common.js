@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
               📅 行事予定
             </a>
 
-            <a href="../blog/neighborhood/">
+            <a href="https://ikki-portal.com/blog/neighborhood/">
               🏘️ 町内会紹介
             </a>
 
@@ -120,8 +120,8 @@ document.addEventListener("DOMContentLoaded", () => {
               LINE 公式LINE
             </a>
 
-            <a href="../blog/"
-               ${getCurrentAttribute("blog")}>
+            <a href="https://ikki-portal.com/blog/"
+              ${getCurrentAttribute("blog")}>
               ✏️ 地域ブログ
             </a>
 
@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
               行事予定
             </a>
 
-            <a href="../blog/neighborhood/">
+            <a href="https://ikki-portal.com/blog/neighborhood/">
               町内会紹介
             </a>
 
@@ -190,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
               公式LINE
             </a>
 
-            <a href="../blog/">
+            <a href="https://ikki-portal.com/blog/">
               地域ブログ
             </a>
 
