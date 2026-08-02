@@ -10,11 +10,15 @@
 
     <link rel="stylesheet" href="photo-entries.css">
 
+    <link rel="stylesheet" href="photo-entries-download.css?v=20260802-1">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
     <script src="photo-entries-config.js?v=20260802-1"></script>
 
-    <script src="photo-entries.js?v=20260802-1" defer></script>
+    <script src="photo-entries.js?v=20260802-2" defer></script>
 </head>
 
 <body>
@@ -118,6 +122,49 @@
                 </label>
 
                 <input id="year-filter" type="number" value="2026" min="2026" max="2100">
+            </div>
+        </section>
+
+
+        <section class="download-panel">
+            <div class="download-panel-heading">
+                <div>
+                    <p class="download-label">
+                        JUDGING MATERIALS
+                    </p>
+
+                    <h2>
+                        審査会提出データ
+                    </h2>
+
+                    <p>
+                        応募写真と応募情報を、ZIPまたはCSVで出力します。
+                    </p>
+                </div>
+
+                <div class="download-actions">
+                    <button id="download-all-zip-button" type="button" class="download-button primary">
+                        全作品をZIP
+                    </button>
+
+                    <button id="download-public-zip-button" type="button" class="download-button secondary">
+                        公開作品をZIP
+                    </button>
+
+                    <button id="download-csv-button" type="button" class="download-button neutral">
+                        応募一覧CSV
+                    </button>
+                </div>
+            </div>
+
+            <div id="download-progress" class="download-progress" hidden aria-live="polite">
+                <div class="download-progress-track">
+                    <div id="download-progress-bar" class="download-progress-bar"></div>
+                </div>
+
+                <p id="download-progress-text">
+                    ダウンロードを準備しています。
+                </p>
             </div>
         </section>
 
