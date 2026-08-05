@@ -157,6 +157,12 @@ body {
     margin-top: 3px;
     display: block;
     color: #71808e;
+
+    /* 10文字程度で省略 */
+    max-width: 10em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .line-user-picture,
@@ -465,6 +471,213 @@ body {
 body.delivery-modal-open {
     overflow: hidden;
 }
+
+/* ==========================================
+   管理画面 共通レイアウト
+========================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Noto Sans JP", sans-serif;
+    color: #263746;
+    background: #f5f7f8;
+    margin: 0;
+}
+
+/* ヘッダー */
+.admin-header {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 28px 30px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+}
+
+.admin-header-label {
+    margin: 0 0 8px;
+    color: #16865f;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.admin-header h1 {
+    margin: 0;
+    color: #173b63;
+    font-size: 2rem;
+}
+
+.admin-back-link {
+    padding: 10px 16px;
+    color: #176a4e;
+    background: #ffffff;
+    border: 1px solid #cddbd7;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.admin-back-link:hover {
+    background: #eaf5f1;
+}
+
+/* メイン領域 */
+.admin-main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 30px 50px;
+}
+
+.admin-panel {
+    padding: 24px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 28px rgba(27, 54, 70, 0.08);
+}
+
+/* 共通ボタン */
+.admin-button {
+    min-height: 42px;
+    padding: 9px 16px;
+    color: #ffffff;
+    background: #1f7a5c;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.admin-button:hover {
+    background: #166348;
+}
+
+.admin-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+/* 状態メッセージ */
+.admin-status-message {
+    margin: 18px 0 12px;
+    padding: 12px 14px;
+    color: #536273;
+    background: #f5f8f8;
+    border-radius: 7px;
+}
+
+/* ==========================================
+   一覧テーブル
+========================================== */
+
+.admin-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #dce5e3;
+    border-radius: 10px;
+}
+
+.admin-table {
+    width: 100%;
+    min-width: 1050px;
+    border-collapse: collapse;
+    background: #ffffff;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #e1e8e6;
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.admin-table th {
+    color: #31564d;
+    background: #edf5f2;
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+.admin-table tbody tr:hover {
+    background: #f7faf9;
+}
+
+.admin-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.admin-table td:first-child,
+.admin-table th:first-child {
+    width: 44px;
+    text-align: center;
+}
+
+.admin-table td:last-child,
+.admin-table th:last-child {
+    width: 70px;
+    text-align: center;
+}
+
+/* テーブル内編集ボタン */
+.admin-table button {
+    padding: 7px 11px;
+    color: #176a4e;
+    background: #ffffff;
+    border: 1px solid #9ebbb2;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.admin-table button:hover {
+    background: #eaf5f1;
+}
+
+/* 入力欄の共通調整 */
+.filter-item input,
+.filter-item select,
+.delivery-form-group input,
+.delivery-form-group select,
+.delivery-form-group textarea {
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+/* スマートフォン */
+@media screen and (max-width: 800px) {
+
+    .admin-header {
+        padding: 20px 16px 14px;
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admin-header h1 {
+        font-size: 1.55rem;
+    }
+
+    .admin-main {
+        padding: 0 12px 30px;
+    }
+
+    .admin-panel {
+        padding: 16px 12px;
+        border-radius: 12px;
+    }
+
+    .admin-back-link {
+        width: 100%;
+        text-align: center;
+    }
+}
+
 
 @media screen and (max-width: 600px) {
 

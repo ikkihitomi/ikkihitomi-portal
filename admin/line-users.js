@@ -644,21 +644,16 @@ function renderLineUsers() {
                     <div>
                         <strong>
                             ${escapeHtml(
-                user.display_name
-                || "名称なし",
-            )
-            }
+                user.display_name || "名称なし",
+            )}
                         </strong>
 
-                        <small>
+                        <small title="${escapeHtml(user.status_message || "")}">
                             ${escapeHtml(
-                user.status_message
-                || "",
-            )
-            }
+                user.status_message || "",
+            )}
                         </small>
                     </div>
-
                 </div>
             </td>
 
