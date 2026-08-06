@@ -8,7 +8,7 @@
 
     <title>LINE登録者管理｜一箕地区ポータル</title>
 
-    <link rel="stylesheet" href="./admin.css">
+    <link rel="stylesheet" href="./admin.css?v=20260806-114">
 
     <link rel="icon" href="/images/favicon.ico" sizes="any">
 
@@ -26,7 +26,7 @@
 
         <div>
             <p class="admin-header-label">
-                一箕地区ポータル
+                一箕地区ポータル Ver1.14
             </p>
 
             <h1>
@@ -85,16 +85,8 @@
                         7地区
                     </label>
 
-                    <select id="district-filter">
-                        <option value="">すべて</option>
-                        <option value="未設定">未設定</option>
-                        <option value="第1地区">第1地区</option>
-                        <option value="第2地区">第2地区</option>
-                        <option value="第3地区">第3地区</option>
-                        <option value="第4地区">第4地区</option>
-                        <option value="第5地区">第5地区</option>
-                        <option value="第6地区">第6地区</option>
-                        <option value="第7地区">第7地区</option>
+                    <select id="district-filter" disabled>
+                        <option value="">地区マスターを読み込んでいます…</option>
                     </select>
                 </div>
 
@@ -196,6 +188,44 @@
             </div>
 
         </section>
+
+
+            <section class="line-history-panel" aria-labelledby="line-history-title">
+                <div class="line-history-heading">
+                    <div>
+                        <h2 id="line-history-title">最近のLINE配信履歴</h2>
+                        <p>最新10件の配信結果を表示します。</p>
+                    </div>
+
+                    <button type="button" id="history-refresh-button" class="admin-button secondary">
+                        履歴を再読み込み
+                    </button>
+                </div>
+
+                <div class="admin-table-wrap">
+                    <table class="admin-table line-history-table">
+                        <thead>
+                            <tr>
+                                <th>配信日時</th>
+                                <th>タイトル</th>
+                                <th>要求</th>
+                                <th>対象</th>
+                                <th>受付</th>
+                                <th>除外</th>
+                                <th>状態</th>
+                                <th>管理者</th>
+                            </tr>
+                        </thead>
+                        <tbody id="delivery-history-body">
+                            <tr>
+                                <td colspan="8" class="admin-empty-cell">
+                                    配信履歴を読み込んでいます。
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
     </main>
 
@@ -337,7 +367,9 @@
                         町内会名
                     </label>
 
-                    <input type="text" id="edit-neighborhood-name" maxlength="100" placeholder="例：八幡町内会">
+                    <select id="edit-neighborhood-name" disabled>
+                        <option value="">町内会マスターを読み込んでいます…</option>
+                    </select>
                 </div>
 
                 <div class="delivery-form-group">
@@ -345,15 +377,8 @@
                         7地区
                     </label>
 
-                    <select id="edit-district-group">
-                        <option value="">未設定</option>
-                        <option value="第1地区">第1地区</option>
-                        <option value="第2地区">第2地区</option>
-                        <option value="第3地区">第3地区</option>
-                        <option value="第4地区">第4地区</option>
-                        <option value="第5地区">第5地区</option>
-                        <option value="第6地区">第6地区</option>
-                        <option value="第7地区">第7地区</option>
+                    <select id="edit-district-group" disabled aria-readonly="true">
+                        <option value="">町内会を選択すると自動設定されます</option>
                     </select>
                 </div>
 
@@ -362,7 +387,9 @@
                         所属団体
                     </label>
 
-                    <input type="text" id="edit-organization-name" maxlength="200" placeholder="例：区長会、防犯協会">
+                    <select id="edit-organization-name" disabled>
+                        <option value="">所属団体マスターを読み込んでいます…</option>
+                    </select>
                 </div>
 
                 <div class="delivery-form-group">
@@ -411,8 +438,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
-    <script src="./line-users.js"></script>
-    <script src="./line-users-master.js"></script>
+    <script src="./line-users.js?v=20260806-114"></script>
+    <script src="./line-users-master.js?v=20260806-114"></script>
 
 </body>
 

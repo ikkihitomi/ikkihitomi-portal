@@ -71,6 +71,12 @@ const selectedCount =
 const deliveryButton =
     document.getElementById("delivery-button");
 
+const historyRefreshButton =
+    document.getElementById("history-refresh-button");
+
+const deliveryHistoryBody =
+    document.getElementById("delivery-history-body");
+
 
 /* 配信ダイアログ */
 
@@ -1191,8 +1197,119 @@ async function saveUserEdit(event) {
 }
 
 
+
 /* ==========================================
-   10. LINE配信
+   10. LINE配信履歴
+========================================== */
+
+const deliveryStatusLabels = {
+    processing: "処理中",
+    completed: "完了",
+    partial: "一部失敗",
+    failed: "失敗",
+};
+
+function renderDeliveryHistory(rows) {
+    deliveryHistoryBody.innerHTML = "";
+
+    if (!Array.isArray(rows) || rows.length === 0) {
+        deliveryHistoryBody.innerHTML = `
+            <tr>
+                <td colspan="8" class="admin-empty-cell">
+                    配信履歴はまだありません。
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    for (const row of rows) {
+        const status = row.status || "failed";
+        const statusLabel =
+            deliveryStatusLabels[status] || status;
+
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${escapeHtml(formatDate(row.created_at))}</td>
+            <td><strong>${escapeHtml(row.title || "-")}</strong></td>
+            <td>${escapeHtml(row.requested_count ?? 0)}名</td>
+            <td>${escapeHtml(row.valid_count ?? 0)}名</td>
+            <td>${escapeHtml(row.accepted_count ?? 0)}名</td>
+            <td>${escapeHtml(row.skipped_count ?? 0)}名</td>
+            <td>
+                <span class="delivery-history-status ${escapeHtml(status)}">
+                    ${escapeHtml(statusLabel)}
+                </span>
+            </td>
+            <td>${escapeHtml(row.admin_email || row.admin_user_id || "-")}</td>
+        `;
+
+        deliveryHistoryBody.appendChild(tr);
+    }
+}
+
+async function loadDeliveryHistory() {
+    if (!deliveryHistoryBody) {
+        return;
+    }
+
+    historyRefreshButton.disabled = true;
+
+    deliveryHistoryBody.innerHTML = `
+        <tr>
+            <td colspan="8" class="admin-empty-cell">
+                配信履歴を読み込んでいます。
+            </td>
+        </tr>
+    `;
+
+    try {
+        const { data, error } =
+            await supabaseClient
+                .from("line_delivery_history")
+                .select(`
+                    id,
+                    title,
+                    requested_count,
+                    valid_count,
+                    accepted_count,
+                    skipped_count,
+                    status,
+                    admin_user_id,
+                    admin_email,
+                    created_at
+                `)
+                .order("created_at", {
+                    ascending: false,
+                })
+                .limit(10);
+
+        if (error) {
+            throw error;
+        }
+
+        renderDeliveryHistory(data ?? []);
+    } catch (error) {
+        console.error(
+            "LINE delivery history load error:",
+            error,
+        );
+
+        deliveryHistoryBody.innerHTML = `
+            <tr>
+                <td colspan="8" class="admin-empty-cell">
+                    配信履歴を取得できませんでした。
+                </td>
+            </tr>
+        `;
+    } finally {
+        historyRefreshButton.disabled = false;
+    }
+}
+
+/* ==========================================
+   11. LINE配信
 ========================================== */
 
 /**
@@ -1515,19 +1632,33 @@ async function sendLineMessage(event) {
             );
         }
 
-        const deliveredCount =
-            data.deliveredCount
+        const acceptedCount =
+            data.acceptedCount
+            ?? data.deliveredCount
             ?? targetCount;
 
+        const skippedCount =
+            data.skippedCount
+            ?? Math.max(
+                targetCount - acceptedCount,
+                0,
+            );
+
+        const resultMessage =
+            skippedCount > 0
+                ? `${acceptedCount}名の送信を受け付けました。`
+                  + `${skippedCount}名は対象外として除外されました。`
+                : `${acceptedCount}名の送信を受け付けました。`;
+
         deliveryFormMessage.textContent =
-            `${deliveredCount}名へのLINE配信が完了しました。`;
+            resultMessage;
 
         deliveryFormMessage.className =
             "delivery-form-message success";
 
-        alert(
-            `${deliveredCount}名へのLINE配信が完了しました。`,
-        );
+        alert(resultMessage);
+
+        await loadDeliveryHistory();
 
         /*
          * 送信成功後に入力と選択を解除
@@ -1571,7 +1702,7 @@ async function sendLineMessage(event) {
 }
 
 /* ==========================================
-   11. イベント
+   12. イベント
 ========================================== */
 
 // 検索
@@ -1602,6 +1733,11 @@ followingFilter.addEventListener(
 refreshButton.addEventListener(
     "click",
     loadLineUsers,
+);
+
+historyRefreshButton.addEventListener(
+    "click",
+    loadDeliveryHistory,
 );
 
 // 表示中をすべて選択
@@ -1732,7 +1868,7 @@ document.addEventListener(
 );
 
 /* ==========================================
-   12. 初期表示
+   13. 初期表示
 ========================================== */
 
 /* ==========================================
@@ -1744,7 +1880,10 @@ async function initializeLineUsersPage() {
     /*
      * 最初にLINE登録者を読み込みます。
      */
-    await loadLineUsers();
+    await Promise.all([
+        loadLineUsers(),
+        loadDeliveryHistory(),
+    ]);
 
     /*
      * 投稿管理画面から記事IDが渡された場合、

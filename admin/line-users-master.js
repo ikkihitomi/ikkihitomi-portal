@@ -1,429 +1,659 @@
 "use strict";
 
 /* ==========================================
-   一箕地区ポータル
-   LINE登録者管理 Ver1.35 マスター連携
+   一箕地区ポータル Ver1.14
+   LINE登録者管理 マスター完全連携
 
-   ・編集モーダルを開くたびに最新マスターを取得
-   ・町内会選択で7地区を自動設定
-   ・名称と4桁コードを同時に保持
+   ・地区フィルターをdistrict_masterから生成
+   ・町内会をneighborhood_masterから生成
+   ・町内会選択時に地区を自動設定
+   ・所属団体をorganization_masterから生成
+   ・名称と4桁コードを同時保存
 ========================================== */
 
 (() => {
-    let districts = [];
-    let neighborhoods = [];
-    let organizations = [];
-    let loading = false;
+    const MASTER_TABLES = {
+        districts: "district_master",
+        neighborhoods: "neighborhood_master",
+        organizations: "organization_master",
+    };
 
-    const byId = id => document.getElementById(id);
+    const state = {
+        districts: [],
+        neighborhoods: [],
+        organizations: [],
+        loaded: false,
+    };
 
-    /*
-     * Ver1.35 再修正
-     * Supabaseから取得したコードが数値・文字列のどちらでも、
-     * 0001形式として比較できるように統一します。
-     */
-    function normalizeCode(value) {
-        const digits = String(value ?? "")
-            .trim()
-            .replace(/[０-９]/g, character =>
-                String.fromCharCode(
-                    character.charCodeAt(0) - 0xFEE0,
-                ),
-            )
-            .replace(/\D/g, "");
-
-        return digits
-            ? digits.padStart(4, "0").slice(-4)
-            : "";
-    }
-
-    async function fetchRows(table, columns) {
-        const { data, error } = await supabaseClient
-            .from(table)
-            .select(columns)
-            .eq("is_active", true)
-            .order("sort_order", { ascending: true })
-            .order("name", { ascending: true });
-
-        if (error) throw error;
-        return data ?? [];
-    }
-
-    async function loadMasters() {
-        if (loading) return;
-
-        loading = true;
-
-        try {
-            const [
-                districtRows,
-                neighborhoodRows,
-                organizationRows,
-            ] = await Promise.all([
-                fetchRows(
-                    "district_master",
-                    "code,name,sort_order,is_active",
-                ),
-                fetchRows(
-                    "neighborhood_master",
-                    "code,name,district_code,sort_order,is_active",
-                ),
-                fetchRows(
-                    "organization_master",
-                    "code,name,sort_order,is_active",
-                ),
-            ]);
-
-            districts = districtRows.map(row => ({
-                ...row,
-                code: normalizeCode(row.code),
-            }));
-
-            neighborhoods = neighborhoodRows.map(row => ({
-                ...row,
-                code: normalizeCode(row.code),
-                district_code:
-                    normalizeCode(row.district_code),
-            }));
-
-            organizations = organizationRows.map(row => ({
-                ...row,
-                code: normalizeCode(row.code),
-            }));
-        } finally {
-            loading = false;
-        }
-    }
-
-    function toSelect(element) {
-        if (!element) return null;
-        if (element.tagName === "SELECT") return element;
-
-        const select = document.createElement("select");
-
-        [...element.attributes].forEach(attr => {
-            if (!["type", "value"].includes(attr.name)) {
-                select.setAttribute(attr.name, attr.value);
-            }
-        });
-
-        select.className = element.className;
-        select.value = element.value || "";
-        select.dataset.masterCode =
-            element.dataset.masterCode || "";
-
-        element.replaceWith(select);
-
-        return select;
+    function getElement(id) {
+        return document.getElementById(id);
     }
 
     function addOption(
         select,
         value,
-        text,
-        code = "",
-        selected = false,
+        label,
+        dataset = {},
     ) {
         const option = document.createElement("option");
-
         option.value = value ?? "";
-        option.textContent = text;
-        option.dataset.code = code ?? "";
-        option.selected = selected;
+        option.textContent = label ?? "";
+
+        Object.entries(dataset).forEach(
+            ([key, dataValue]) => {
+                option.dataset[key] =
+                    String(dataValue ?? "");
+            },
+        );
 
         select.appendChild(option);
+        return option;
     }
 
-    function keepExisting(select, value, code = "") {
-        if (!value) {
-            select.value = "";
-            select.dataset.masterCode = "";
+    function sortMasters(rows) {
+        return [...rows].sort((a, b) => {
+            const orderA = Number(a.sort_order ?? 0);
+            const orderB = Number(b.sort_order ?? 0);
+
+            if (orderA !== orderB) {
+                return orderA - orderB;
+            }
+
+            return String(a.name ?? "")
+                .localeCompare(
+                    String(b.name ?? ""),
+                    "ja",
+                );
+        });
+    }
+
+    async function fetchMaster(
+        table,
+        columns,
+    ) {
+        const { data, error } =
+            await supabaseClient
+                .from(table)
+                .select(columns)
+                .eq("is_active", true)
+                .order("sort_order", {
+                    ascending: true,
+                })
+                .order("name", {
+                    ascending: true,
+                });
+
+        if (error) {
+            throw error;
+        }
+
+        return Array.isArray(data)
+            ? data
+            : [];
+    }
+
+    async function loadMasters() {
+        const [
+            districts,
+            neighborhoods,
+            organizations,
+        ] = await Promise.all([
+            fetchMaster(
+                MASTER_TABLES.districts,
+                "code,name,sort_order,is_active",
+            ),
+            fetchMaster(
+                MASTER_TABLES.neighborhoods,
+                "code,name,district_code,sort_order,is_active",
+            ),
+            fetchMaster(
+                MASTER_TABLES.organizations,
+                "code,name,sort_order,is_active",
+            ),
+        ]);
+
+        state.districts =
+            sortMasters(districts);
+
+        state.neighborhoods =
+            sortMasters(neighborhoods);
+
+        state.organizations =
+            sortMasters(organizations);
+
+        state.loaded = true;
+    }
+
+    function preserveExistingValue(
+        select,
+        currentValue,
+    ) {
+        if (!currentValue) {
             return;
         }
 
-        const option =
-            [...select.options].find(
-                item => item.value === value,
+        const exists =
+            [...select.options].some(
+                option =>
+                    option.value === currentValue,
             );
 
-        if (!option) {
+        if (!exists) {
             addOption(
                 select,
-                value,
-                `${value}（既存データ）`,
-                code,
-                true,
+                currentValue,
+                `${currentValue}（既存データ）`,
+                {
+                    legacy: "true",
+                },
             );
-        } else {
-            select.value = value;
         }
 
-        const selectedOption =
-            select.options[select.selectedIndex];
-
-        select.dataset.masterCode =
-            selectedOption?.dataset.code
-            || code
-            || "";
+        select.value = currentValue;
     }
 
-    function setSelectedCode(select) {
-        if (!select) return;
+    function populateDistrictFilter() {
+        const select =
+            getElement("district-filter");
 
-        const selectedOption =
-            select.options[select.selectedIndex];
-
-        select.dataset.masterCode =
-            selectedOption?.dataset.code || "";
-    }
-
-    function fillControls() {
-        const currentNeighborhood =
-            byId("edit-neighborhood-name");
-
-        const currentDistrict =
-            byId("edit-district-group");
-
-        const currentOrganization =
-            byId("edit-organization-name");
-
-        const oldNeighborhood =
-            currentNeighborhood?.value ?? "";
-
-        const oldDistrict =
-            currentDistrict?.value ?? "";
-
-        const oldOrganization =
-            currentOrganization?.value ?? "";
-
-        const oldNeighborhoodCode =
-            currentNeighborhood?.dataset.masterCode ?? "";
-
-        const oldDistrictCode =
-            currentDistrict?.dataset.masterCode ?? "";
-
-        const oldOrganizationCode =
-            currentOrganization?.dataset.masterCode ?? "";
-
-        const n = toSelect(currentNeighborhood);
-        const d = toSelect(currentDistrict);
-        const o = toSelect(currentOrganization);
-
-        if (n) {
-            n.innerHTML = "";
-
-            addOption(
-                n,
-                "",
-                neighborhoods.length
-                    ? "町内会を選択してください"
-                    : "町内会マスターは未登録です",
-            );
-
-            neighborhoods.forEach(row => {
-                addOption(
-                    n,
-                    row.name,
-                    row.name,
-                    row.code,
-                );
-            });
-
-            keepExisting(
-                n,
-                oldNeighborhood,
-                oldNeighborhoodCode,
-            );
+        if (!select) {
+            return;
         }
 
-        if (d) {
-            d.innerHTML = "";
+        const currentValue =
+            select.value;
 
-            addOption(
-                d,
-                "",
-                "町内会を選択すると自動設定されます",
-            );
+        select.innerHTML = "";
 
-            districts.forEach(row => {
+        addOption(
+            select,
+            "",
+            "すべて",
+        );
+
+        addOption(
+            select,
+            "未設定",
+            "未設定",
+        );
+
+        state.districts.forEach(
+            district => {
                 addOption(
-                    d,
-                    row.name,
-                    row.name,
-                    row.code,
-                );
-            });
-
-            keepExisting(
-                d,
-                oldDistrict,
-                oldDistrictCode,
-            );
-
-            d.disabled = true;
-        }
-
-        if (o) {
-            o.innerHTML = "";
-
-            addOption(
-                o,
-                "",
-                organizations.length
-                    ? "所属団体を選択してください"
-                    : "所属団体マスターは未登録です",
-            );
-
-            organizations.forEach(row => {
-                addOption(
-                    o,
-                    row.name,
-                    row.name,
-                    row.code,
-                );
-            });
-
-            keepExisting(
-                o,
-                oldOrganization,
-                oldOrganizationCode,
-            );
-        }
-
-        function syncDistrictFromNeighborhood() {
-            if (!n || !d) return;
-
-            const neighborhood =
-                neighborhoods.find(
-                    row =>
-                        String(row.name ?? "").trim()
-                        === String(n.value ?? "").trim(),
-                );
-
-            const district =
-                districts.find(
-                    row =>
-                        normalizeCode(row.code)
-                        === normalizeCode(
-                            neighborhood?.district_code,
-                        ),
-                );
-
-            setSelectedCode(n);
-
-            d.value = district?.name ?? "";
-            d.dataset.masterCode =
-                normalizeCode(district?.code);
-
-            if (neighborhood && !district) {
-                console.warn(
-                    "7地区を照合できません。",
+                    select,
+                    district.name,
+                    district.name,
                     {
-                        neighborhood:
-                            neighborhood.name,
-                        neighborhoodDistrictCode:
-                            neighborhood.district_code,
-                        districtCodes:
-                            districts.map(row => row.code),
+                        code:
+                            district.code,
                     },
                 );
-            }
+            },
+        );
+
+        preserveExistingValue(
+            select,
+            currentValue,
+        );
+
+        select.disabled = false;
+    }
+
+    function populateNeighborhoodSelect(
+        currentValue = "",
+    ) {
+        const select =
+            getElement(
+                "edit-neighborhood-name",
+            );
+
+        if (!select) {
+            return;
         }
 
+        select.innerHTML = "";
+
+        addOption(
+            select,
+            "",
+            state.neighborhoods.length > 0
+                ? "町内会を選択してください"
+                : "町内会マスターは未登録です",
+        );
+
+        state.neighborhoods.forEach(
+            neighborhood => {
+                addOption(
+                    select,
+                    neighborhood.name,
+                    neighborhood.name,
+                    {
+                        code:
+                            neighborhood.code,
+                        districtCode:
+                            neighborhood.district_code,
+                    },
+                );
+            },
+        );
+
+        preserveExistingValue(
+            select,
+            currentValue,
+        );
+
+        select.disabled =
+            state.neighborhoods.length === 0;
+    }
+
+    function populateDistrictSelect(
+        currentValue = "",
+    ) {
+        const select =
+            getElement(
+                "edit-district-group",
+            );
+
+        if (!select) {
+            return;
+        }
+
+        select.innerHTML = "";
+
+        addOption(
+            select,
+            "",
+            "町内会を選択すると自動設定されます",
+        );
+
+        state.districts.forEach(
+            district => {
+                addOption(
+                    select,
+                    district.name,
+                    district.name,
+                    {
+                        code:
+                            district.code,
+                    },
+                );
+            },
+        );
+
+        preserveExistingValue(
+            select,
+            currentValue,
+        );
+
+        select.disabled = false;
+        select.dataset.readOnly = "true";
+    }
+
+    function populateOrganizationSelect(
+        currentValue = "",
+    ) {
+        const select =
+            getElement(
+                "edit-organization-name",
+            );
+
+        if (!select) {
+            return;
+        }
+
+        select.innerHTML = "";
+
+        addOption(
+            select,
+            "",
+            state.organizations.length > 0
+                ? "所属団体を選択してください"
+                : "所属団体マスターは未登録です",
+        );
+
+        state.organizations.forEach(
+            organization => {
+                addOption(
+                    select,
+                    organization.name,
+                    organization.name,
+                    {
+                        code:
+                            organization.code,
+                    },
+                );
+            },
+        );
+
+        preserveExistingValue(
+            select,
+            currentValue,
+        );
+
+        select.disabled =
+            state.organizations.length === 0;
+    }
+
+    function findDistrictByCode(
+        districtCode,
+    ) {
+        return state.districts.find(
+            district =>
+                String(district.code)
+                === String(districtCode),
+        );
+    }
+
+    function updateDistrictFromNeighborhood() {
+        const neighborhoodSelect =
+            getElement(
+                "edit-neighborhood-name",
+            );
+
+        const districtSelect =
+            getElement(
+                "edit-district-group",
+            );
+
         if (
-            n
-            && n.dataset.masterChangeInstalled !== "true"
+            !neighborhoodSelect
+            || !districtSelect
         ) {
-            n.addEventListener(
+            return;
+        }
+
+        const selectedOption =
+            neighborhoodSelect.options[
+                neighborhoodSelect.selectedIndex
+            ];
+
+        const districtCode =
+            selectedOption?.dataset
+                ?.districtCode || "";
+
+        const district =
+            findDistrictByCode(
+                districtCode,
+            );
+
+        districtSelect.value =
+            district?.name || "";
+
+        districtSelect.dataset.masterCode =
+            district?.code || "";
+    }
+
+    function updateMasterCodeDatasets() {
+        const neighborhoodSelect =
+            getElement(
+                "edit-neighborhood-name",
+            );
+
+        const districtSelect =
+            getElement(
+                "edit-district-group",
+            );
+
+        const organizationSelect =
+            getElement(
+                "edit-organization-name",
+            );
+
+        if (neighborhoodSelect) {
+            const option =
+                neighborhoodSelect.options[
+                    neighborhoodSelect.selectedIndex
+                ];
+
+            neighborhoodSelect.dataset.masterCode =
+                option?.dataset?.code || "";
+        }
+
+        if (districtSelect) {
+            const option =
+                districtSelect.options[
+                    districtSelect.selectedIndex
+                ];
+
+            districtSelect.dataset.masterCode =
+                option?.dataset?.code
+                || districtSelect.dataset.masterCode
+                || "";
+        }
+
+        if (organizationSelect) {
+            const option =
+                organizationSelect.options[
+                    organizationSelect.selectedIndex
+                ];
+
+            organizationSelect.dataset.masterCode =
+                option?.dataset?.code || "";
+        }
+    }
+
+    function refreshEditControls() {
+        const neighborhoodSelect =
+            getElement(
+                "edit-neighborhood-name",
+            );
+
+        const districtSelect =
+            getElement(
+                "edit-district-group",
+            );
+
+        const organizationSelect =
+            getElement(
+                "edit-organization-name",
+            );
+
+        const currentNeighborhood =
+            neighborhoodSelect?.value || "";
+
+        const currentDistrict =
+            districtSelect?.value || "";
+
+        const currentOrganization =
+            organizationSelect?.value || "";
+
+        populateNeighborhoodSelect(
+            currentNeighborhood,
+        );
+
+        populateDistrictSelect(
+            currentDistrict,
+        );
+
+        populateOrganizationSelect(
+            currentOrganization,
+        );
+
+        updateMasterCodeDatasets();
+    }
+
+    function installHandlers() {
+        const neighborhoodSelect =
+            getElement(
+                "edit-neighborhood-name",
+            );
+
+        const organizationSelect =
+            getElement(
+                "edit-organization-name",
+            );
+
+        if (
+            neighborhoodSelect
+            && neighborhoodSelect.dataset
+                .masterHandlerInstalled
+                !== "true"
+        ) {
+            neighborhoodSelect.addEventListener(
                 "change",
-                syncDistrictFromNeighborhood,
+                () => {
+                    updateDistrictFromNeighborhood();
+                    updateMasterCodeDatasets();
+                },
             );
 
-            n.dataset.masterChangeInstalled = "true";
+            neighborhoodSelect.dataset
+                .masterHandlerInstalled =
+                "true";
         }
 
         if (
-            o
-            && o.dataset.masterChangeInstalled !== "true"
+            organizationSelect
+            && organizationSelect.dataset
+                .masterHandlerInstalled
+                !== "true"
         ) {
-            o.addEventListener("change", () => {
-                setSelectedCode(o);
-            });
-
-            o.dataset.masterChangeInstalled = "true";
-        }
-
-        /*
-         * Ver1.35 修正
-         * 編集画面を開いた直後にも、選択済み町内会から
-         * 7地区を自動表示します。
-         */
-        if (n?.value) {
-            syncDistrictFromNeighborhood();
-        }
-    }
-
-    window.getLineUserMasterCodes = function () {
-        return {
-            neighborhood_code:
-                byId("edit-neighborhood-name")
-                    ?.dataset.masterCode || null,
-
-            district_code:
-                byId("edit-district-group")
-                    ?.dataset.masterCode || null,
-
-            organization_code:
-                byId("edit-organization-name")
-                    ?.dataset.masterCode || null,
-        };
-    };
-
-    async function refreshForModal() {
-        try {
-            await loadMasters();
-            fillControls();
-        } catch (error) {
-            console.error(
-                "Ver1.35 master linkage error:",
-                error,
+            organizationSelect.addEventListener(
+                "change",
+                updateMasterCodeDatasets,
             );
+
+            organizationSelect.dataset
+                .masterHandlerInstalled =
+                "true";
         }
     }
 
-    function observeModal() {
-        const modal = byId("user-edit-modal");
+    function observeEditModal() {
+        const modal =
+            getElement("user-edit-modal");
 
-        if (!modal) return;
+        if (!modal) {
+            return;
+        }
 
         const observer =
             new MutationObserver(() => {
-                if (!modal.hidden) {
-                    setTimeout(refreshForModal, 0);
+                if (modal.hidden) {
+                    return;
                 }
+
+                window.setTimeout(
+                    () => {
+                        refreshEditControls();
+                        installHandlers();
+
+                        const neighborhoodSelect =
+                            getElement(
+                                "edit-neighborhood-name",
+                            );
+
+                        const districtSelect =
+                            getElement(
+                                "edit-district-group",
+                            );
+
+                        if (
+                            neighborhoodSelect?.value
+                            && !districtSelect?.value
+                        ) {
+                            updateDistrictFromNeighborhood();
+                        }
+
+                        updateMasterCodeDatasets();
+                    },
+                    0,
+                );
             });
 
         observer.observe(
             modal,
             {
                 attributes: true,
-                attributeFilter: ["hidden"],
+                attributeFilter: [
+                    "hidden",
+                ],
             },
         );
     }
 
-    async function init() {
-        await refreshForModal();
-        observeModal();
+    window.getLineUserMasterCodes =
+        function getLineUserMasterCodes() {
+            updateMasterCodeDatasets();
+
+            return {
+                neighborhood_code:
+                    getElement(
+                        "edit-neighborhood-name",
+                    )?.dataset
+                        ?.masterCode
+                    || null,
+
+                district_code:
+                    getElement(
+                        "edit-district-group",
+                    )?.dataset
+                        ?.masterCode
+                    || null,
+
+                organization_code:
+                    getElement(
+                        "edit-organization-name",
+                    )?.dataset
+                        ?.masterCode
+                    || null,
+            };
+        };
+
+    async function initializeMasterAddon() {
+        try {
+            await loadMasters();
+
+            populateDistrictFilter();
+            refreshEditControls();
+            installHandlers();
+            observeEditModal();
+
+            console.info(
+                "Ver1.14 master addon loaded:",
+                {
+                    districts:
+                        state.districts.length,
+                    neighborhoods:
+                        state.neighborhoods.length,
+                    organizations:
+                        state.organizations.length,
+                },
+            );
+        } catch (error) {
+            console.error(
+                "Ver1.14 master load error:",
+                error,
+            );
+
+            const districtFilter =
+                getElement(
+                    "district-filter",
+                );
+
+            if (districtFilter) {
+                districtFilter.innerHTML = "";
+                addOption(
+                    districtFilter,
+                    "",
+                    "地区マスターを取得できません",
+                );
+                districtFilter.disabled = true;
+            }
+        }
     }
 
-    if (document.readyState === "loading") {
+    if (
+        document.readyState === "loading"
+    ) {
         document.addEventListener(
             "DOMContentLoaded",
-            init,
-            { once: true },
+            initializeMasterAddon,
+            {
+                once: true,
+            },
         );
     } else {
-        init();
+        initializeMasterAddon();
     }
 })();

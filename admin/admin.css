@@ -699,3 +699,108 @@ body {
         width: 100%;
     }
 }
+
+/* ==========================================
+   Ver1.13 LINE配信履歴
+========================================== */
+
+.line-history-panel {
+    max-width: 1400px;
+    margin: 24px auto 0;
+    padding: 24px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 28px rgba(27, 54, 70, 0.08);
+}
+
+.line-history-heading {
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+}
+
+.line-history-heading h2 {
+    margin: 0 0 5px;
+    color: #173b63;
+    font-size: 1.2rem;
+}
+
+.line-history-heading p {
+    margin: 0;
+    color: #64727f;
+}
+
+.line-history-table {
+    min-width: 900px;
+}
+
+.line-history-table th:first-child,
+.line-history-table td:first-child,
+.line-history-table th:last-child,
+.line-history-table td:last-child {
+    width: auto;
+    text-align: left;
+}
+
+.delivery-history-status {
+    padding: 4px 9px;
+    display: inline-block;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.delivery-history-status.processing,
+.delivery-history-status.partial {
+    color: #775200;
+    background: #fff2cf;
+}
+
+.delivery-history-status.completed {
+    color: #176a4e;
+    background: #e0f5ec;
+}
+
+.delivery-history-status.failed {
+    color: #8b3c3c;
+    background: #f8dddd;
+}
+
+@media screen and (max-width: 800px) {
+    .line-history-panel {
+        margin: 18px 12px 0;
+        padding: 16px 12px;
+        border-radius: 12px;
+    }
+
+    .line-history-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .line-history-heading .admin-button {
+        width: 100%;
+    }
+}
+
+
+/* ==========================================
+   Ver1.14 マスター完全連携
+========================================== */
+
+select[data-read-only="true"] {
+    color: #536273;
+    background: #eef3f2;
+    pointer-events: none;
+}
+
+#district-filter:disabled,
+#edit-neighborhood-name:disabled,
+#edit-district-group:disabled,
+#edit-organization-name:disabled {
+    color: #7b8783;
+    background: #f1f4f3;
+    cursor: not-allowed;
+}
