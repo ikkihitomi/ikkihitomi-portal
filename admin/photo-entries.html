@@ -8,24 +8,24 @@
     <title>フォトコン応募管理｜一箕CMS</title>
     <meta name="robots" content="noindex,nofollow">
 
-    <link rel="stylesheet" href="photo-entries.css">
+    <link rel="stylesheet" href="photo-entries.css?v=20260806-162">
 
-    <link rel="stylesheet" href="photo-entries-download.css?v=20260802-1">
+    <link rel="stylesheet" href="photo-entries-download.css?v=20260806-162">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
-    <script src="photo-entries-config.js?v=20260802-1"></script>
+    <script src="photo-entries-config.js?v=20260806-162"></script>
 
-    <script src="photo-entries.js?v=20260802-2" defer></script>
+    <script src="photo-entries.js?v=20260806-162" defer></script>
 </head>
 
 <body>
     <header class="admin-header">
         <div>
             <p class="eyebrow">
-                IKKI CMS Ver1.50
+                IKKI CMS Ver1.62
             </p>
 
             <h1>
@@ -33,7 +33,7 @@
             </h1>
 
             <p>
-                応募作品を確認し、公開・非承認・削除を管理します。
+                応募作品と応募者情報を確認し、審査・公開・削除を管理します。
             </p>
         </div>
 
@@ -101,6 +101,29 @@
                     <option value="rejected">非承認</option>
                     <option value="hidden">公開停止</option>
                     <option value="winner">入賞</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="district-filter">
+                    地区
+                </label>
+
+                <select id="district-filter">
+                    <option value="">すべて</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="registration-filter">
+                    登録連携
+                </label>
+
+                <select id="registration-filter">
+                    <option value="">すべて</option>
+                    <option value="resident">住民登録あり</option>
+                    <option value="line">LINE登録あり</option>
+                    <option value="guest">未連携応募</option>
                 </select>
             </div>
 
@@ -206,12 +229,34 @@
             </div>
 
             <div class="detail-layout">
-                <div class="detail-image-wrap">
-                    <img id="detail-image" alt="">
+                <div>
+                    <div class="detail-image-wrap">
+                        <img id="detail-image" alt="">
+                    </div>
+
+                    <div class="detail-image-actions">
+                        <button id="open-original-button" type="button" class="button neutral">
+                            原寸画像を開く
+                        </button>
+
+                        <button id="download-original-button" type="button" class="button neutral">
+                            画像を保存
+                        </button>
+                    </div>
                 </div>
 
                 <div class="detail-content">
                     <dl id="detail-list" class="detail-list"></dl>
+
+                    <div class="contact-actions" aria-label="応募者連絡先操作">
+                        <button id="copy-email-button" type="button" class="button neutral">
+                            メールをコピー
+                        </button>
+
+                        <button id="copy-phone-button" type="button" class="button neutral">
+                            電話番号をコピー
+                        </button>
+                    </div>
 
                     <div class="field">
                         <label for="detail-admin-note">

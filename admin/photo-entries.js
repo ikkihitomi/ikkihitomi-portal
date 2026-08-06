@@ -16,6 +16,8 @@
     const searchInput = document.getElementById("search-input");
     const statusFilter = document.getElementById("status-filter");
     const publicFilter = document.getElementById("public-filter");
+    const districtFilter = document.getElementById("district-filter");
+    const registrationFilter = document.getElementById("registration-filter");
     const yearFilter = document.getElementById("year-filter");
 
     const detailDialog = document.getElementById("detail-dialog");
@@ -25,6 +27,18 @@
     const detailAdminNote = document.getElementById("detail-admin-note");
     const detailAwardName = document.getElementById("detail-award-name");
     const dialogMessage = document.getElementById("dialog-message");
+
+    const openOriginalButton =
+        document.getElementById("open-original-button");
+
+    const downloadOriginalButton =
+        document.getElementById("download-original-button");
+
+    const copyEmailButton =
+        document.getElementById("copy-email-button");
+
+    const copyPhoneButton =
+        document.getElementById("copy-phone-button");
 
     const downloadAllZipButton =
         document.getElementById("download-all-zip-button");
@@ -178,7 +192,10 @@
                 contest_year,
                 entry_no,
                 line_user_id,
+                resident_id,
                 resident_name,
+                email,
+                phone,
                 district_name,
                 neighborhood_name,
                 title,
@@ -212,9 +229,82 @@
             })),
         );
 
+        renderDistrictFilter();
         renderStats();
         renderEntries();
         setPageMessage(`${entries.length}件の応募作品を読み込みました。`, "success");
+    }
+
+    function renderDistrictFilter() {
+        const currentValue = districtFilter.value;
+
+        const districtNames = [...new Set(
+            entries
+                .map(entry => entry.district_name)
+                .filter(Boolean),
+        )].sort((a, b) =>
+            String(a).localeCompare(String(b), "ja"),
+        );
+
+        districtFilter.innerHTML =
+            '<option value="">すべて</option>';
+
+        districtNames.forEach(name => {
+            const option = document.createElement("option");
+            option.value = name;
+            option.textContent = name;
+            districtFilter.appendChild(option);
+        });
+
+        if (districtNames.includes(currentValue)) {
+            districtFilter.value = currentValue;
+        }
+    }
+
+    function getRegistrationLabel(entry) {
+        if (entry.resident_id) {
+            return "住民登録あり";
+        }
+
+        if (entry.line_user_id) {
+            return "LINE登録あり";
+        }
+
+        return "未連携応募";
+    }
+
+    function getRegistrationClass(entry) {
+        if (entry.resident_id) {
+            return "registration-resident";
+        }
+
+        if (entry.line_user_id) {
+            return "registration-line";
+        }
+
+        return "registration-guest";
+    }
+
+    function maskEmail(value) {
+        const email = String(value || "");
+        const [localPart, domain] = email.split("@");
+
+        if (!localPart || !domain) {
+            return email || "—";
+        }
+
+        const visible = localPart.slice(0, 2);
+        return `${visible}${"*".repeat(Math.max(localPart.length - 2, 2))}@${domain}`;
+    }
+
+    function maskPhone(value) {
+        const digits = String(value || "").replace(/\D/g, "");
+
+        if (digits.length < 7) {
+            return value || "—";
+        }
+
+        return `${digits.slice(0, 3)}-****-${digits.slice(-4)}`;
     }
 
     function renderStats() {
@@ -235,6 +325,8 @@
         const keyword = searchInput.value.trim().toLowerCase();
         const status = statusFilter.value;
         const publicValue = publicFilter.value;
+        const districtValue = districtFilter.value;
+        const registrationValue = registrationFilter.value;
 
         return entries.filter(entry => {
             if (status && entry.status !== status) {
@@ -248,12 +340,42 @@
                 return false;
             }
 
+            if (
+                districtValue
+                && entry.district_name !== districtValue
+            ) {
+                return false;
+            }
+
+            if (
+                registrationValue === "resident"
+                && !entry.resident_id
+            ) {
+                return false;
+            }
+
+            if (
+                registrationValue === "line"
+                && (!entry.line_user_id || entry.resident_id)
+            ) {
+                return false;
+            }
+
+            if (
+                registrationValue === "guest"
+                && (entry.line_user_id || entry.resident_id)
+            ) {
+                return false;
+            }
+
             if (!keyword) return true;
 
             const haystack = [
                 entry.entry_no,
                 entry.title,
                 entry.resident_name,
+                entry.email,
+                entry.phone,
                 entry.district_name,
                 entry.neighborhood_name,
                 entry.location,
@@ -309,16 +431,42 @@
                         <span class="status-badge">
                             ${entry.is_public ? "公開中" : "非公開"}
                         </span>
+
+                        <span class="status-badge ${getRegistrationClass(entry)}">
+                            ${escapeHtml(getRegistrationLabel(entry))}
+                        </span>
                     </div>
 
                     <h3>${escapeHtml(entry.title)}</h3>
 
-                    <p>
-                        ${escapeHtml(entry.neighborhood_name || entry.district_name || "地区未設定")}
-                    </p>
+                    <div class="area-summary">
+                        <p>
+                            <span>地区</span>
+                            <strong>
+                                ${escapeHtml(entry.district_name || "地区外・未設定")}
+                            </strong>
+                        </p>
+
+                        <p>
+                            <span>町内会</span>
+                            <strong>
+                                ${escapeHtml(entry.neighborhood_name || "未設定")}
+                            </strong>
+                        </p>
+                    </div>
 
                     <p>
                         撮影場所：${escapeHtml(entry.location)}
+                    </p>
+
+                    <p class="applicant-summary">
+                        応募者：${escapeHtml(entry.resident_name || "—")}
+                    </p>
+
+                    <p class="contact-summary">
+                        ${escapeHtml(maskEmail(entry.email))}
+                        ／
+                        ${escapeHtml(maskPhone(entry.phone))}
                     </p>
 
                     <p>
@@ -346,7 +494,16 @@
                                     公開承認
                                 </button>
                                 `
-                    : ""
+                    : `
+                                <button
+                                    type="button"
+                                    class="quick-hide-button"
+                                    data-action="hide"
+                                    data-id="${escapeHtml(entry.id)}"
+                                >
+                                    公開停止
+                                </button>
+                                `
                 }
                     </div>
                 </div>
@@ -360,6 +517,11 @@
         return [
             ["応募番号", entry.entry_no],
             ["応募者氏名", entry.resident_name],
+            ["メールアドレス", entry.email],
+            ["電話番号", entry.phone],
+            ["登録連携", getRegistrationLabel(entry)],
+            ["LINEユーザーID", entry.line_user_id],
+            ["住民登録ID", entry.resident_id],
             ["地区", entry.district_name],
             ["町内会", entry.neighborhood_name],
             ["作品名", entry.title],
@@ -373,6 +535,81 @@
             ["MIME", entry.mime_type],
             ["ファイルサイズ", formatBytes(entry.file_size)],
         ];
+    }
+
+    async function copyText(value, label) {
+        const text = String(value || "").trim();
+
+        if (!text) {
+            setDialogMessage(`${label}が登録されていません。`, "error");
+            return;
+        }
+
+        try {
+            await navigator.clipboard.writeText(text);
+            setDialogMessage(`${label}をコピーしました。`, "success");
+        } catch (error) {
+            console.error("Clipboard error:", error);
+
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.style.position = "fixed";
+            textarea.style.opacity = "0";
+            document.body.appendChild(textarea);
+            textarea.select();
+
+            const copied = document.execCommand("copy");
+            textarea.remove();
+
+            setDialogMessage(
+                copied
+                    ? `${label}をコピーしました。`
+                    : `${label}をコピーできませんでした。`,
+                copied ? "success" : "error",
+            );
+        }
+    }
+
+    function updateDetailActionAvailability(entry) {
+        const hasEmail = Boolean(String(entry.email || "").trim());
+        const hasPhone = Boolean(String(entry.phone || "").trim());
+        const hasImage = Boolean(String(entry.image_url || "").trim());
+
+        copyEmailButton.disabled = !hasEmail;
+        copyPhoneButton.disabled = !hasPhone;
+        openOriginalButton.disabled = !hasImage;
+        downloadOriginalButton.disabled = !hasImage;
+
+        copyEmailButton.title =
+            hasEmail ? entry.email : "メールアドレス未登録";
+
+        copyPhoneButton.title =
+            hasPhone ? entry.phone : "電話番号未登録";
+    }
+
+    async function downloadOriginalImage() {
+        if (!currentEntry) return;
+
+        try {
+            setDialogMessage("画像を準備しています。");
+
+            const blob = await downloadPhotoBlob(currentEntry);
+            const extension = getFileExtension(currentEntry);
+            const title = sanitizeFileName(currentEntry.title);
+            const fileName =
+                `${currentEntry.entry_no}_${title}.${extension}`;
+
+            triggerBlobDownload(blob, fileName);
+            setDialogMessage("画像を保存しました。", "success");
+        } catch (error) {
+            console.error(error);
+            setDialogMessage(
+                error instanceof Error
+                    ? error.message
+                    : "画像を保存できませんでした。",
+                "error",
+            );
+        }
     }
 
     function openDetail(entryId) {
@@ -397,6 +634,7 @@
         detailAdminNote.value = entry.admin_note ?? "";
         detailAwardName.value = entry.award_name ?? "";
 
+        updateDetailActionAvailability(entry);
         setDialogMessage("");
         detailDialog.showModal();
     }
@@ -443,6 +681,14 @@
 
         currentEntry = entries.find(row => row.id === entryId);
 
+        if (!currentEntry) return;
+
+        const confirmed = window.confirm(
+            `応募番号 ${currentEntry.entry_no} を公開承認しますか？`,
+        );
+
+        if (!confirmed) return;
+
         await updateEntry(
             {
                 status: "approved",
@@ -451,6 +697,28 @@
                 approved_by: currentUser?.id ?? null,
             },
             "公開を承認しました。",
+        );
+    }
+
+    async function hideEntry(entryId = currentEntry?.id) {
+        if (!entryId) return;
+
+        currentEntry = entries.find(row => row.id === entryId);
+
+        if (!currentEntry) return;
+
+        const confirmed = window.confirm(
+            `応募番号 ${currentEntry.entry_no} の公開を停止しますか？`,
+        );
+
+        if (!confirmed) return;
+
+        await updateEntry(
+            {
+                status: "hidden",
+                is_public: false,
+            },
+            "作品を公開停止にしました。",
         );
     }
 
@@ -562,13 +830,7 @@
             }
 
             if (action === "hide") {
-                await updateEntry(
-                    {
-                        status: "hidden",
-                        is_public: false,
-                    },
-                    "作品を公開停止にしました。",
-                );
+                await hideEntry();
             }
 
             if (action === "reject") {
@@ -710,6 +972,9 @@
             "応募番号",
             "作品名",
             "応募者氏名",
+            "メールアドレス",
+            "電話番号",
+            "登録連携",
             "地区",
             "町内会",
             "撮影場所",
@@ -727,6 +992,8 @@
                 entry.entry_no,
                 entry.title,
                 entry.resident_name,
+                entry.email,
+                entry.phone,
                 entry.district_name,
                 entry.neighborhood_name,
                 entry.location,
@@ -1171,12 +1438,27 @@
                 );
             }
         }
+
+        if (action === "hide") {
+            try {
+                await hideEntry(entryId);
+            } catch (error) {
+                setPageMessage(
+                    error instanceof Error
+                        ? error.message
+                        : "公開停止に失敗しました。",
+                    "error",
+                );
+            }
+        }
     });
 
     [
         searchInput,
         statusFilter,
         publicFilter,
+        districtFilter,
+        registrationFilter,
     ].forEach(element => {
         element.addEventListener("input", renderEntries);
         element.addEventListener("change", renderEntries);
@@ -1232,6 +1514,42 @@
                 runZipDownload("public");
             },
         );
+
+    openOriginalButton
+        ?.addEventListener("click", () => {
+            if (!currentEntry?.image_url) return;
+
+            window.open(
+                currentEntry.image_url,
+                "_blank",
+                "noopener,noreferrer",
+            );
+        });
+
+    downloadOriginalButton
+        ?.addEventListener(
+            "click",
+            downloadOriginalImage,
+        );
+
+    copyEmailButton
+        ?.addEventListener(
+            "click",
+            () => copyText(
+                currentEntry?.email,
+                "メールアドレス",
+            ),
+        );
+
+    copyPhoneButton
+        ?.addEventListener(
+            "click",
+            () => copyText(
+                currentEntry?.phone,
+                "電話番号",
+            ),
+        );
+
 
     downloadCsvButton
         ?.addEventListener(

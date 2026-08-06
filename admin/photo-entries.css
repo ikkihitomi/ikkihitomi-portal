@@ -276,7 +276,9 @@ a {
 .filter-panel {
     display: grid;
     grid-template-columns:
-        minmax(260px, 2fr) minmax(160px, 1fr) minmax(160px, 1fr) minmax(120px, 0.7fr);
+        minmax(260px, 2fr)
+        repeat(4, minmax(150px, 1fr))
+        minmax(120px, 0.7fr);
 
     gap: 14px;
 
@@ -1168,5 +1170,150 @@ a {
 
     .download-button {
         width: 100%;
+    }
+}
+
+/* ==========================================
+   Ver1.60 応募者情報・登録連携
+========================================== */
+
+.registration-resident {
+    color: #ffffff;
+    background: var(--admin-green);
+}
+
+.registration-line {
+    color: #204f71;
+    background: #dfefff;
+}
+
+.registration-guest {
+    color: #6a5a24;
+    background: #f5edc9;
+}
+
+.applicant-summary {
+    color: var(--admin-text) !important;
+    font-weight: 700;
+}
+
+.contact-summary {
+    overflow: hidden;
+    color: var(--admin-muted) !important;
+    font-size: 0.86rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.detail-list dd {
+    min-width: 0;
+}
+
+@media (max-width: 1180px) {
+    .filter-panel {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 820px) {
+    .filter-panel {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .filter-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-summary {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+}
+
+
+/* ==========================================
+   Ver1.61 地区・町内会表示
+========================================== */
+
+.area-summary {
+    display: grid;
+    gap: 6px;
+    margin: 8px 0 4px;
+    padding: 10px 12px;
+    border: 1px solid var(--admin-line);
+    border-radius: 10px;
+    background: #f7faf8;
+}
+
+.area-summary p {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 8px;
+    margin: 0;
+}
+
+.area-summary span {
+    color: var(--admin-muted);
+    font-size: 0.82rem;
+}
+
+.area-summary strong {
+    min-width: 0;
+    color: var(--admin-text);
+    font-size: 0.9rem;
+    overflow-wrap: anywhere;
+}
+
+
+/* ==========================================
+   Ver1.62 管理操作・詳細画像
+========================================== */
+
+.quick-hide-button {
+    color: var(--admin-text);
+    background: #e7ece9;
+}
+
+.quick-hide-button:hover {
+    background: #d8e1dc;
+}
+
+.detail-image-actions,
+.contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.detail-image-actions {
+    margin-top: 10px;
+}
+
+.detail-image-actions .button,
+.contact-actions .button {
+    flex: 1;
+}
+
+.contact-actions {
+    margin: 0 0 20px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--admin-line);
+}
+
+.button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+@media (max-width: 640px) {
+    .detail-image-actions,
+    .contact-actions {
+        display: grid;
+        grid-template-columns: 1fr;
     }
 }
