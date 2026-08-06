@@ -4,7 +4,7 @@
    一箕地区ポータル
    LINE登録者管理
 
-   Ver1.35
+   Ver1.14.1
    ・登録者一覧表示
    ・検索・絞り込み
    ・配信対象者の選択
@@ -59,8 +59,11 @@ const lineUsersBody =
 const selectAllCheckbox =
     document.getElementById("select-all-checkbox");
 
-const selectFilteredButton =
-    document.getElementById("select-filtered-button");
+const selectRegisteredButton =
+    document.getElementById("select-registered-button");
+
+const selectAllFollowingButton =
+    document.getElementById("select-all-following-button");
 
 const clearSelectionButton =
     document.getElementById("clear-selection-button");
@@ -70,12 +73,6 @@ const selectedCount =
 
 const deliveryButton =
     document.getElementById("delivery-button");
-
-const historyRefreshButton =
-    document.getElementById("history-refresh-button");
-
-const deliveryHistoryBody =
-    document.getElementById("delivery-history-body");
 
 
 /* 配信ダイアログ */
@@ -91,6 +88,15 @@ const deliveryCancelButton =
 
 const deliveryTargetCount =
     document.getElementById("delivery-target-count");
+
+const deliveryModeInput =
+    document.getElementById("delivery-mode");
+
+const deliveryModeLabel =
+    document.getElementById("delivery-mode-label");
+
+const deliveryConditionText =
+    document.getElementById("delivery-condition-text");
 
 const deliveryForm =
     document.getElementById("delivery-form");
@@ -184,6 +190,8 @@ let lineUsers = [];
  */
 const selectedUserIds = new Set();
 
+let currentDeliveryMode = "registered_only";
+
 
 /* ==========================================
    3. 共通関数
@@ -247,9 +255,45 @@ function canDeliverToUser(user) {
 
     return (
         user.is_following === true
-        && user.registration_completed === true
         && Boolean(user.line_user_id)
     );
+}
+
+
+function canDeliverToRegisteredUser(user) {
+
+    return (
+        canDeliverToUser(user)
+        && user.registration_completed === true
+    );
+}
+
+
+function updateDeliveryMode(mode) {
+
+    currentDeliveryMode =
+        mode === "all_following"
+            ? "all_following"
+            : "registered_only";
+
+    if (deliveryModeInput) {
+        deliveryModeInput.value =
+            currentDeliveryMode;
+    }
+
+    if (deliveryModeLabel) {
+        deliveryModeLabel.textContent =
+            currentDeliveryMode === "all_following"
+                ? "友だち登録者全員"
+                : "住民登録済みのみ";
+    }
+
+    if (deliveryConditionText) {
+        deliveryConditionText.textContent =
+            currentDeliveryMode === "all_following"
+                ? "現在は、友だち状態が有効な方全員を配信対象にしています。"
+                : "現在は、友だち状態が有効で住民登録済みの方を配信対象にしています。";
+    }
 }
 
 
@@ -411,7 +455,11 @@ function updateSelectAllCheckbox() {
 
     const deliverableUsers =
         getFilteredUsers()
-            .filter(canDeliverToUser);
+            .filter(
+                currentDeliveryMode === "all_following"
+                    ? canDeliverToUser
+                    : canDeliverToRegisteredUser,
+            );
 
     if (deliverableUsers.length === 0) {
 
@@ -446,15 +494,25 @@ function updateSelectAllCheckbox() {
 /**
  * 表示中の配信可能者をすべて選択します。
  */
-function selectFilteredUsers() {
+function selectFilteredUsers(
+    mode = currentDeliveryMode,
+) {
+
+    updateDeliveryMode(mode);
+
+    selectedUserIds.clear();
 
     const filteredUsers =
         getFilteredUsers();
 
     for (const user of filteredUsers) {
 
-        if (canDeliverToUser(user)) {
+        const canSelect =
+            currentDeliveryMode === "all_following"
+                ? canDeliverToUser(user)
+                : canDeliverToRegisteredUser(user);
 
+        if (canSelect) {
             selectedUserIds.add(
                 user.line_user_id,
             );
@@ -748,6 +806,14 @@ function renderLineUsers() {
                         selectedUserIds.add(
                             lineUserId,
                         );
+
+                        if (
+                            user.registration_completed !== true
+                        ) {
+                            updateDeliveryMode(
+                                "all_following",
+                            );
+                        }
 
                     } else {
 
@@ -1197,119 +1263,8 @@ async function saveUserEdit(event) {
 }
 
 
-
 /* ==========================================
-   10. LINE配信履歴
-========================================== */
-
-const deliveryStatusLabels = {
-    processing: "処理中",
-    completed: "完了",
-    partial: "一部失敗",
-    failed: "失敗",
-};
-
-function renderDeliveryHistory(rows) {
-    deliveryHistoryBody.innerHTML = "";
-
-    if (!Array.isArray(rows) || rows.length === 0) {
-        deliveryHistoryBody.innerHTML = `
-            <tr>
-                <td colspan="8" class="admin-empty-cell">
-                    配信履歴はまだありません。
-                </td>
-            </tr>
-        `;
-        return;
-    }
-
-    for (const row of rows) {
-        const status = row.status || "failed";
-        const statusLabel =
-            deliveryStatusLabels[status] || status;
-
-        const tr = document.createElement("tr");
-
-        tr.innerHTML = `
-            <td>${escapeHtml(formatDate(row.created_at))}</td>
-            <td><strong>${escapeHtml(row.title || "-")}</strong></td>
-            <td>${escapeHtml(row.requested_count ?? 0)}名</td>
-            <td>${escapeHtml(row.valid_count ?? 0)}名</td>
-            <td>${escapeHtml(row.accepted_count ?? 0)}名</td>
-            <td>${escapeHtml(row.skipped_count ?? 0)}名</td>
-            <td>
-                <span class="delivery-history-status ${escapeHtml(status)}">
-                    ${escapeHtml(statusLabel)}
-                </span>
-            </td>
-            <td>${escapeHtml(row.admin_email || row.admin_user_id || "-")}</td>
-        `;
-
-        deliveryHistoryBody.appendChild(tr);
-    }
-}
-
-async function loadDeliveryHistory() {
-    if (!deliveryHistoryBody) {
-        return;
-    }
-
-    historyRefreshButton.disabled = true;
-
-    deliveryHistoryBody.innerHTML = `
-        <tr>
-            <td colspan="8" class="admin-empty-cell">
-                配信履歴を読み込んでいます。
-            </td>
-        </tr>
-    `;
-
-    try {
-        const { data, error } =
-            await supabaseClient
-                .from("line_delivery_history")
-                .select(`
-                    id,
-                    title,
-                    requested_count,
-                    valid_count,
-                    accepted_count,
-                    skipped_count,
-                    status,
-                    admin_user_id,
-                    admin_email,
-                    created_at
-                `)
-                .order("created_at", {
-                    ascending: false,
-                })
-                .limit(10);
-
-        if (error) {
-            throw error;
-        }
-
-        renderDeliveryHistory(data ?? []);
-    } catch (error) {
-        console.error(
-            "LINE delivery history load error:",
-            error,
-        );
-
-        deliveryHistoryBody.innerHTML = `
-            <tr>
-                <td colspan="8" class="admin-empty-cell">
-                    配信履歴を取得できませんでした。
-                </td>
-            </tr>
-        `;
-    } finally {
-        historyRefreshButton.disabled = false;
-    }
-}
-
-/* ==========================================
-   11. LINE配信
+   10. LINE配信
 ========================================== */
 
 /**
@@ -1464,6 +1419,10 @@ function openDeliveryModal() {
     deliveryTargetCount.textContent =
         String(selectedUserIds.size);
 
+    updateDeliveryMode(
+        currentDeliveryMode,
+    );
+
     deliveryFormMessage.textContent = "";
     deliveryFormMessage.className =
         "delivery-form-message";
@@ -1616,6 +1575,8 @@ async function sendLineMessage(event) {
                                 Array.from(
                                     selectedUserIds,
                                 ),
+                            deliveryMode:
+                                currentDeliveryMode,
                         },
                     },
                 );
@@ -1632,33 +1593,19 @@ async function sendLineMessage(event) {
             );
         }
 
-        const acceptedCount =
-            data.acceptedCount
-            ?? data.deliveredCount
+        const deliveredCount =
+            data.deliveredCount
             ?? targetCount;
 
-        const skippedCount =
-            data.skippedCount
-            ?? Math.max(
-                targetCount - acceptedCount,
-                0,
-            );
-
-        const resultMessage =
-            skippedCount > 0
-                ? `${acceptedCount}名の送信を受け付けました。`
-                  + `${skippedCount}名は対象外として除外されました。`
-                : `${acceptedCount}名の送信を受け付けました。`;
-
         deliveryFormMessage.textContent =
-            resultMessage;
+            `${deliveredCount}名へのLINE配信が完了しました。`;
 
         deliveryFormMessage.className =
             "delivery-form-message success";
 
-        alert(resultMessage);
-
-        await loadDeliveryHistory();
+        alert(
+            `${deliveredCount}名へのLINE配信が完了しました。`,
+        );
 
         /*
          * 送信成功後に入力と選択を解除
@@ -1702,7 +1649,7 @@ async function sendLineMessage(event) {
 }
 
 /* ==========================================
-   12. イベント
+   11. イベント
 ========================================== */
 
 // 検索
@@ -1735,15 +1682,24 @@ refreshButton.addEventListener(
     loadLineUsers,
 );
 
-historyRefreshButton.addEventListener(
+// 住民登録済みを選択
+selectRegisteredButton.addEventListener(
     "click",
-    loadDeliveryHistory,
+    () => {
+        selectFilteredUsers(
+            "registered_only",
+        );
+    },
 );
 
-// 表示中をすべて選択
-selectFilteredButton.addEventListener(
+// 友だち全員を選択
+selectAllFollowingButton.addEventListener(
     "click",
-    selectFilteredUsers,
+    () => {
+        selectFilteredUsers(
+            "all_following",
+        );
+    },
 );
 
 // 全選択解除
@@ -1759,7 +1715,9 @@ selectAllCheckbox.addEventListener(
 
         if (selectAllCheckbox.checked) {
 
-            selectFilteredUsers();
+            selectFilteredUsers(
+                currentDeliveryMode,
+            );
 
         } else {
 
@@ -1868,7 +1826,7 @@ document.addEventListener(
 );
 
 /* ==========================================
-   13. 初期表示
+   12. 初期表示
 ========================================== */
 
 /* ==========================================
@@ -1880,10 +1838,7 @@ async function initializeLineUsersPage() {
     /*
      * 最初にLINE登録者を読み込みます。
      */
-    await Promise.all([
-        loadLineUsers(),
-        loadDeliveryHistory(),
-    ]);
+    await loadLineUsers();
 
     /*
      * 投稿管理画面から記事IDが渡された場合、
@@ -1901,7 +1856,9 @@ async function initializeLineUsersPage() {
      */
     if (postLoaded) {
 
-        selectFilteredUsers();
+        selectFilteredUsers(
+            "registered_only",
+        );
 
         openDeliveryModal();
     }
