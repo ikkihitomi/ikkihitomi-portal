@@ -185,7 +185,8 @@ async function loadPublicPosts() {
                     name
                 ),
                 organizer_id,
-                organizers (
+                 organization_master (
+                    code,
                     name
                 )
             `)
@@ -216,7 +217,7 @@ async function loadPublicPosts() {
                 getCategoryClass(categoryName);
 
             const organizerName =
-                post.organizers?.name || "";
+                post.organization_master?.name || "";
 
             const article =
                 document.createElement("article");

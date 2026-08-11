@@ -62,7 +62,8 @@ async function loadPostDetail() {
             post_categories (
                 name
             ),
-            organizers (
+            organization_master (
+                code,
                 name
             )
         `)
@@ -87,7 +88,8 @@ async function loadPostDetail() {
     }
 
     const categoryName = data.post_categories?.name || "";
-    const organizerName = data.organizers?.name || "";
+    const organizerName =
+        data.organization_master?.name || "";
 
     const imageHtml = data.eyecatch_url
         ? `<img class="detail-eyecatch" src="${data.eyecatch_url}" alt="${data.title}">`

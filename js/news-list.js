@@ -22,7 +22,10 @@ async function loadPosts() {
         .select(`
             *,
             post_categories(name),
-            organizers(name)
+            organization_master (
+                    code,
+                    name
+                )
         `)
         .eq("status", "published")
         .order("published_at", { ascending: false });
@@ -80,7 +83,7 @@ function renderPosts(posts) {
             post.post_categories?.name || "";
 
         const organizer =
-            post.organizers?.name || "";
+            post.organization_master?.name || "";
 
         const image = post.eyecatch_url
             ? `<img class="public-post-image"

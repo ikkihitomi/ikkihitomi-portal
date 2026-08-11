@@ -150,14 +150,17 @@ async function loadCategories() {
 }
 
 async function loadOrganizers() {
+
     const { data, error } = await supabaseClient
-        .from("organizers")
-        .select("id, name")
+        .from("organization_master")
+        .select("id, code, name")
         .eq("is_active", true)
         .order("sort_order", { ascending: true });
 
     if (error) {
-        message.textContent = "主催者を取得できませんでした。";
+        message.textContent =
+            "主催者を取得できませんでした。";
+
         console.error(error);
         return;
     }
@@ -165,9 +168,15 @@ async function loadOrganizers() {
     organizerSelect.innerHTML = "";
 
     data.forEach((org) => {
-        const option = document.createElement("option");
+
+        const option =
+            document.createElement("option");
+
         option.value = org.id;
-        option.textContent = org.name;
+
+        option.textContent =
+            `${org.code} ${org.name}`;
+
         organizerSelect.appendChild(option);
     });
 }
@@ -177,6 +186,7 @@ async function loadOrganizers() {
 // 記事一覧取得
 // ==============================
 async function loadPosts() {
+
     const { data, error } = await supabaseClient
         .from("posts")
         .select(`
@@ -209,16 +219,27 @@ async function loadPosts() {
             post_categories (
                 name
             ),
+
             organizer_id,
-            organizers (
+
+            organization_master (
+                id,
+                code,
                 name
             )
         `)
         .order("created_at", { ascending: false });
 
     if (error) {
-        postsList.innerHTML = "記事一覧を取得できませんでした。";
-        console.error(error);
+
+        postsList.innerHTML =
+            "記事一覧を取得できませんでした。";
+
+        console.error(
+            "記事一覧取得エラー:",
+            error
+        );
+
         return;
     }
 
@@ -226,39 +247,88 @@ async function loadPosts() {
     postsList.innerHTML = "";
 
     if (postsCache.length === 0) {
-        postsList.innerHTML = "<p>まだ記事がありません。</p>";
+
+        postsList.innerHTML =
+            "<p>まだ記事がありません。</p>";
+
         return;
     }
 
     postsCache.forEach((post) => {
-        const div = document.createElement("div");
+
+        const div =
+            document.createElement("div");
+
         div.className = "post-item";
 
-        const categoryName = post.post_categories?.name || "未分類";
-        const organizerName = post.organizers?.name || "未設定";
+        const categoryName =
+            post.post_categories?.name || "未分類";
 
-        const imageHtml = post.eyecatch_url
-            ? `<img src="${post.eyecatch_url}" style="max-width:180px; border-radius:10px; margin:10px 0;">`
-            : "";
+        const organizerName =
+            post.organization_master?.name || "未設定";
+
+        const imageHtml =
+            post.eyecatch_url
+                ? `
+                    <img
+                        src="${post.eyecatch_url}"
+                        style="
+                            max-width:180px;
+                            border-radius:10px;
+                            margin:10px 0;
+                        "
+                    >
+                  `
+                : "";
 
         div.innerHTML = `
-      <h3>${post.title}</h3>
-      ${imageHtml}
-      <div class="post-meta">
-        カテゴリ：${categoryName}
-        ／ 主催者：${organizerName}
-        ／ 状態：${post.status}
-        </div>
-      <button type="button" onclick="editPost('${post.id}')">編集</button>
-      <button type="button" onclick="deletePost('${post.id}')">削除</button>
-      <button type="button" onclick="prepareLinePost('${post.id}')">
-        LINE配信
-      </button>
-    `;
+            <h3>${post.title}</h3>
+
+            ${imageHtml}
+
+            <div class="post-meta">
+                カテゴリ：${categoryName}
+                ／ 主催者：${organizerName}
+                ／ 状態：${post.status}
+            </div>
+
+            <button type="button"
+                onclick="editPost('${post.id}')">
+                編集
+            </button>
+
+            <button type="button"
+                onclick="deletePost('${post.id}')">
+                削除
+            </button>
+
+            <button type="button"
+                onclick="prepareLinePost('${post.id}')">
+                LINE配信
+            </button>
+        `;
 
         postsList.appendChild(div);
     });
 }
+
+// ==============================
+// 時刻表示整形
+// ==============================
+function formatTime(value) {
+
+    if (!value) {
+        return "";
+    }
+
+    const text = String(value);
+
+    // 例
+    // 10:00:00 → 10:00
+    // 10:00    → 10:00
+    return text.slice(0, 5);
+}
+
 
 // ==============================
 // 保存・更新
@@ -283,7 +353,10 @@ async function savePost() {
         : null;
     const eventDeadline = eventDeadlineInput.value || null;
     const showOnCalendar = showOnCalendarInput.checked;
-    const organizerId = organizerSelect.value || null;
+    const organizerId =
+        organizerSelect.value
+            ? Number(organizerSelect.value)
+            : null;
 
     const eventReceptionTime = eventReceptionTimeInput.value || null;
     const eventFee = eventFeeInput.value.trim() || null;
