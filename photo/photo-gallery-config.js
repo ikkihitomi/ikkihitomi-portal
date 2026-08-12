@@ -11,5 +11,5 @@ window.PHOTO_GALLERY_CONFIG = {
         2026,
 
     applicationUrl:
-        "../photo2026/"
+        "../photo2026/apply/"
 };

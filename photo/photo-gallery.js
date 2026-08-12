@@ -437,7 +437,7 @@
                 "application-link",
             ).href =
                 config.applicationUrl
-                || "../photo2026/";
+                || "/photo2026/apply/";
 
             await loadEntries();
 
