@@ -1,7 +1,7 @@
 "use strict";
 
 /* ==========================================
-   一箕地区ポータル Ver1.14
+   一箕地区ポータル Ver1.40
    LINE登録者管理 マスター完全連携
 
    ・地区フィルターをdistrict_masterから生成
@@ -27,6 +27,75 @@
 
     function getElement(id) {
         return document.getElementById(id);
+    }
+
+    /*
+     * HTML側では町内会・所属団体が input の場合があります。
+     * マスター連携では option を扱うため、必要に応じて select へ置き換えます。
+     *
+     * line-users.js 側は編集時に現在の要素を取り直す実装なので、
+     * ここで安全に置き換えできます。
+     */
+    function ensureSelectElement(id) {
+        const current =
+            getElement(id);
+
+        if (!current) {
+            return null;
+        }
+
+        if (
+            current.tagName
+            && current.tagName.toLowerCase() === "select"
+        ) {
+            return current;
+        }
+
+        const select =
+            document.createElement("select");
+
+        /*
+         * id / class / aria 等を引き継ぎます。
+         * input 固有の type / value は除外します。
+         */
+        for (const attribute of current.attributes) {
+            if (
+                attribute.name === "type"
+                || attribute.name === "value"
+            ) {
+                continue;
+            }
+
+            select.setAttribute(
+                attribute.name,
+                attribute.value,
+            );
+        }
+
+        const currentValue =
+            current.value || "";
+
+        select.dataset.initialValue =
+            currentValue;
+
+        current.replaceWith(select);
+
+        return select;
+    }
+
+
+    function ensureMasterSelects() {
+        ensureSelectElement(
+            "edit-neighborhood-name",
+        );
+
+        ensureSelectElement(
+            "edit-district-group",
+        );
+
+        ensureSelectElement(
+            "edit-organization-name",
+        );
     }
 
     function addOption(
@@ -161,7 +230,11 @@
         }
 
         const currentValue =
-            select.value;
+            select.value
+            || select.dataset.initialValue
+            || "";
+
+        delete select.dataset.initialValue;
 
         select.innerHTML = "";
 
@@ -203,13 +276,20 @@
         currentValue = "",
     ) {
         const select =
-            getElement(
+            ensureSelectElement(
                 "edit-neighborhood-name",
             );
 
         if (!select) {
             return;
         }
+
+        currentValue =
+            currentValue
+            || select.dataset.initialValue
+            || "";
+
+        delete select.dataset.initialValue;
 
         select.innerHTML = "";
 
@@ -250,13 +330,20 @@
         currentValue = "",
     ) {
         const select =
-            getElement(
+            ensureSelectElement(
                 "edit-district-group",
             );
 
         if (!select) {
             return;
         }
+
+        currentValue =
+            currentValue
+            || select.dataset.initialValue
+            || "";
+
+        delete select.dataset.initialValue;
 
         select.innerHTML = "";
 
@@ -293,13 +380,20 @@
         currentValue = "",
     ) {
         const select =
-            getElement(
+            ensureSelectElement(
                 "edit-organization-name",
             );
 
         if (!select) {
             return;
         }
+
+        currentValue =
+            currentValue
+            || select.dataset.initialValue
+            || "";
+
+        delete select.dataset.initialValue;
 
         select.innerHTML = "";
 
@@ -364,7 +458,7 @@
 
         const selectedOption =
             neighborhoodSelect.options[
-                neighborhoodSelect.selectedIndex
+            neighborhoodSelect.selectedIndex
             ];
 
         const districtCode =
@@ -402,7 +496,7 @@
         if (neighborhoodSelect) {
             const option =
                 neighborhoodSelect.options[
-                    neighborhoodSelect.selectedIndex
+                neighborhoodSelect.selectedIndex
                 ];
 
             neighborhoodSelect.dataset.masterCode =
@@ -412,7 +506,7 @@
         if (districtSelect) {
             const option =
                 districtSelect.options[
-                    districtSelect.selectedIndex
+                districtSelect.selectedIndex
                 ];
 
             districtSelect.dataset.masterCode =
@@ -424,7 +518,7 @@
         if (organizationSelect) {
             const option =
                 organizationSelect.options[
-                    organizationSelect.selectedIndex
+                organizationSelect.selectedIndex
                 ];
 
             organizationSelect.dataset.masterCode =
@@ -487,7 +581,7 @@
             neighborhoodSelect
             && neighborhoodSelect.dataset
                 .masterHandlerInstalled
-                !== "true"
+            !== "true"
         ) {
             neighborhoodSelect.addEventListener(
                 "change",
@@ -506,7 +600,7 @@
             organizationSelect
             && organizationSelect.dataset
                 .masterHandlerInstalled
-                !== "true"
+            !== "true"
         ) {
             organizationSelect.addEventListener(
                 "change",
@@ -602,6 +696,8 @@
 
     async function initializeMasterAddon() {
         try {
+            ensureMasterSelects();
+
             await loadMasters();
 
             populateDistrictFilter();
@@ -610,7 +706,7 @@
             observeEditModal();
 
             console.info(
-                "Ver1.14 master addon loaded:",
+                "Ver1.40 master addon loaded:",
                 {
                     districts:
                         state.districts.length,
@@ -622,7 +718,7 @@
             );
         } catch (error) {
             console.error(
-                "Ver1.14 master load error:",
+                "Ver1.40 master load error:",
                 error,
             );
 

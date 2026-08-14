@@ -729,3 +729,101 @@ body {
         flex: 1 1 100%;
     }
 }
+
+/* ==========================================
+   Ver1.40 LINE予約配信
+========================================== */
+
+.delivery-method-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.delivery-method-option {
+    flex: 1 1 180px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    background: #f5f9f8;
+    border: 1px solid #cddbd7;
+    border-radius: 9px;
+
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.delivery-method-option:hover {
+    background: #edf7f3;
+    border-color: #8db8aa;
+}
+
+.delivery-method-option input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+
+    accent-color: #16865f;
+}
+
+
+/* 予約日時 */
+
+.delivery-schedule-fields {
+    margin: 4px 0 20px;
+    padding: 18px;
+
+    background: #f3f8f7;
+    border: 1px solid #d7e5e1;
+    border-radius: 10px;
+}
+
+.delivery-schedule-fields[hidden] {
+    display: none;
+}
+
+
+/* 日付・時刻 */
+
+.delivery-schedule-fields input,
+.delivery-schedule-fields select {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+
+    color: #243248;
+    background: #ffffff;
+
+    border: 1px solid #b9c7c4;
+    border-radius: 8px;
+
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+.delivery-schedule-fields input:focus,
+.delivery-schedule-fields select:focus {
+    border-color: #16865f;
+    outline: 3px solid rgba(22, 134, 95, 0.14);
+}
+
+
+/* スマートフォン */
+
+@media screen and (max-width: 600px) {
+
+    .delivery-method-options {
+        flex-direction: column;
+    }
+
+    .delivery-method-option {
+        flex: none;
+        width: 100%;
+    }
+
+    .delivery-schedule-fields {
+        padding: 14px;
+    }
+}

@@ -4,11 +4,13 @@
    一箕地区ポータル
    LINE登録者管理
 
-   Ver1.14.1
+   Ver1.41
    ・登録者一覧表示
    ・検索・絞り込み
    ・配信対象者の選択
    ・4桁マスターコード連携
+   ・LINE即時配信／予約配信
+   ・配信対象表示を個別／全体で自動切替
 ========================================== */
 
 
@@ -118,6 +120,24 @@ const deliveryFormMessage =
 
 const deliverySubmitButton =
     document.getElementById("delivery-submit-button");
+
+
+/* 予約配信 */
+
+const deliveryMethodNow =
+    document.getElementById("delivery-method-now");
+
+const deliveryMethodScheduled =
+    document.getElementById("delivery-method-scheduled");
+
+const deliveryScheduleFields =
+    document.getElementById("delivery-schedule-fields");
+
+const deliveryScheduleDate =
+    document.getElementById("delivery-schedule-date");
+
+const deliveryScheduleTime =
+    document.getElementById("delivery-schedule-time");
 
 
 /* 登録者編集ダイアログ */
@@ -281,19 +301,76 @@ function updateDeliveryMode(mode) {
             currentDeliveryMode;
     }
 
-    if (deliveryModeLabel) {
-        deliveryModeLabel.textContent =
-            currentDeliveryMode === "all_following"
-                ? "友だち登録者全員"
-                : "住民登録済みのみ";
-    }
-
+    /*
+     * 一覧側の説明文は、現在の選択基準を表示します。
+     */
     if (deliveryConditionText) {
         deliveryConditionText.textContent =
             currentDeliveryMode === "all_following"
-                ? "現在は、友だち状態が有効な方全員を配信対象にしています。"
-                : "現在は、友だち状態が有効で住民登録済みの方を配信対象にしています。";
+                ? "現在は、友だち状態が有効な方を配信対象にできます。"
+                : "現在は、友だち状態が有効で住民登録済みの方を配信対象にできます。";
     }
+
+    updateDeliveryTargetLabel();
+}
+
+
+/**
+ * 現在の選択状態に応じて、
+ * 配信ダイアログの対象表示を更新します。
+ *
+ * ・全対象を選択している場合
+ *   → 住民登録済み全員 / 友だち全員
+ *
+ * ・一部だけ選択している場合
+ *   → 個別選択：○名
+ */
+function updateDeliveryTargetLabel() {
+
+    if (!deliveryModeLabel) {
+        return;
+    }
+
+    const selectedIds =
+        Array.from(
+            selectedUserIds,
+        );
+
+    const eligibleIds =
+        lineUsers
+            .filter(
+                currentDeliveryMode === "all_following"
+                    ? canDeliverToUser
+                    : canDeliverToRegisteredUser,
+            )
+            .map(
+                user => user.line_user_id,
+            )
+            .filter(Boolean);
+
+    const selectedSet =
+        new Set(
+            selectedIds,
+        );
+
+    const isWholeSelection =
+        eligibleIds.length > 0
+        && selectedIds.length === eligibleIds.length
+        && eligibleIds.every(
+            id => selectedSet.has(id),
+        );
+
+    if (isWholeSelection) {
+        deliveryModeLabel.textContent =
+            currentDeliveryMode === "all_following"
+                ? "友だち全員"
+                : "住民登録済み全員";
+
+        return;
+    }
+
+    deliveryModeLabel.textContent =
+        `個別選択：${selectedIds.length}名`;
 }
 
 
@@ -444,6 +521,8 @@ function updateSelectedCount() {
 
     deliveryButton.disabled =
         selectedUserIds.size === 0;
+
+    updateDeliveryTargetLabel();
 }
 
 
@@ -1264,6 +1343,355 @@ async function saveUserEdit(event) {
 
 
 /* ==========================================
+   9-1. LINE予約配信 共通処理
+========================================== */
+
+function initializeScheduleTimes() {
+
+    if (!deliveryScheduleTime) {
+        return;
+    }
+
+    deliveryScheduleTime.innerHTML =
+        '<option value="">選択してください</option>';
+
+    for (
+        let hour = 0;
+        hour < 24;
+        hour += 1
+    ) {
+
+        for (
+            const minute of [0, 30]
+        ) {
+
+            const hourText =
+                String(hour).padStart(2, "0");
+
+            const minuteText =
+                String(minute).padStart(2, "0");
+
+            const value =
+                `${hourText}:${minuteText}`;
+
+            const option =
+                document.createElement("option");
+
+            option.value = value;
+            option.textContent = value;
+
+            deliveryScheduleTime.appendChild(option);
+        }
+    }
+}
+
+
+function setDefaultScheduleDate() {
+
+    if (!deliveryScheduleDate) {
+        return;
+    }
+
+    const now =
+        new Date();
+
+    const year =
+        now.getFullYear();
+
+    const month =
+        String(now.getMonth() + 1)
+            .padStart(2, "0");
+
+    const day =
+        String(now.getDate())
+            .padStart(2, "0");
+
+    const today =
+        `${year}-${month}-${day}`;
+
+    deliveryScheduleDate.min =
+        today;
+
+    if (!deliveryScheduleDate.value) {
+        deliveryScheduleDate.value =
+            today;
+    }
+}
+
+
+function updateDeliveryMethod() {
+
+    if (
+        !deliveryMethodNow
+        || !deliveryMethodScheduled
+        || !deliveryScheduleFields
+    ) {
+        return;
+    }
+
+    const isScheduled =
+        deliveryMethodScheduled.checked;
+
+    deliveryScheduleFields.hidden =
+        !isScheduled;
+
+    deliverySubmitButton.textContent =
+        isScheduled
+            ? "予約配信する"
+            : "選択した方へ送信";
+}
+
+
+function createScheduledAtIso() {
+
+    if (
+        !deliveryScheduleDate
+        || !deliveryScheduleTime
+    ) {
+        throw new Error(
+            "予約配信項目を確認できません。"
+        );
+    }
+
+    const dateValue =
+        deliveryScheduleDate.value;
+
+    const timeValue =
+        deliveryScheduleTime.value;
+
+    if (
+        !dateValue
+        || !timeValue
+    ) {
+        throw new Error(
+            "予約配信の日付と時刻を選択してください。"
+        );
+    }
+
+    /*
+     * ローカル時刻として生成します。
+     * 日本国内の管理画面利用時はJSTとして解釈され、
+     * SupabaseにはUTCのISO文字列として保存されます。
+     */
+    const scheduledDate =
+        new Date(
+            `${dateValue}T${timeValue}:00`
+        );
+
+    if (
+        Number.isNaN(
+            scheduledDate.getTime()
+        )
+    ) {
+        throw new Error(
+            "予約配信日時を確認してください。"
+        );
+    }
+
+    if (
+        scheduledDate.getTime()
+        <= Date.now()
+    ) {
+        throw new Error(
+            "予約配信日時は現在より後の日時を指定してください。"
+        );
+    }
+
+    return scheduledDate.toISOString();
+}
+
+
+/*
+ * 予約時の配信モードを決定します。
+ *
+ * ・住民登録済みを全員選択
+ *   → registered_only / recipient_user_ids = []
+ *
+ * ・友だち全員を全員選択
+ *   → all_following / recipient_user_ids = []
+ *
+ * ・一部だけ手動選択
+ *   → individual / 選択者IDを保存
+ */
+function getScheduledDeliveryTarget() {
+
+    const selectedIds =
+        Array.from(
+            selectedUserIds,
+        );
+
+    const allEligibleIds =
+        lineUsers
+            .filter(
+                currentDeliveryMode
+                    === "all_following"
+                    ? canDeliverToUser
+                    : canDeliverToRegisteredUser,
+            )
+            .map(
+                user =>
+                    user.line_user_id,
+            )
+            .filter(Boolean);
+
+    const selectedSet =
+        new Set(
+            selectedIds,
+        );
+
+    const isWholeTarget =
+        allEligibleIds.length > 0
+        && selectedIds.length
+        === allEligibleIds.length
+        && allEligibleIds.every(
+            lineUserId =>
+                selectedSet.has(
+                    lineUserId,
+                ),
+        );
+
+    if (isWholeTarget) {
+
+        return {
+            deliveryMode:
+                currentDeliveryMode,
+
+            recipientUserIds:
+                [],
+        };
+    }
+
+    return {
+        deliveryMode:
+            "individual",
+
+        recipientUserIds:
+            selectedIds,
+    };
+}
+
+
+async function reserveLineMessage(
+    title,
+    body,
+    detailUrl,
+    session,
+) {
+
+    const scheduledAt =
+        createScheduledAtIso();
+
+    const {
+        deliveryMode,
+        recipientUserIds,
+    } =
+        getScheduledDeliveryTarget();
+
+    const targetLabel =
+        deliveryMode === "all_following"
+            ? "友だち全員"
+            : deliveryMode === "registered_only"
+                ? "住民登録済み全員"
+                : `個別選択 ${recipientUserIds.length}名`;
+
+    const scheduleText =
+        `${deliveryScheduleDate.value} `
+        + `${deliveryScheduleTime.value}`;
+
+    const confirmed =
+        window.confirm(
+            "LINE予約配信を登録します。\n\n"
+            + `配信対象：${targetLabel}\n`
+            + `配信日時：${scheduleText}\n`
+            + `タイトル：${title}\n\n`
+            + "この内容で予約しますか？",
+        );
+
+    if (!confirmed) {
+        return false;
+    }
+
+    const {
+        error,
+    } =
+        await supabaseClient
+            .from(
+                "line_scheduled_messages",
+            )
+            .insert({
+                title,
+
+                message:
+                    body || null,
+
+                body:
+                    body || null,
+
+                detail_url:
+                    detailUrl || null,
+
+                delivery_mode:
+                    deliveryMode,
+
+                recipient_user_ids:
+                    recipientUserIds,
+
+                scheduled_at:
+                    scheduledAt,
+
+                status:
+                    "scheduled",
+
+                created_by:
+                    session.user.id,
+
+                test_line_user_id:
+                    null,
+
+                sent_at:
+                    null,
+
+                error_message:
+                    null,
+            });
+
+    if (error) {
+        throw error;
+    }
+
+    deliveryFormMessage.textContent =
+        `${scheduleText} にLINE予約配信を登録しました。`;
+
+    deliveryFormMessage.className =
+        "delivery-form-message success";
+
+    alert(
+        `${scheduleText} のLINE予約配信を登録しました。`,
+    );
+
+    deliveryForm.reset();
+
+    selectedUserIds.clear();
+
+    renderLineUsers();
+
+    initializeScheduleTimes();
+    setDefaultScheduleDate();
+    updateDeliveryMethod();
+    updateDeliveryPreview();
+
+    window.setTimeout(
+        () => {
+            closeDeliveryModal();
+        },
+        500,
+    );
+
+    return true;
+}
+
+
+/* ==========================================
    10. LINE配信
 ========================================== */
 
@@ -1423,6 +1851,8 @@ function openDeliveryModal() {
         currentDeliveryMode,
     );
 
+    updateDeliveryTargetLabel();
+
     deliveryFormMessage.textContent = "";
     deliveryFormMessage.className =
         "delivery-form-message";
@@ -1477,6 +1907,12 @@ async function sendLineMessage(event) {
     const detailUrl =
         deliveryUrlInput.value.trim();
 
+    const isScheduled =
+        Boolean(
+            deliveryMethodScheduled
+            && deliveryMethodScheduled.checked,
+        );
+
     if (!title) {
 
         deliveryFormMessage.textContent =
@@ -1506,29 +1942,20 @@ async function sendLineMessage(event) {
         return;
     }
 
-    const targetCount =
-        selectedUserIds.size;
+    if (
+        selectedUserIds.size === 0
+    ) {
 
-    const confirmed =
-        window.confirm(
-            `${targetCount}名へLINE配信します。\n\n`
-            + "配信後は取り消せません。\n"
-            + "本当に送信しますか？",
-        );
+        deliveryFormMessage.textContent =
+            "配信対象者を選択してください。";
 
-    if (!confirmed) {
+        deliveryFormMessage.className =
+            "delivery-form-message error";
+
         return;
     }
 
     deliverySubmitButton.disabled = true;
-    deliverySubmitButton.textContent =
-        "送信しています";
-
-    deliveryFormMessage.textContent =
-        "LINEへ配信しています。";
-
-    deliveryFormMessage.className =
-        "delivery-form-message";
 
     try {
 
@@ -1554,11 +1981,55 @@ async function sendLineMessage(event) {
         }
 
         /*
-         * Supabase Edge Function呼び出し
-         *
-         * ログイン中のJWTは
-         * functions.invokeが自動送信します。
+         * 予約配信
          */
+        if (isScheduled) {
+
+            deliverySubmitButton.textContent =
+                "予約しています";
+
+            deliveryFormMessage.textContent =
+                "LINE予約配信を登録しています。";
+
+            deliveryFormMessage.className =
+                "delivery-form-message";
+
+            await reserveLineMessage(
+                title,
+                body,
+                detailUrl,
+                sessionData.session,
+            );
+
+            return;
+        }
+
+        /*
+         * 即時配信
+         */
+        const targetCount =
+            selectedUserIds.size;
+
+        const confirmed =
+            window.confirm(
+                `${targetCount}名へLINE配信します。\n\n`
+                + "配信後は取り消せません。\n"
+                + "本当に送信しますか？",
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+        deliverySubmitButton.textContent =
+            "送信しています";
+
+        deliveryFormMessage.textContent =
+            "LINEへ配信しています。";
+
+        deliveryFormMessage.className =
+            "delivery-form-message";
+
         const {
             data,
             error,
@@ -1571,10 +2042,12 @@ async function sendLineMessage(event) {
                             title,
                             body,
                             detailUrl,
+
                             userIds:
                                 Array.from(
                                     selectedUserIds,
                                 ),
+
                             deliveryMode:
                                 currentDeliveryMode,
                         },
@@ -1607,15 +2080,15 @@ async function sendLineMessage(event) {
             `${deliveredCount}名へのLINE配信が完了しました。`,
         );
 
-        /*
-         * 送信成功後に入力と選択を解除
-         */
         deliveryForm.reset();
 
         selectedUserIds.clear();
 
         renderLineUsers();
 
+        initializeScheduleTimes();
+        setDefaultScheduleDate();
+        updateDeliveryMethod();
         updateDeliveryPreview();
 
         window.setTimeout(
@@ -1635,7 +2108,7 @@ async function sendLineMessage(event) {
         deliveryFormMessage.textContent =
             error instanceof Error
                 ? error.message
-                : "LINE配信に失敗しました。";
+                : "LINE配信または予約登録に失敗しました。";
 
         deliveryFormMessage.className =
             "delivery-form-message error";
@@ -1643,11 +2116,10 @@ async function sendLineMessage(event) {
     } finally {
 
         deliverySubmitButton.disabled = false;
-        deliverySubmitButton.textContent =
-            "選択した方へ送信";
+
+        updateDeliveryMethod();
     }
 }
-
 /* ==========================================
    11. イベント
 ========================================== */
@@ -1777,6 +2249,20 @@ deliveryModal.addEventListener(
     },
 );
 
+if (deliveryMethodNow) {
+    deliveryMethodNow.addEventListener(
+        "change",
+        updateDeliveryMethod,
+    );
+}
+
+if (deliveryMethodScheduled) {
+    deliveryMethodScheduled.addEventListener(
+        "change",
+        updateDeliveryMethod,
+    );
+}
+
 userEditForm.addEventListener(
     "submit",
     saveUserEdit,
@@ -1863,5 +2349,9 @@ async function initializeLineUsersPage() {
         openDeliveryModal();
     }
 }
+
+initializeScheduleTimes();
+setDefaultScheduleDate();
+updateDeliveryMethod();
 
 initializeLineUsersPage();
