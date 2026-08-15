@@ -4,13 +4,14 @@
    一箕地区ポータル
    LINE登録者管理
 
-   Ver1.41
+   Ver1.42
    ・登録者一覧表示
    ・検索・絞り込み
    ・配信対象者の選択
    ・4桁マスターコード連携
    ・LINE即時配信／予約配信
    ・配信対象表示を個別／全体で自動切替
+   ・予約配信一覧表示
 ========================================== */
 
 
@@ -120,6 +121,16 @@ const deliveryFormMessage =
 
 const deliverySubmitButton =
     document.getElementById("delivery-submit-button");
+
+/* 予約配信一覧 */
+const scheduledRefreshButton =
+    document.getElementById("scheduled-refresh-button");
+
+const scheduledStatusMessage =
+    document.getElementById("scheduled-status-message");
+
+const scheduledDeliveryBody =
+    document.getElementById("scheduled-delivery-body");
 
 
 /* 予約配信 */
@@ -1524,7 +1535,7 @@ function getScheduledDeliveryTarget() {
         lineUsers
             .filter(
                 currentDeliveryMode
-                    === "all_following"
+                === "all_following"
                     ? canDeliverToUser
                     : canDeliverToRegisteredUser,
             )
@@ -1542,7 +1553,7 @@ function getScheduledDeliveryTarget() {
     const isWholeTarget =
         allEligibleIds.length > 0
         && selectedIds.length
-        === allEligibleIds.length
+            === allEligibleIds.length
         && allEligibleIds.every(
             lineUserId =>
                 selectedSet.has(
@@ -1668,6 +1679,8 @@ async function reserveLineMessage(
     alert(
         `${scheduleText} のLINE予約配信を登録しました。`,
     );
+
+    await loadScheduledDeliveries();
 
     deliveryForm.reset();
 
@@ -2120,6 +2133,184 @@ async function sendLineMessage(event) {
         updateDeliveryMethod();
     }
 }
+
+/* ==========================================
+   10-2. 予約配信一覧
+========================================== */
+
+function getScheduledModeLabel(item) {
+    const recipientIds =
+        Array.isArray(item.recipient_user_ids)
+            ? item.recipient_user_ids
+            : [];
+
+    if (item.delivery_mode === "individual") {
+        return `個別 ${recipientIds.length}名`;
+    }
+
+    if (item.delivery_mode === "all_following") {
+        return "友だち全員";
+    }
+
+    if (item.delivery_mode === "registered_only") {
+        return recipientIds.length > 0
+            ? `住民登録者 ${recipientIds.length}名`
+            : "住民登録済み全員";
+    }
+
+    return "-";
+}
+
+
+function getScheduledStatusLabel(status) {
+    switch (status) {
+        case "scheduled":
+            return "予約中";
+        case "sending":
+            return "送信処理中";
+        case "sent":
+            return "送信済み";
+        case "failed":
+            return "失敗";
+        case "cancelled":
+            return "取消済み";
+        default:
+            return status || "-";
+    }
+}
+
+
+function getScheduledStatusClass(status) {
+    switch (status) {
+        case "scheduled":
+            return "scheduled";
+        case "sending":
+            return "sending";
+        case "sent":
+            return "sent";
+        case "failed":
+            return "failed";
+        case "cancelled":
+            return "cancelled";
+        default:
+            return "";
+    }
+}
+
+
+function renderScheduledDeliveries(rows) {
+    if (!scheduledDeliveryBody) {
+        return;
+    }
+
+    scheduledDeliveryBody.innerHTML = "";
+
+    if (!Array.isArray(rows) || rows.length === 0) {
+        scheduledDeliveryBody.innerHTML = `
+            <tr>
+                <td colspan="5" class="admin-empty-cell">
+                    予約配信はありません。
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    for (const item of rows) {
+        const row =
+            document.createElement("tr");
+
+        const statusClass =
+            getScheduledStatusClass(item.status);
+
+        row.innerHTML = `
+            <td>${escapeHtml(formatDate(item.scheduled_at))}</td>
+            <td><strong>${escapeHtml(item.title || "タイトルなし")}</strong></td>
+            <td>${escapeHtml(getScheduledModeLabel(item))}</td>
+            <td>
+                <span class="scheduled-status-badge ${escapeHtml(statusClass)}">
+                    ${escapeHtml(getScheduledStatusLabel(item.status))}
+                </span>
+            </td>
+            <td>${escapeHtml(item.sent_at ? formatDate(item.sent_at) : "-")}</td>
+        `;
+
+        scheduledDeliveryBody.appendChild(row);
+    }
+}
+
+
+async function loadScheduledDeliveries() {
+    if (!scheduledStatusMessage || !scheduledDeliveryBody) {
+        return;
+    }
+
+    scheduledStatusMessage.textContent =
+        "予約配信を読み込んでいます。";
+
+    if (scheduledRefreshButton) {
+        scheduledRefreshButton.disabled = true;
+    }
+
+    try {
+        const { data, error } =
+            await supabaseClient
+                .from("line_scheduled_messages")
+                .select(`
+                    id,
+                    title,
+                    delivery_mode,
+                    recipient_user_ids,
+                    scheduled_at,
+                    status,
+                    sent_at,
+                    error_message,
+                    created_at
+                `)
+                .order("scheduled_at", {
+                    ascending: false,
+                })
+                .limit(50);
+
+        if (error) {
+            throw error;
+        }
+
+        const rows =
+            Array.isArray(data)
+                ? data
+                : [];
+
+        renderScheduledDeliveries(rows);
+
+        scheduledStatusMessage.textContent =
+            `${rows.length}件の予約配信を表示しています。`;
+
+    } catch (error) {
+        console.error(
+            "Scheduled delivery load error:",
+            error,
+        );
+
+        scheduledStatusMessage.textContent =
+            "予約配信一覧を読み込めませんでした。";
+
+        scheduledDeliveryBody.innerHTML = `
+            <tr>
+                <td colspan="5" class="admin-empty-cell">
+                    予約配信データを取得できませんでした。
+                </td>
+            </tr>
+        `;
+
+    } finally {
+        if (scheduledRefreshButton) {
+            scheduledRefreshButton.disabled = false;
+        }
+    }
+}
+
+
 /* ==========================================
    11. イベント
 ========================================== */
@@ -2263,6 +2454,13 @@ if (deliveryMethodScheduled) {
     );
 }
 
+if (scheduledRefreshButton) {
+    scheduledRefreshButton.addEventListener(
+        "click",
+        loadScheduledDeliveries,
+    );
+}
+
 userEditForm.addEventListener(
     "submit",
     saveUserEdit,
@@ -2325,6 +2523,8 @@ async function initializeLineUsersPage() {
      * 最初にLINE登録者を読み込みます。
      */
     await loadLineUsers();
+
+    await loadScheduledDeliveries();
 
     /*
      * 投稿管理画面から記事IDが渡された場合、

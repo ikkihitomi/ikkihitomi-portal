@@ -26,7 +26,7 @@
 
         <div>
             <p class="admin-header-label">
-                一箕地区ポータル Ver1.14.1
+                一箕地区ポータル Ver1.42
             </p>
 
             <h1>
@@ -166,6 +166,41 @@
 
             </div>
 
+
+            <section class="scheduled-delivery-panel">
+
+                <div class="scheduled-delivery-header">
+                    <div>
+                        <h2>予約配信一覧</h2>
+                        <p>予約中・送信済み・失敗した予約配信を確認できます。</p>
+                    </div>
+
+                    <button type="button" id="scheduled-refresh-button" class="admin-button secondary">
+                        予約一覧を更新
+                    </button>
+                </div>
+
+                <p id="scheduled-status-message" class="scheduled-status-message">
+                    予約配信を読み込んでいます。
+                </p>
+
+                <div class="scheduled-table-wrap">
+                    <table class="scheduled-table">
+                        <thead>
+                            <tr>
+                                <th>予約日時</th>
+                                <th>タイトル</th>
+                                <th>配信対象</th>
+                                <th>状態</th>
+                                <th>送信日時</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scheduled-delivery-body"></tbody>
+                    </table>
+                </div>
+
+            </section>
+
             <p id="status-message" class="admin-status-message">
                 LINE登録者を読み込んでいます。
             </p>
@@ -278,14 +313,12 @@
 
 
                 <div class="delivery-form-group">
-
                     <label>
                         配信方法
                         <span class="required-mark">必須</span>
                     </label>
 
                     <div class="delivery-method-options">
-
                         <label class="delivery-method-option">
                             <input type="radio" name="delivery-method" id="delivery-method-now" value="now" checked>
                             <span>今すぐ配信</span>
@@ -295,42 +328,30 @@
                             <input type="radio" name="delivery-method" id="delivery-method-scheduled" value="scheduled">
                             <span>予約配信</span>
                         </label>
-
                     </div>
-
                 </div>
 
                 <div id="delivery-schedule-fields" class="delivery-schedule-fields" hidden>
-
                     <div class="delivery-form-group">
-
                         <label for="delivery-schedule-date">
                             配信日
                             <span class="required-mark">必須</span>
                         </label>
-
                         <input type="date" id="delivery-schedule-date">
-
                     </div>
 
                     <div class="delivery-form-group">
-
                         <label for="delivery-schedule-time">
                             配信時刻
                             <span class="required-mark">必須</span>
                         </label>
-
                         <select id="delivery-schedule-time">
                             <option value="">選択してください</option>
                         </select>
-
                         <p class="delivery-input-note">
-                            30分単位で予約できます。
-                            実際の配信は5分間隔で処理されます。
+                            30分単位で予約できます。実際の配信は5分間隔で処理されます。
                         </p>
-
                     </div>
-
                 </div>
 
                 <div class="delivery-preview">

@@ -730,6 +730,7 @@ body {
     }
 }
 
+
 /* ==========================================
    Ver1.40 LINE予約配信
 ========================================== */
@@ -746,35 +747,23 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-
     background: #f5f9f8;
     border: 1px solid #cddbd7;
     border-radius: 9px;
-
     cursor: pointer;
     font-weight: 700;
-}
-
-.delivery-method-option:hover {
-    background: #edf7f3;
-    border-color: #8db8aa;
 }
 
 .delivery-method-option input[type="radio"] {
     width: 18px;
     height: 18px;
     margin: 0;
-
     accent-color: #16865f;
 }
-
-
-/* 予約日時 */
 
 .delivery-schedule-fields {
     margin: 4px 0 20px;
     padding: 18px;
-
     background: #f3f8f7;
     border: 1px solid #d7e5e1;
     border-radius: 10px;
@@ -784,46 +773,127 @@ body {
     display: none;
 }
 
-
-/* 日付・時刻 */
-
 .delivery-schedule-fields input,
 .delivery-schedule-fields select {
     width: 100%;
     min-height: 44px;
     padding: 10px 12px;
-
-    color: #243248;
-    background: #ffffff;
-
     border: 1px solid #b9c7c4;
     border-radius: 8px;
-
     font-family: inherit;
     font-size: 1rem;
 }
 
-.delivery-schedule-fields input:focus,
-.delivery-schedule-fields select:focus {
-    border-color: #16865f;
-    outline: 3px solid rgba(22, 134, 95, 0.14);
+
+/* ==========================================
+   Ver1.42 予約配信一覧
+========================================== */
+
+.scheduled-delivery-panel {
+    margin: 24px 0;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #dce5e3;
+    border-radius: 12px;
 }
 
+.scheduled-delivery-header {
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
 
-/* スマートフォン */
+.scheduled-delivery-header h2 {
+    margin: 0 0 6px;
+    color: #173b63;
+    font-size: 1.2rem;
+}
 
-@media screen and (max-width: 600px) {
+.scheduled-delivery-header p {
+    margin: 0;
+    color: #64727f;
+}
 
-    .delivery-method-options {
+.scheduled-status-message {
+    margin: 0 0 12px;
+    padding: 10px 12px;
+    color: #536273;
+    background: #f5f8f8;
+    border-radius: 7px;
+}
+
+.scheduled-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #dce5e3;
+    border-radius: 10px;
+}
+
+.scheduled-table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+    background: #ffffff;
+}
+
+.scheduled-table th,
+.scheduled-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #e1e8e6;
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.scheduled-table th {
+    color: #31564d;
+    background: #edf5f2;
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+.scheduled-status-badge {
+    padding: 4px 9px;
+    display: inline-block;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.scheduled-status-badge.scheduled {
+    color: #8a6415;
+    background: #fff2cf;
+}
+
+.scheduled-status-badge.sending {
+    color: #245d8a;
+    background: #e0eef8;
+}
+
+.scheduled-status-badge.sent {
+    color: #176a4e;
+    background: #e0f5ec;
+}
+
+.scheduled-status-badge.failed {
+    color: #8b3c3c;
+    background: #f8dddd;
+}
+
+.scheduled-status-badge.cancelled {
+    color: #536273;
+    background: #e8ecef;
+}
+
+@media screen and (max-width: 800px) {
+    .scheduled-delivery-header {
         flex-direction: column;
+        align-items: stretch;
     }
 
-    .delivery-method-option {
-        flex: none;
+    .scheduled-delivery-header .admin-button {
         width: 100%;
-    }
-
-    .delivery-schedule-fields {
-        padding: 14px;
     }
 }
