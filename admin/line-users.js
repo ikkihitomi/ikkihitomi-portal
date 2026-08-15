@@ -4,7 +4,7 @@
    一箕地区ポータル
    LINE登録者管理
 
-   Ver1.42
+   Ver1.48
    ・登録者一覧表示
    ・検索・絞り込み
    ・配信対象者の選択
@@ -12,6 +12,13 @@
    ・LINE即時配信／予約配信
    ・配信対象表示を個別／全体で自動切替
    ・予約配信一覧表示
+   ・予約配信取消機能
+   ・予約配信変更機能
+   ・予約配信内容確認機能
+   ・予約配信状態フィルター
+   ・予約中優先表示
+   ・予約配信状態サマリー表示
+   ・送信処理中を含む状態別件数の即時更新
 ========================================== */
 
 
@@ -132,6 +139,102 @@ const scheduledStatusMessage =
 const scheduledDeliveryBody =
     document.getElementById("scheduled-delivery-body");
 
+const scheduledStatusFilter =
+    document.getElementById("scheduled-status-filter");
+
+
+/* Ver1.48 予約配信状態サマリー */
+const scheduledCount =
+    document.getElementById("scheduled-count");
+
+const sendingCount =
+    document.getElementById("sending-count");
+
+const sentCount =
+    document.getElementById("sent-count");
+
+const cancelledCount =
+    document.getElementById("cancelled-count");
+
+const failedCount =
+    document.getElementById("failed-count");
+
+/* 予約配信編集 */
+
+const scheduledEditModal =
+    document.getElementById("scheduled-edit-modal");
+
+const scheduledEditModalClose =
+    document.getElementById("scheduled-edit-modal-close");
+
+const scheduledEditCancelButton =
+    document.getElementById("scheduled-edit-cancel-button");
+
+const scheduledEditForm =
+    document.getElementById("scheduled-edit-form");
+
+const scheduledEditId =
+    document.getElementById("scheduled-edit-id");
+
+const scheduledEditTitle =
+    document.getElementById("scheduled-edit-title");
+
+const scheduledEditBody =
+    document.getElementById("scheduled-edit-body");
+
+const scheduledEditUrl =
+    document.getElementById("scheduled-edit-url");
+
+const scheduledEditDate =
+    document.getElementById("scheduled-edit-date");
+
+const scheduledEditTime =
+    document.getElementById("scheduled-edit-time");
+
+const scheduledEditTargetLabel =
+    document.getElementById("scheduled-edit-target-label");
+
+const scheduledEditMessage =
+    document.getElementById("scheduled-edit-message");
+
+const scheduledEditSubmitButton =
+    document.getElementById("scheduled-edit-submit-button");
+
+/* 予約配信内容確認 */
+
+const scheduledDetailModal =
+    document.getElementById("scheduled-detail-modal");
+
+const scheduledDetailModalClose =
+    document.getElementById("scheduled-detail-modal-close");
+
+const scheduledDetailCloseButton =
+    document.getElementById("scheduled-detail-close-button");
+
+const scheduledDetailDate =
+    document.getElementById("scheduled-detail-date");
+
+const scheduledDetailTarget =
+    document.getElementById("scheduled-detail-target");
+
+const scheduledDetailStatus =
+    document.getElementById("scheduled-detail-status");
+
+const scheduledDetailSentAt =
+    document.getElementById("scheduled-detail-sent-at");
+
+const scheduledDetailTitle =
+    document.getElementById("scheduled-detail-title");
+
+const scheduledDetailBody =
+    document.getElementById("scheduled-detail-body");
+
+const scheduledDetailUrl =
+    document.getElementById("scheduled-detail-url");
+
+const scheduledDetailError =
+    document.getElementById("scheduled-detail-error");
+
 
 /* 予約配信 */
 
@@ -222,6 +325,8 @@ let lineUsers = [];
 const selectedUserIds = new Set();
 
 let currentDeliveryMode = "registered_only";
+
+let scheduledDeliveries = [];
 
 
 /* ==========================================
@@ -2198,6 +2303,214 @@ function getScheduledStatusClass(status) {
 }
 
 
+
+function getScheduledStatusPriority(
+    status,
+) {
+
+    switch (status) {
+        case "scheduled":
+            return 1;
+
+        case "sending":
+            return 2;
+
+        case "failed":
+            return 3;
+
+        case "cancelled":
+            return 4;
+
+        case "sent":
+            return 5;
+
+        default:
+            return 9;
+    }
+}
+
+
+function getVisibleScheduledDeliveries() {
+
+    const filterValue =
+        scheduledStatusFilter
+            ? scheduledStatusFilter.value
+            : "all";
+
+    const filtered =
+        scheduledDeliveries.filter(
+            item => {
+                if (
+                    filterValue === "all"
+                ) {
+                    return true;
+                }
+
+                return item.status
+                    === filterValue;
+            },
+        );
+
+    return filtered.sort(
+        (a, b) => {
+
+            const priorityDifference =
+                getScheduledStatusPriority(
+                    a.status,
+                )
+                - getScheduledStatusPriority(
+                    b.status,
+                );
+
+            if (
+                priorityDifference !== 0
+            ) {
+                return priorityDifference;
+            }
+
+            const aTime =
+                new Date(
+                    a.scheduled_at,
+                ).getTime();
+
+            const bTime =
+                new Date(
+                    b.scheduled_at,
+                ).getTime();
+
+            if (
+                a.status === "scheduled"
+                || a.status === "sending"
+            ) {
+                /*
+                 * 予約中は、直近の予約を上へ
+                 */
+                return aTime - bTime;
+            }
+
+            /*
+             * 履歴は、新しいものを上へ
+             */
+            return bTime - aTime;
+        },
+    );
+}
+
+
+
+/**
+ * Ver1.48
+ * 予約配信の状態別件数を更新します。
+ */
+function updateScheduledSummary() {
+
+    const counts = {
+        scheduled: 0,
+        sending: 0,
+        sent: 0,
+        cancelled: 0,
+        failed: 0,
+    };
+
+    for (const item of scheduledDeliveries) {
+        if (
+            item
+            && Object.prototype.hasOwnProperty.call(
+                counts,
+                item.status,
+            )
+        ) {
+            counts[item.status] += 1;
+        }
+    }
+
+    if (scheduledCount) {
+        scheduledCount.textContent =
+            String(counts.scheduled);
+    }
+
+    if (sendingCount) {
+        sendingCount.textContent =
+            String(counts.sending);
+    }
+
+    if (sentCount) {
+        sentCount.textContent =
+            String(counts.sent);
+    }
+
+    if (cancelledCount) {
+        cancelledCount.textContent =
+            String(counts.cancelled);
+    }
+
+    if (failedCount) {
+        failedCount.textContent =
+            String(counts.failed);
+    }
+}
+
+
+function refreshScheduledDeliveryView() {
+
+    updateScheduledSummary();
+
+    const rows =
+        getVisibleScheduledDeliveries();
+
+    renderScheduledDeliveries(
+        rows,
+    );
+
+    if (
+        scheduledStatusMessage
+    ) {
+        scheduledStatusMessage.textContent =
+            scheduledDeliveries.length === rows.length
+                ? `${rows.length}件の予約配信を表示しています。`
+                : `${rows.length}件を表示しています。全体は${scheduledDeliveries.length}件です。`;
+    }
+}
+
+
+
+function canDeleteScheduledDelivery(status) {
+    return ["sent", "cancelled", "failed"].includes(status);
+}
+
+async function deleteScheduledDelivery(item) {
+    if (!item || !canDeleteScheduledDelivery(item.status)) {
+        alert("予約中の配信は削除できません。先に予約取消を行ってください。");
+        return;
+    }
+
+    const confirmed = window.confirm(
+        `「${item.title || "予約配信"}」を完全に削除します。\n\nこの操作は元に戻せません。\n削除しますか？`
+    );
+
+    if (!confirmed) return;
+
+    try {
+        const { error } = await supabaseClient
+            .from("line_scheduled_messages")
+            .delete()
+            .eq("id", item.id);
+
+        if (error) throw error;
+
+        await loadScheduledDeliveries();
+        alert("予約配信履歴を削除しました。");
+    } catch (error) {
+        console.error("Scheduled delivery delete error:", error);
+        alert(
+            error instanceof Error
+                ? error.message
+                : "予約配信履歴の削除に失敗しました。"
+        );
+    }
+}
+
+
 function renderScheduledDeliveries(rows) {
     if (!scheduledDeliveryBody) {
         return;
@@ -2208,7 +2521,7 @@ function renderScheduledDeliveries(rows) {
     if (!Array.isArray(rows) || rows.length === 0) {
         scheduledDeliveryBody.innerHTML = `
             <tr>
-                <td colspan="5" class="admin-empty-cell">
+                <td colspan="6" class="admin-empty-cell">
                     予約配信はありません。
                 </td>
             </tr>
@@ -2223,6 +2536,61 @@ function renderScheduledDeliveries(rows) {
         const statusClass =
             getScheduledStatusClass(item.status);
 
+        const actionHtml =
+            item.status === "scheduled"
+                ? `
+                    <div class="scheduled-action-buttons">
+                        <button
+                            type="button"
+                            class="admin-button secondary scheduled-detail-button"
+                            data-scheduled-id="${escapeHtml(item.id)}"
+                        >
+                            詳細
+                        </button>
+
+                        <button
+                            type="button"
+                            class="admin-button secondary scheduled-edit-button"
+                            data-scheduled-id="${escapeHtml(item.id)}"
+                        >
+                            変更
+                        </button>
+
+                        <button
+                            type="button"
+                            class="admin-button secondary scheduled-cancel-button"
+                            data-scheduled-id="${escapeHtml(item.id)}"
+                            data-scheduled-title="${escapeHtml(item.title || "タイトルなし")}"
+                        >
+                            予約取消
+                        </button>
+                    </div>
+                `
+                : `
+                    <div class="scheduled-action-buttons">
+                        <button
+                            type="button"
+                            class="admin-button secondary scheduled-detail-button"
+                            data-scheduled-id="${escapeHtml(item.id)}"
+                        >
+                            詳細
+                        </button>
+
+                        ${canDeleteScheduledDelivery(item.status)
+                            ? `
+                                <button
+                                    type="button"
+                                    class="admin-button secondary scheduled-delete-button"
+                                    data-scheduled-id="${escapeHtml(item.id)}"
+                                >
+                                    削除
+                                </button>
+                            `
+                            : ""
+                        }
+                    </div>
+                `;
+
         row.innerHTML = `
             <td>${escapeHtml(formatDate(item.scheduled_at))}</td>
             <td><strong>${escapeHtml(item.title || "タイトルなし")}</strong></td>
@@ -2233,9 +2601,812 @@ function renderScheduledDeliveries(rows) {
                 </span>
             </td>
             <td>${escapeHtml(item.sent_at ? formatDate(item.sent_at) : "-")}</td>
+            <td>${actionHtml}</td>
         `;
 
+        const detailButton =
+            row.querySelector(
+                ".scheduled-detail-button",
+            );
+
+        if (detailButton) {
+            detailButton.addEventListener(
+                "click",
+                () => {
+                    openScheduledDetailModal(
+                        detailButton.dataset.scheduledId,
+                    );
+                },
+            );
+        }
+
+        const editButton =
+            row.querySelector(
+                ".scheduled-edit-button",
+            );
+
+        if (editButton) {
+            editButton.addEventListener(
+                "click",
+                () => {
+                    openScheduledEditModal(
+                        editButton.dataset.scheduledId,
+                    );
+                },
+            );
+        }
+
+        const cancelButton =
+            row.querySelector(
+                ".scheduled-cancel-button",
+            );
+
+        if (cancelButton) {
+            cancelButton.addEventListener(
+                "click",
+                () => {
+                    cancelScheduledDelivery(
+                        cancelButton.dataset.scheduledId,
+                        cancelButton.dataset.scheduledTitle,
+                    );
+                },
+            );
+        }
+
+
+        const deleteButton =
+            row.querySelector(".scheduled-delete-button");
+
+        if (deleteButton) {
+            deleteButton.addEventListener(
+                "click",
+                () => {
+                    const targetItem =
+                        scheduledDeliveries.find(
+                            scheduledItem =>
+                                String(scheduledItem.id)
+                                === String(deleteButton.dataset.scheduledId)
+                        );
+
+                    deleteScheduledDelivery(targetItem);
+                }
+            );
+        }
+
         scheduledDeliveryBody.appendChild(row);
+    }
+}
+
+
+
+
+
+async function openScheduledDetailModal(
+    scheduledId,
+) {
+
+    if (!scheduledId) {
+        return;
+    }
+
+    try {
+
+        const {
+            data,
+            error,
+        } =
+            await supabaseClient
+                .from(
+                    "line_scheduled_messages",
+                )
+                .select(`
+                    id,
+                    title,
+                    body,
+                    message,
+                    detail_url,
+                    delivery_mode,
+                    recipient_user_ids,
+                    scheduled_at,
+                    status,
+                    sent_at,
+                    error_message
+                `)
+                .eq(
+                    "id",
+                    scheduledId,
+                )
+                .single();
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data) {
+            throw new Error(
+                "予約配信を確認できませんでした。",
+            );
+        }
+
+        scheduledDetailDate.textContent =
+            formatDate(
+                data.scheduled_at,
+            );
+
+        scheduledDetailTarget.textContent =
+            getScheduledModeLabel(
+                data,
+            );
+
+        scheduledDetailStatus.textContent =
+            getScheduledStatusLabel(
+                data.status,
+            );
+
+        scheduledDetailSentAt.textContent =
+            data.sent_at
+                ? formatDate(
+                    data.sent_at,
+                )
+                : "-";
+
+        scheduledDetailTitle.textContent =
+            data.title
+            || "タイトルなし";
+
+        scheduledDetailBody.textContent =
+            data.body
+            || data.message
+            || "-";
+
+        if (data.detail_url) {
+            scheduledDetailUrl.innerHTML = "";
+
+            const link =
+                document.createElement("a");
+
+            link.href =
+                data.detail_url;
+
+            link.target =
+                "_blank";
+
+            link.rel =
+                "noopener noreferrer";
+
+            link.textContent =
+                data.detail_url;
+
+            scheduledDetailUrl.appendChild(
+                link,
+            );
+        } else {
+            scheduledDetailUrl.textContent =
+                "-";
+        }
+
+        scheduledDetailError.textContent =
+            data.error_message
+            || "-";
+
+        scheduledDetailModal.hidden =
+            false;
+
+        document.body.classList.add(
+            "delivery-modal-open",
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Scheduled detail load error:",
+            error,
+        );
+
+        alert(
+            error instanceof Error
+                ? error.message
+                : "予約内容を読み込めませんでした。",
+        );
+    }
+}
+
+
+function closeScheduledDetailModal() {
+
+    scheduledDetailModal.hidden =
+        true;
+
+    if (
+        scheduledEditModal.hidden
+        && userEditModal.hidden
+        && deliveryModal.hidden
+    ) {
+        document.body.classList.remove(
+            "delivery-modal-open",
+        );
+    }
+}
+
+
+function initializeScheduledEditTimes() {
+
+    if (!scheduledEditTime) {
+        return;
+    }
+
+    scheduledEditTime.innerHTML =
+        '<option value="">選択してください</option>';
+
+    for (
+        let hour = 0;
+        hour < 24;
+        hour += 1
+    ) {
+
+        for (
+            const minute of [0, 30]
+        ) {
+
+            const value =
+                `${String(hour).padStart(2, "0")}:`
+                + `${String(minute).padStart(2, "0")}`;
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                value;
+
+            option.textContent =
+                value;
+
+            scheduledEditTime.appendChild(
+                option,
+            );
+        }
+    }
+}
+
+
+function formatLocalDateInput(
+    value,
+) {
+
+    const date =
+        new Date(value);
+
+    if (
+        Number.isNaN(
+            date.getTime(),
+        )
+    ) {
+        return "";
+    }
+
+    const year =
+        date.getFullYear();
+
+    const month =
+        String(
+            date.getMonth() + 1,
+        ).padStart(2, "0");
+
+    const day =
+        String(
+            date.getDate(),
+        ).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+
+function formatLocalTimeInput(
+    value,
+) {
+
+    const date =
+        new Date(value);
+
+    if (
+        Number.isNaN(
+            date.getTime(),
+        )
+    ) {
+        return "";
+    }
+
+    const hour =
+        String(
+            date.getHours(),
+        ).padStart(2, "0");
+
+    const minute =
+        date.getMinutes() < 30
+            ? "00"
+            : "30";
+
+    return `${hour}:${minute}`;
+}
+
+
+function createScheduledEditIso() {
+
+    const dateValue =
+        scheduledEditDate.value;
+
+    const timeValue =
+        scheduledEditTime.value;
+
+    if (
+        !dateValue
+        || !timeValue
+    ) {
+        throw new Error(
+            "配信日と配信時刻を選択してください。",
+        );
+    }
+
+    const scheduledDate =
+        new Date(
+            `${dateValue}T${timeValue}:00`,
+        );
+
+    if (
+        Number.isNaN(
+            scheduledDate.getTime(),
+        )
+    ) {
+        throw new Error(
+            "予約配信日時を確認してください。",
+        );
+    }
+
+    if (
+        scheduledDate.getTime()
+        <= Date.now()
+    ) {
+        throw new Error(
+            "予約配信日時は現在より後の日時を指定してください。",
+        );
+    }
+
+    return scheduledDate.toISOString();
+}
+
+
+async function openScheduledEditModal(
+    scheduledId,
+) {
+
+    if (!scheduledId) {
+        return;
+    }
+
+    try {
+
+        const {
+            data,
+            error,
+        } =
+            await supabaseClient
+                .from(
+                    "line_scheduled_messages",
+                )
+                .select(`
+                    id,
+                    title,
+                    body,
+                    message,
+                    detail_url,
+                    delivery_mode,
+                    recipient_user_ids,
+                    scheduled_at,
+                    status
+                `)
+                .eq(
+                    "id",
+                    scheduledId,
+                )
+                .eq(
+                    "status",
+                    "scheduled",
+                )
+                .single();
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data) {
+            throw new Error(
+                "予約配信を確認できませんでした。",
+            );
+        }
+
+        scheduledEditId.value =
+            data.id;
+
+        scheduledEditTitle.value =
+            data.title || "";
+
+        scheduledEditBody.value =
+            data.body
+            || data.message
+            || "";
+
+        scheduledEditUrl.value =
+            data.detail_url
+            || "";
+
+        scheduledEditDate.value =
+            formatLocalDateInput(
+                data.scheduled_at,
+            );
+
+        scheduledEditTime.value =
+            formatLocalTimeInput(
+                data.scheduled_at,
+            );
+
+        scheduledEditTargetLabel.textContent =
+            getScheduledModeLabel(
+                data,
+            );
+
+        scheduledEditMessage.textContent =
+            "";
+
+        scheduledEditMessage.className =
+            "delivery-form-message";
+
+        scheduledEditModal.hidden =
+            false;
+
+        document.body.classList.add(
+            "delivery-modal-open",
+        );
+
+        window.setTimeout(
+            () => {
+                scheduledEditTitle.focus();
+            },
+            50,
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Scheduled edit load error:",
+            error,
+        );
+
+        alert(
+            error instanceof Error
+                ? error.message
+                : "予約配信を読み込めませんでした。",
+        );
+    }
+}
+
+
+function closeScheduledEditModal() {
+
+    if (
+        scheduledEditSubmitButton
+        && scheduledEditSubmitButton.disabled
+    ) {
+        return;
+    }
+
+    scheduledEditModal.hidden =
+        true;
+
+    if (
+        userEditModal.hidden
+        && deliveryModal.hidden
+    ) {
+        document.body.classList.remove(
+            "delivery-modal-open",
+        );
+    }
+}
+
+
+async function saveScheduledEdit(
+    event,
+) {
+
+    event.preventDefault();
+
+    const scheduledId =
+        scheduledEditId.value;
+
+    const title =
+        scheduledEditTitle.value.trim();
+
+    const body =
+        scheduledEditBody.value.trim();
+
+    const detailUrl =
+        scheduledEditUrl.value.trim();
+
+    if (!scheduledId) {
+        scheduledEditMessage.textContent =
+            "更新する予約を確認できません。";
+
+        scheduledEditMessage.className =
+            "delivery-form-message error";
+
+        return;
+    }
+
+    if (!title) {
+        scheduledEditMessage.textContent =
+            "配信タイトルを入力してください。";
+
+        scheduledEditMessage.className =
+            "delivery-form-message error";
+
+        scheduledEditTitle.focus();
+
+        return;
+    }
+
+    if (
+        detailUrl
+        && !/^https:\/\/.+/i.test(
+            detailUrl,
+        )
+    ) {
+        scheduledEditMessage.textContent =
+            "リンクURLはhttps://から入力してください。";
+
+        scheduledEditMessage.className =
+            "delivery-form-message error";
+
+        scheduledEditUrl.focus();
+
+        return;
+    }
+
+    let scheduledAt;
+
+    try {
+        scheduledAt =
+            createScheduledEditIso();
+    } catch (error) {
+
+        scheduledEditMessage.textContent =
+            error instanceof Error
+                ? error.message
+                : "予約日時を確認してください。";
+
+        scheduledEditMessage.className =
+            "delivery-form-message error";
+
+        return;
+    }
+
+    const confirmed =
+        window.confirm(
+            "予約内容を変更します。\n\n"
+            + `配信日時：${scheduledEditDate.value} ${scheduledEditTime.value}\n`
+            + `タイトル：${title}\n\n`
+            + "この内容で保存しますか？",
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    scheduledEditSubmitButton.disabled =
+        true;
+
+    scheduledEditSubmitButton.textContent =
+        "保存しています";
+
+    scheduledEditMessage.textContent =
+        "予約内容を保存しています。";
+
+    scheduledEditMessage.className =
+        "delivery-form-message";
+
+    try {
+
+        const {
+            data,
+            error,
+        } =
+            await supabaseClient
+                .from(
+                    "line_scheduled_messages",
+                )
+                .update({
+                    title,
+                    message:
+                        body || null,
+                    body:
+                        body || null,
+                    detail_url:
+                        detailUrl || null,
+                    scheduled_at:
+                        scheduledAt,
+                    error_message:
+                        null,
+                })
+                .eq(
+                    "id",
+                    scheduledId,
+                )
+                .eq(
+                    "status",
+                    "scheduled",
+                )
+                .select(`
+                    id,
+                    status
+                `)
+                .maybeSingle();
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data) {
+            throw new Error(
+                "この予約はすでに送信処理中、送信済み、"
+                + "または別の操作で変更されています。",
+            );
+        }
+
+        scheduledEditMessage.textContent =
+            "予約内容を変更しました。";
+
+        scheduledEditMessage.className =
+            "delivery-form-message success";
+
+        await loadScheduledDeliveries();
+
+        window.setTimeout(
+            () => {
+                closeScheduledEditModal();
+            },
+            500,
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Scheduled edit save error:",
+            error,
+        );
+
+        scheduledEditMessage.textContent =
+            error instanceof Error
+                ? error.message
+                : "予約内容の変更に失敗しました。";
+
+        scheduledEditMessage.className =
+            "delivery-form-message error";
+
+    } finally {
+
+        scheduledEditSubmitButton.disabled =
+            false;
+
+        scheduledEditSubmitButton.textContent =
+            "予約内容を保存";
+    }
+}
+
+
+async function cancelScheduledDelivery(
+    scheduledId,
+    scheduledTitle,
+) {
+
+    if (!scheduledId) {
+        alert(
+            "取消する予約を確認できませんでした。",
+        );
+        return;
+    }
+
+    const confirmed =
+        window.confirm(
+            "この予約配信を取り消します。\n\n"
+            + `タイトル：${scheduledTitle || "タイトルなし"}\n\n`
+            + "取消後、この予約は自動配信されません。\n"
+            + "履歴は取消済みとして残ります。\n\n"
+            + "本当に取り消しますか？",
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        const {
+            data: sessionData,
+            error: sessionError,
+        } =
+            await supabaseClient.auth
+                .getSession();
+
+        if (
+            sessionError
+            || !sessionData.session
+        ) {
+            throw new Error(
+                "管理者ログインを確認できません。"
+                + "もう一度ログインしてください。",
+            );
+        }
+
+        /*
+         * scheduled の予約だけを cancelled へ変更します。
+         * sending / sent / failed は取消できません。
+         */
+        const {
+            data,
+            error,
+        } =
+            await supabaseClient
+                .from(
+                    "line_scheduled_messages",
+                )
+                .update({
+                    status:
+                        "cancelled",
+
+                    error_message:
+                        "管理画面から予約を取り消しました。",
+                })
+                .eq(
+                    "id",
+                    scheduledId,
+                )
+                .eq(
+                    "status",
+                    "scheduled",
+                )
+                .select(`
+                    id,
+                    status
+                `)
+                .maybeSingle();
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data) {
+            throw new Error(
+                "この予約はすでに送信処理中、送信済み、"
+                + "または別の操作で変更されています。",
+            );
+        }
+
+        alert(
+            "予約配信を取り消しました。",
+        );
+
+        await loadScheduledDeliveries();
+
+    } catch (error) {
+
+        console.error(
+            "Scheduled delivery cancel error:",
+            error,
+        );
+
+        alert(
+            error instanceof Error
+                ? error.message
+                : "予約配信の取消に失敗しました。",
+        );
     }
 }
 
@@ -2259,6 +3430,8 @@ async function loadScheduledDeliveries() {
                 .select(`
                     id,
                     title,
+                    body,
+                    detail_url,
                     delivery_mode,
                     recipient_user_ids,
                     scheduled_at,
@@ -2276,15 +3449,12 @@ async function loadScheduledDeliveries() {
             throw error;
         }
 
-        const rows =
+        scheduledDeliveries =
             Array.isArray(data)
                 ? data
                 : [];
 
-        renderScheduledDeliveries(rows);
-
-        scheduledStatusMessage.textContent =
-            `${rows.length}件の予約配信を表示しています。`;
+        refreshScheduledDeliveryView();
 
     } catch (error) {
         console.error(
@@ -2292,12 +3462,15 @@ async function loadScheduledDeliveries() {
             error,
         );
 
+        scheduledDeliveries = [];
+        updateScheduledSummary();
+
         scheduledStatusMessage.textContent =
             "予約配信一覧を読み込めませんでした。";
 
         scheduledDeliveryBody.innerHTML = `
             <tr>
-                <td colspan="5" class="admin-empty-cell">
+                <td colspan="6" class="admin-empty-cell">
                     予約配信データを取得できませんでした。
                 </td>
             </tr>
@@ -2461,6 +3634,80 @@ if (scheduledRefreshButton) {
     );
 }
 
+
+if (scheduledStatusFilter) {
+    scheduledStatusFilter.addEventListener(
+        "change",
+        refreshScheduledDeliveryView,
+    );
+}
+
+
+if (scheduledDetailModalClose) {
+    scheduledDetailModalClose.addEventListener(
+        "click",
+        closeScheduledDetailModal,
+    );
+}
+
+if (scheduledDetailCloseButton) {
+    scheduledDetailCloseButton.addEventListener(
+        "click",
+        closeScheduledDetailModal,
+    );
+}
+
+if (scheduledDetailModal) {
+    scheduledDetailModal.addEventListener(
+        "click",
+        event => {
+            if (
+                event.target.matches(
+                    "[data-close-scheduled-detail-modal]",
+                )
+            ) {
+                closeScheduledDetailModal();
+            }
+        },
+    );
+}
+
+if (scheduledEditForm) {
+    scheduledEditForm.addEventListener(
+        "submit",
+        saveScheduledEdit,
+    );
+}
+
+if (scheduledEditModalClose) {
+    scheduledEditModalClose.addEventListener(
+        "click",
+        closeScheduledEditModal,
+    );
+}
+
+if (scheduledEditCancelButton) {
+    scheduledEditCancelButton.addEventListener(
+        "click",
+        closeScheduledEditModal,
+    );
+}
+
+if (scheduledEditModal) {
+    scheduledEditModal.addEventListener(
+        "click",
+        event => {
+            if (
+                event.target.matches(
+                    "[data-close-scheduled-edit-modal]",
+                )
+            ) {
+                closeScheduledEditModal();
+            }
+        },
+    );
+}
+
 userEditForm.addEventListener(
     "submit",
     saveUserEdit,
@@ -2495,6 +3742,22 @@ document.addEventListener(
     event => {
 
         if (event.key !== "Escape") {
+            return;
+        }
+
+        if (
+            scheduledDetailModal
+            && !scheduledDetailModal.hidden
+        ) {
+            closeScheduledDetailModal();
+            return;
+        }
+
+        if (
+            scheduledEditModal
+            && !scheduledEditModal.hidden
+        ) {
+            closeScheduledEditModal();
             return;
         }
 
@@ -2553,5 +3816,7 @@ async function initializeLineUsersPage() {
 initializeScheduleTimes();
 setDefaultScheduleDate();
 updateDeliveryMethod();
+
+initializeScheduledEditTimes();
 
 initializeLineUsersPage();

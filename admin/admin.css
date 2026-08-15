@@ -897,3 +897,290 @@ body {
         width: 100%;
     }
 }
+
+
+/* ==========================================
+   Ver1.43 予約配信取消
+========================================== */
+
+.scheduled-table th:last-child,
+.scheduled-table td:last-child {
+    width: 110px;
+    text-align: center;
+}
+
+.scheduled-cancel-button {
+    min-height: 34px;
+    padding: 6px 10px;
+    color: #8b3c3c !important;
+    background: #ffffff !important;
+    border: 1px solid #d7a7a7 !important;
+    font-size: 0.82rem;
+}
+
+.scheduled-cancel-button:hover {
+    color: #ffffff !important;
+    background: #b94a4a !important;
+}
+
+.scheduled-action-disabled {
+    color: #9aa6ad;
+}
+
+
+/* ==========================================
+   Ver1.44 予約配信変更
+========================================== */
+
+.scheduled-action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+}
+
+.scheduled-edit-button {
+    min-height: 34px;
+    padding: 6px 10px;
+    color: #176a4e !important;
+    background: #ffffff !important;
+    border: 1px solid #9ebbb2 !important;
+    font-size: 0.82rem;
+}
+
+.scheduled-edit-button:hover {
+    color: #ffffff !important;
+    background: #1f7a5c !important;
+}
+
+.scheduled-edit-target {
+    margin: 0 0 18px;
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: #31564d;
+    background: #edf7f3;
+    border-left: 4px solid #16865f;
+    border-radius: 6px;
+}
+
+.scheduled-edit-target span {
+    font-weight: 700;
+}
+
+.scheduled-edit-target strong {
+    color: #173b63;
+}
+
+@media screen and (max-width: 800px) {
+    .scheduled-action-buttons {
+        flex-direction: column;
+    }
+}
+
+
+/* ==========================================
+   Ver1.45 予約配信内容確認
+========================================== */
+
+.scheduled-detail-button {
+    min-height: 34px;
+    padding: 6px 10px;
+    color: #245d8a !important;
+    background: #ffffff !important;
+    border: 1px solid #a8bfd2 !important;
+    font-size: 0.82rem;
+}
+
+.scheduled-detail-button:hover {
+    color: #ffffff !important;
+    background: #2468a2 !important;
+}
+
+.scheduled-detail-grid {
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.scheduled-detail-item {
+    padding: 12px 14px;
+    background: #f5f8f8;
+    border: 1px solid #dce5e3;
+    border-radius: 8px;
+}
+
+.scheduled-detail-item span {
+    display: block;
+    margin-bottom: 5px;
+    color: #71808e;
+    font-size: 0.8rem;
+}
+
+.scheduled-detail-item strong {
+    color: #173b63;
+}
+
+.scheduled-detail-text {
+    min-height: 44px;
+    padding: 11px 13px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: #263746;
+    background: #f7f9fa;
+    border: 1px solid #dce4e6;
+    border-radius: 8px;
+    line-height: 1.7;
+}
+
+.scheduled-detail-body {
+    min-height: 120px;
+}
+
+.scheduled-detail-text a {
+    color: #176a4e;
+    overflow-wrap: anywhere;
+}
+
+@media screen and (max-width: 600px) {
+
+    .scheduled-detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ==========================================
+   Ver1.46 予約配信一覧フィルター
+========================================== */
+
+.scheduled-delivery-tools {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.scheduled-delivery-tools label {
+    color: #536273;
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+.scheduled-delivery-tools select {
+    min-width: 120px;
+    min-height: 40px;
+    padding: 8px 34px 8px 10px;
+    color: #243248;
+    background: #ffffff;
+    border: 1px solid #c3d1ce;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+
+.scheduled-delivery-tools select:focus {
+    border-color: #16865f;
+    outline: 3px solid rgba(22, 134, 95, 0.12);
+}
+
+@media screen and (max-width: 800px) {
+
+    .scheduled-delivery-tools {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .scheduled-delivery-tools select {
+        flex: 1;
+    }
+}
+
+
+/* ==========================================
+   Ver1.47 予約配信履歴削除
+========================================== */
+
+.scheduled-delete-button {
+    color: #b42318;
+    background: #ffffff;
+    border-color: #e3a6a1;
+}
+
+.scheduled-delete-button:hover {
+    color: #ffffff;
+    background: #b42318;
+    border-color: #b42318;
+}
+
+
+/* ==========================================
+   Ver1.48 予約配信状態サマリー
+========================================== */
+
+.scheduled-summary {
+    margin: 0 0 14px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.scheduled-summary-card {
+    min-height: 82px;
+    padding: 13px 14px;
+    background: #f7f9fa;
+    border: 1px solid #dce5e3;
+    border-radius: 9px;
+}
+
+.scheduled-summary-card span {
+    display: block;
+    color: #657280;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.scheduled-summary-card strong {
+    display: block;
+    margin-top: 5px;
+    color: #173b63;
+    font-size: 1.55rem;
+}
+
+.scheduled-summary-card.scheduled {
+    background: #fffaf0;
+    border-color: #ead9aa;
+}
+
+.scheduled-summary-card.sending {
+    background: #f2f8fc;
+    border-color: #c9dce9;
+}
+
+.scheduled-summary-card.sent {
+    background: #f0faf6;
+    border-color: #c9e7da;
+}
+
+.scheduled-summary-card.cancelled {
+    background: #f5f7f8;
+    border-color: #dce2e5;
+}
+
+.scheduled-summary-card.failed {
+    background: #fff5f5;
+    border-color: #ebcaca;
+}
+
+@media screen and (max-width: 900px) {
+    .scheduled-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media screen and (max-width: 520px) {
+    .scheduled-summary {
+        grid-template-columns: 1fr;
+    }
+}

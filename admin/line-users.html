@@ -8,7 +8,7 @@
 
     <title>LINE登録者管理｜一箕地区ポータル</title>
 
-    <link rel="stylesheet" href="./admin.css?v=20260807-1141">
+    <link rel="stylesheet" href="./admin.css?v=20260815-148">
 
     <link rel="icon" href="/images/favicon.ico" sizes="any">
 
@@ -26,7 +26,7 @@
 
         <div>
             <p class="admin-header-label">
-                一箕地区ポータル Ver1.42
+                一箕地区ポータル Ver1.48
             </p>
 
             <h1>
@@ -172,12 +172,57 @@
                 <div class="scheduled-delivery-header">
                     <div>
                         <h2>予約配信一覧</h2>
-                        <p>予約中・送信済み・失敗した予約配信を確認できます。</p>
+                        <p>予約中の配信を優先して表示し、過去の履歴も確認できます。</p>
                     </div>
 
-                    <button type="button" id="scheduled-refresh-button" class="admin-button secondary">
-                        予約一覧を更新
-                    </button>
+                    <div class="scheduled-delivery-tools">
+
+                        <label for="scheduled-status-filter">
+                            状態
+                        </label>
+
+                        <select id="scheduled-status-filter">
+                            <option value="all">すべて</option>
+                            <option value="scheduled">予約中</option>
+                            <option value="sent">送信済み</option>
+                            <option value="cancelled">取消済み</option>
+                            <option value="failed">失敗</option>
+                        </select>
+
+                        <button type="button" id="scheduled-refresh-button" class="admin-button secondary">
+                            予約一覧を更新
+                        </button>
+
+                    </div>
+                </div>
+
+
+                <!-- Ver1.48 予約配信状態サマリー -->
+                <div class="scheduled-summary" aria-label="予約配信状態集計">
+                    <div class="scheduled-summary-card scheduled">
+                        <span>予約中</span>
+                        <strong id="scheduled-count">0</strong>
+                    </div>
+
+                    <div class="scheduled-summary-card sending">
+                        <span>送信処理中</span>
+                        <strong id="sending-count">0</strong>
+                    </div>
+
+                    <div class="scheduled-summary-card sent">
+                        <span>送信済み</span>
+                        <strong id="sent-count">0</strong>
+                    </div>
+
+                    <div class="scheduled-summary-card cancelled">
+                        <span>取消済み</span>
+                        <strong id="cancelled-count">0</strong>
+                    </div>
+
+                    <div class="scheduled-summary-card failed">
+                        <span>失敗</span>
+                        <strong id="failed-count">0</strong>
+                    </div>
                 </div>
 
                 <p id="scheduled-status-message" class="scheduled-status-message">
@@ -193,6 +238,7 @@
                                 <th>配信対象</th>
                                 <th>状態</th>
                                 <th>送信日時</th>
+                                <th>操作</th>
                             </tr>
                         </thead>
                         <tbody id="scheduled-delivery-body"></tbody>
@@ -382,6 +428,258 @@
 
     </div>
 
+
+
+    <!-- 予約配信内容確認ダイアログ -->
+    <div id="scheduled-detail-modal" class="delivery-modal" hidden>
+
+        <div class="delivery-modal-backdrop" data-close-scheduled-detail-modal></div>
+
+        <section
+            class="delivery-modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="scheduled-detail-modal-title"
+        >
+
+            <div class="delivery-modal-header">
+
+                <div>
+                    <p class="delivery-modal-label">
+                        LINE予約配信
+                    </p>
+
+                    <h2 id="scheduled-detail-modal-title">
+                        予約内容の確認
+                    </h2>
+                </div>
+
+                <button
+                    type="button"
+                    id="scheduled-detail-modal-close"
+                    class="delivery-modal-close"
+                    aria-label="予約内容確認画面を閉じる"
+                >
+                    ×
+                </button>
+
+            </div>
+
+            <div class="scheduled-detail-grid">
+
+                <div class="scheduled-detail-item">
+                    <span>予約日時</span>
+                    <strong id="scheduled-detail-date">-</strong>
+                </div>
+
+                <div class="scheduled-detail-item">
+                    <span>配信対象</span>
+                    <strong id="scheduled-detail-target">-</strong>
+                </div>
+
+                <div class="scheduled-detail-item">
+                    <span>状態</span>
+                    <strong id="scheduled-detail-status">-</strong>
+                </div>
+
+                <div class="scheduled-detail-item">
+                    <span>送信日時</span>
+                    <strong id="scheduled-detail-sent-at">-</strong>
+                </div>
+
+            </div>
+
+            <div class="delivery-form-group">
+                <label>配信タイトル</label>
+                <div
+                    id="scheduled-detail-title"
+                    class="scheduled-detail-text"
+                ></div>
+            </div>
+
+            <div class="delivery-form-group">
+                <label>配信本文</label>
+                <div
+                    id="scheduled-detail-body"
+                    class="scheduled-detail-text scheduled-detail-body"
+                ></div>
+            </div>
+
+            <div class="delivery-form-group">
+                <label>詳細ページURL</label>
+                <div
+                    id="scheduled-detail-url"
+                    class="scheduled-detail-text"
+                ></div>
+            </div>
+
+            <div class="delivery-form-group">
+                <label>エラー情報</label>
+                <div
+                    id="scheduled-detail-error"
+                    class="scheduled-detail-text"
+                ></div>
+            </div>
+
+            <div class="delivery-modal-actions">
+                <button
+                    type="button"
+                    id="scheduled-detail-close-button"
+                    class="admin-button secondary"
+                >
+                    閉じる
+                </button>
+            </div>
+
+        </section>
+
+    </div>
+
+    <!-- 予約配信編集ダイアログ -->
+    <div id="scheduled-edit-modal" class="delivery-modal" hidden>
+
+        <div class="delivery-modal-backdrop" data-close-scheduled-edit-modal></div>
+
+        <section
+            class="delivery-modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="scheduled-edit-modal-title"
+        >
+
+            <div class="delivery-modal-header">
+
+                <div>
+                    <p class="delivery-modal-label">
+                        LINE予約配信
+                    </p>
+
+                    <h2 id="scheduled-edit-modal-title">
+                        予約内容の変更
+                    </h2>
+                </div>
+
+                <button
+                    type="button"
+                    id="scheduled-edit-modal-close"
+                    class="delivery-modal-close"
+                    aria-label="予約編集画面を閉じる"
+                >
+                    ×
+                </button>
+
+            </div>
+
+            <form id="scheduled-edit-form">
+
+                <input type="hidden" id="scheduled-edit-id">
+
+                <div class="delivery-form-group">
+                    <label for="scheduled-edit-title">
+                        配信タイトル
+                        <span class="required-mark">必須</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="scheduled-edit-title"
+                        maxlength="100"
+                        required
+                    >
+                </div>
+
+                <div class="delivery-form-group">
+                    <label for="scheduled-edit-body">
+                        配信本文
+                    </label>
+
+                    <textarea
+                        id="scheduled-edit-body"
+                        rows="7"
+                        maxlength="500"
+                    ></textarea>
+                </div>
+
+                <div class="delivery-form-group">
+                    <label for="scheduled-edit-url">
+                        詳細ページURL
+                    </label>
+
+                    <input
+                        type="url"
+                        id="scheduled-edit-url"
+                        placeholder="https://ikki-portal.com/..."
+                    >
+                </div>
+
+                <div class="delivery-form-group">
+                    <label for="scheduled-edit-date">
+                        配信日
+                        <span class="required-mark">必須</span>
+                    </label>
+
+                    <input
+                        type="date"
+                        id="scheduled-edit-date"
+                        required
+                    >
+                </div>
+
+                <div class="delivery-form-group">
+                    <label for="scheduled-edit-time">
+                        配信時刻
+                        <span class="required-mark">必須</span>
+                    </label>
+
+                    <select
+                        id="scheduled-edit-time"
+                        required
+                    >
+                        <option value="">選択してください</option>
+                    </select>
+
+                    <p class="delivery-input-note">
+                        30分単位で変更できます。実際の配信は5分間隔で処理されます。
+                    </p>
+                </div>
+
+                <div class="scheduled-edit-target">
+                    <span>配信対象</span>
+                    <strong id="scheduled-edit-target-label">-</strong>
+                </div>
+
+                <p
+                    id="scheduled-edit-message"
+                    class="delivery-form-message"
+                    aria-live="polite"
+                ></p>
+
+                <div class="delivery-modal-actions">
+
+                    <button
+                        type="button"
+                        id="scheduled-edit-cancel-button"
+                        class="admin-button secondary"
+                    >
+                        キャンセル
+                    </button>
+
+                    <button
+                        type="submit"
+                        id="scheduled-edit-submit-button"
+                        class="admin-button delivery"
+                    >
+                        予約内容を保存
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+    </div>
+
     <!-- 登録者編集ダイアログ -->
     <div id="user-edit-modal" class="delivery-modal" hidden>
 
@@ -498,7 +796,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
-    <script src="./line-users.js?v=20260807-1141"></script>
+    <script src="./line-users.js?v=20260815-148"></script>
     <script src="./line-users-master.js"></script>
 
 </body>
