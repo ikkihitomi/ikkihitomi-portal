@@ -556,6 +556,17 @@ select.form-control {
     }
 }
 
+/* ==============================
+   迷惑送信対策：ハニーポット
+============================== */
+
+.honeypot-field {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
 
 /* ========================================
    小型スマートフォン

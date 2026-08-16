@@ -170,7 +170,13 @@ function getFormValues() {
         agreement:
             document
                 .getElementById("agreement")
-                .checked
+                .checked,
+
+        website:
+            document
+                .getElementById("website")
+                .value
+                .trim(),
     };
 }
 
@@ -333,7 +339,10 @@ async function submitContact(
                             values.subject,
 
                         message:
-                            values.message
+                            values.message,
+
+                        website:
+                            values.website
                     })
             }
         );

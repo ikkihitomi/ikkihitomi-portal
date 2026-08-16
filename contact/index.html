@@ -62,6 +62,17 @@
 
                 <form id="contact-form" class="contact-form" novalidate>
 
+                    <!-- 迷惑送信対策：ハニーポット -->
+                    <div class="honeypot-field" aria-hidden="true">
+                        <label for="website">
+                            Website
+                        </label>
+
+                        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+                    </div>
+
+
+
                     <!-- お名前 -->
                     <div class="form-group">
 
