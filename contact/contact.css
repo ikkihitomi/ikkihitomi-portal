@@ -1,0 +1,588 @@
+/* ========================================
+   一箕地区ポータル
+   お問い合わせフォーム
+   Ver1.00
+======================================== */
+
+
+/* ========================================
+   基本設定
+======================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family:
+        "Hiragino Sans",
+        "Yu Gothic",
+        "Meiryo",
+        sans-serif;
+    background: #f5f7f8;
+    color: #263238;
+    line-height: 1.7;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+
+/* ========================================
+   ヘッダー
+======================================== */
+
+.site-header {
+    background: #ffffff;
+    border-bottom: 1px solid #dfe5e8;
+}
+
+.header-inner {
+    width: min(1100px, calc(100% - 32px));
+    margin: 0 auto;
+    min-height: 74px;
+
+    display: flex;
+    align-items: center;
+}
+
+.site-logo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f5f74;
+}
+
+
+/* ========================================
+   メイン
+======================================== */
+
+.contact-main {
+    padding: 56px 0 80px;
+}
+
+.contact-section {
+    width: 100%;
+}
+
+.contact-container {
+    width: min(820px, calc(100% - 32px));
+    margin: 0 auto;
+}
+
+
+/* ========================================
+   見出し
+======================================== */
+
+.contact-heading {
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+.contact-label {
+    margin: 0 0 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: #2f8ca5;
+}
+
+.contact-heading h1 {
+    margin: 0 0 18px;
+    font-size: 2rem;
+    line-height: 1.4;
+    color: #20343d;
+}
+
+.contact-description {
+    margin: 0 auto;
+    max-width: 620px;
+    color: #52636b;
+}
+
+.contact-note {
+    margin-top: 12px;
+    font-size: 0.9rem;
+    color: #66757c;
+}
+
+.required-mark {
+    color: #c62828;
+    font-weight: 700;
+}
+
+
+/* ========================================
+   フォーム本体
+======================================== */
+
+.contact-form {
+    background: #ffffff;
+    border: 1px solid #dfe5e8;
+    border-radius: 14px;
+    padding: 36px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.05);
+}
+
+.form-group {
+    margin-bottom: 28px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 9px;
+    font-weight: 700;
+    color: #273b44;
+}
+
+.required,
+.optional {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    vertical-align: middle;
+}
+
+.required {
+    background: #c62828;
+    color: #ffffff;
+}
+
+.optional {
+    background: #e9eef0;
+    color: #5c6a70;
+}
+
+
+/* ========================================
+   入力欄
+======================================== */
+
+.form-control {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #cdd7db;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #263238;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #2f8ca5;
+    box-shadow: 0 0 0 3px rgba(47, 140, 165, 0.14);
+    background: #ffffff;
+}
+
+.form-control::placeholder {
+    color: #9aa7ad;
+}
+
+select.form-control {
+    cursor: pointer;
+}
+
+.form-textarea {
+    min-height: 190px;
+    resize: vertical;
+}
+
+
+/* ========================================
+   補助表示
+======================================== */
+
+.form-help {
+    margin: 7px 0 0;
+    font-size: 0.85rem;
+    color: #718087;
+}
+
+.field-error {
+    min-height: 1.3em;
+    margin: 6px 0 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #c62828;
+}
+
+.message-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 7px;
+    font-size: 0.82rem;
+    color: #718087;
+}
+
+.message-count {
+    white-space: nowrap;
+}
+
+
+/* ========================================
+   エラー表示
+======================================== */
+
+.form-control.is-error {
+    border-color: #c62828;
+    background: #fff8f8;
+}
+
+.form-control.is-error:focus {
+    box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.12);
+}
+
+.form-message {
+    display: none;
+    margin-bottom: 22px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.form-message.is-error {
+    display: block;
+    background: #fff1f1;
+    border: 1px solid #efb8b8;
+    color: #a91f1f;
+}
+
+.form-message.is-success {
+    display: block;
+    background: #eef8f1;
+    border: 1px solid #b8dbc1;
+    color: #2e6c3d;
+}
+
+
+/* ========================================
+   個人情報
+======================================== */
+
+.privacy-box {
+    margin-top: 8px;
+    padding: 22px;
+    background: #f6f9fa;
+    border: 1px solid #dfe7ea;
+    border-radius: 10px;
+}
+
+.privacy-box h2 {
+    margin: 0 0 10px;
+    font-size: 1rem;
+    color: #30464f;
+}
+
+.privacy-box p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+    color: #5d6e75;
+}
+
+.agreement-area {
+    margin-top: 18px;
+}
+
+.agreement-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #344950;
+}
+
+.agreement-label input {
+    width: 20px;
+    height: 20px;
+    margin-top: 3px;
+    flex-shrink: 0;
+    accent-color: #2f8ca5;
+}
+
+
+/* ========================================
+   送信ボタン
+======================================== */
+
+.submit-area {
+    margin-top: 34px;
+    text-align: center;
+}
+
+.submit-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 300px;
+    min-height: 54px;
+    padding: 14px 28px;
+    border: 0;
+    border-radius: 9px;
+    background: #2f8ca5;
+    color: #ffffff;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+.submit-button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.submit-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.submit-note {
+    margin: 10px 0 0;
+    font-size: 0.83rem;
+    color: #7a878d;
+}
+
+
+/* ========================================
+   完了画面
+======================================== */
+
+.complete-area {
+    background: #ffffff;
+    border: 1px solid #dfe5e8;
+    border-radius: 14px;
+    padding: 46px 32px;
+    text-align: center;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.05);
+}
+
+.complete-area[hidden] {
+    display: none;
+}
+
+.complete-icon {
+    width: 66px;
+    height: 66px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: #e8f5ec;
+    color: #2e7d48;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.complete-area h2 {
+    margin: 0 0 18px;
+    font-size: 1.6rem;
+    color: #20343d;
+}
+
+.complete-area p {
+    color: #586970;
+}
+
+.inquiry-number-box {
+    margin: 28px auto;
+    padding: 18px;
+    max-width: 470px;
+    background: #f3f8fa;
+    border: 1px solid #d4e3e8;
+    border-radius: 9px;
+}
+
+.inquiry-number-box span {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.85rem;
+    color: #66777e;
+}
+
+.inquiry-number-box strong {
+    display: block;
+    font-size: 1.15rem;
+    color: #1d5d71;
+    word-break: break-all;
+}
+
+.back-home-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
+    min-width: 220px;
+    margin-top: 16px;
+    padding: 13px 24px;
+
+    border-radius: 8px;
+    background: #334b55;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.back-home-button:hover {
+    opacity: 0.9;
+}
+
+
+/* ========================================
+   フッター
+======================================== */
+
+.site-footer {
+    background: #263d46;
+    color: #ffffff;
+    padding: 34px 0;
+}
+
+.footer-inner {
+    width: min(1100px, calc(100% - 32px));
+    margin: 0 auto;
+    text-align: center;
+}
+
+.footer-inner p {
+    margin: 5px 0;
+}
+
+.footer-contact {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.copyright {
+    margin-top: 12px !important;
+    font-size: 0.82rem;
+    opacity: 0.72;
+}
+
+
+/* ========================================
+   タブレット・スマートフォン
+======================================== */
+
+@media (max-width: 768px) {
+
+    .header-inner {
+        min-height: 64px;
+    }
+
+    .site-logo {
+        font-size: 1.1rem;
+    }
+
+    .contact-main {
+        padding: 36px 0 56px;
+    }
+
+    .contact-heading {
+        margin-bottom: 26px;
+    }
+
+    .contact-heading h1 {
+        font-size: 1.65rem;
+    }
+
+    .contact-description {
+        text-align: left;
+        font-size: 0.95rem;
+    }
+
+    .contact-form {
+        padding: 24px 18px;
+        border-radius: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-control {
+        padding: 13px 12px;
+        font-size: 16px;
+    }
+
+    .privacy-box {
+        padding: 18px 16px;
+    }
+
+    .submit-button {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .complete-area {
+        padding: 36px 18px;
+        border-radius: 10px;
+    }
+
+    .complete-area h2 {
+        font-size: 1.35rem;
+    }
+
+    .message-info {
+        flex-direction: column;
+        gap: 2px;
+    }
+}
+
+
+/* ========================================
+   小型スマートフォン
+======================================== */
+
+@media (max-width: 480px) {
+
+    .contact-container,
+    .header-inner,
+    .footer-inner {
+        width: min(100% - 24px, 820px);
+    }
+
+    .contact-heading h1 {
+        font-size: 1.5rem;
+    }
+
+    .required,
+    .optional {
+        margin-left: 5px;
+    }
+
+    .form-textarea {
+        min-height: 170px;
+    }
+
+    .inquiry-number-box strong {
+        font-size: 1rem;
+    }
+}
