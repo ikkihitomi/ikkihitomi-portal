@@ -225,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </nav>
 
           <p class="footer-org">
-            運営：一箕地区コミュニティ部会
+            運営：一箕地区ひとみつながり部会
           </p>
 
           <p class="copyright">
