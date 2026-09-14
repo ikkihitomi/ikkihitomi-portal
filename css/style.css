@@ -720,6 +720,15 @@ body {
   line-height: 1.5;
 }
 
+.public-post-summary {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  overflow: hidden;
+  line-height: 1.8;
+  margin: 0 0 16px;
+}
+
 .public-event-info {
   background: #f0f7f3;
   border-left: 4px solid #2f8f5b;

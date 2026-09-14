@@ -254,6 +254,15 @@ async function loadPublicPosts() {
                         ${escapeHtml(post.title)}
                     </h3>
 
+                    ${post.body
+                    ? `
+                            <p class="public-post-summary">
+                                ${escapeHtml(post.body)}
+                            </p>
+                        `
+                    : ""
+                }
+
                     ${createEventHtml(post)}
 
                     <p class="detail-link public-post-detail-link">
