@@ -24,10 +24,11 @@ on conflict (id) do nothing;
 -- 2. 専用テーブル
 create table if not exists public.historical_photos (
     id uuid primary key default gen_random_uuid(),
-    storage_path text not null,
+    storage_path text not null unique,
     original_file_name text,
     mime_type text not null,
     file_size integer,
+    applicant_name text not null,
     title text,
     shooting_era_display text not null,
     shooting_year_sort smallint,
@@ -277,6 +278,7 @@ begin
         original_file_name,
         mime_type,
         file_size,
+        applicant_name,
         title,
         shooting_era_display,
         shooting_year_sort,
@@ -303,6 +305,7 @@ begin
         nullif(btrim(p_original_file_name), ''),
         v_mime_type,
         p_file_size,
+        btrim(p_applicant_name),
         nullif(btrim(p_title), ''),
         btrim(p_shooting_era_display),
         p_shooting_year_sort,
@@ -337,7 +340,7 @@ revoke all on function public.submit_historical_photo(
 ) from public;
 grant execute on function public.submit_historical_photo(
     text, text, text, integer, text, text, text, text, text, smallint, smallint,
-    text, text, text, text, text, boolean, timestamptz, text, boolean,
+    text, text, text, text, text, text, boolean, timestamptz, text, boolean,
     timestamptz, text
 ) to anon;
 
