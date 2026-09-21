@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#5b3d2e">
+    <meta name="description" content="一箕地区に残る昔の写真を、撮影年代や場所とともに紹介します。">
+    <title>一箕の昔と写真｜一箕地区ポータル</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="old-photo.css">
+    <link rel="icon" href="../images/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16x16.png">
+    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+</head>
+<body>
+    <div id="commonHeader"></div>
+
+    <main>
+        <section class="archive-hero">
+            <div class="archive-hero-inner">
+                <p class="eyebrow">FROM IKKI'S MEMORY</p>
+                <h1>一箕の昔と写真</h1>
+                <p>地域に残る写真から、一箕の風景と暮らしの記憶をたどります。</p>
+                <p class="start-note">2026年10月1日 公開開始</p>
+                <a class="hero-link" href="./apply/">写真を提供する</a>
+            </div>
+        </section>
+
+        <section class="archive-section" aria-labelledby="archive-heading">
+            <div class="archive-inner">
+                <div class="section-heading">
+                    <p class="eyebrow">PHOTO ARCHIVE</p>
+                    <h2 id="archive-heading">一箕に残る記憶</h2>
+                    <p>昔の写真、撮影年代、撮影場所、写真にまつわる説明をご覧いただけます。</p>
+                </div>
+
+                <div class="archive-tools">
+                    <label>
+                        キーワード検索
+                        <input id="archive-search" type="search" placeholder="タイトル・場所・説明・提供者名">
+                    </label>
+                    <label>
+                        並び順
+                        <select id="archive-sort">
+                            <option value="new">新着順</option>
+                            <option value="oldest">年代の古い順</option>
+                            <option value="newest">年代の新しい順</option>
+                        </select>
+                    </label>
+                </div>
+
+                <p id="archive-message" class="archive-message" aria-live="polite">公開作品を確認しています。</p>
+                <section id="archive-grid" class="archive-grid" aria-live="polite"></section>
+                <div id="archive-empty" class="archive-empty">現在、公開準備中です</div>
+            </div>
+        </section>
+
+        <section class="contribute-section">
+            <div class="contribute-inner">
+                <div>
+                    <p class="eyebrow">CONTRIBUTE</p>
+                    <h2>写真をお寄せください</h2>
+                    <p>一箕の昔を知る写真と、その記憶を次の世代へつなぎます。</p>
+                </div>
+                <a class="secondary-link" href="./apply/">提供フォームへ進む</a>
+            </div>
+        </section>
+    </main>
+
+    <dialog id="archive-dialog" class="archive-dialog">
+        <form method="dialog">
+            <button class="dialog-close" value="cancel" aria-label="閉じる">×</button>
+            <img id="dialog-image" alt="">
+            <div class="dialog-content">
+                <h2 id="dialog-title"></h2>
+                <dl id="dialog-details"></dl>
+                <p id="dialog-description"></p>
+            </div>
+        </form>
+    </dialog>
+
+    <div id="commonFooter"></div>
+    <script src="../js/common.js"></script>
+    <script src="old-photo-config.js"></script>
+    <script src="old-photo.js"></script>
+</body>
+</html>
