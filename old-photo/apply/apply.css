@@ -1,0 +1,86 @@
+:root {
+    --form-ink: #33251f;
+    --form-brown: #5b3d2e;
+    --form-rust: #9a5d3d;
+    --form-bg: #f3eee6;
+    --form-paper: #fffdf8;
+    --form-line: #d9cdbd;
+    --form-muted: #756b62;
+    --form-danger: #a12620;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--form-ink); background: linear-gradient(180deg, #f7f1e9, #fffdf8); font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; line-height: 1.7; }
+.form-main { width: min(820px, calc(100% - 28px)); margin: 38px auto 70px; }
+.form-title { margin-bottom: 24px; text-align: center; }
+.eyebrow { margin: 0 0 8px; color: var(--form-rust); font-size: .78rem; font-weight: 800; letter-spacing: .14em; }
+.form-title h1 { margin: 0; color: var(--form-brown); font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-size: clamp(2rem, 7vw, 3.3rem); line-height: 1.3; }
+.form-title p:last-child { margin: 10px 0 0; color: var(--form-muted); }
+.form-notice { margin-bottom: 22px; padding: 16px 18px; border-left: 5px solid var(--form-rust); background: #f3e7d9; }
+.form-notice strong { color: var(--form-brown); }
+.form-notice p { margin: 4px 0 0; color: var(--form-muted); }
+.form-message { min-height: 1.7em; margin-bottom: 12px; color: var(--form-brown); }
+.form-message.error { color: var(--form-danger); }
+.form-message.success { padding: 14px; background: #e5f1e8; color: #24553b; }
+.panel { margin-bottom: 22px; padding: 26px; border: 1px solid var(--form-line); background: var(--form-paper); box-shadow: 0 10px 25px rgba(70, 47, 32, .08); }
+.panel h2 { margin: 0 0 8px; color: var(--form-brown); font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-size: 1.5rem; }
+.section-note, .help { color: var(--form-muted); font-size: .88rem; }
+.section-note { margin: 0 0 20px; }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.field { margin-bottom: 18px; }
+.field:last-child { margin-bottom: 0; }
+.field label, legend { display: block; margin-bottom: 6px; color: var(--form-brown); font-weight: 800; }
+.field label span, legend span { margin-left: 8px; padding: 2px 7px; border-radius: 4px; background: #ead8c8; color: var(--form-rust); font-size: .72rem; }
+input, textarea, select { width: 100%; padding: 11px 12px; border: 1px solid #bcae9e; border-radius: 5px; color: var(--form-ink); background: #fff; font: inherit; }
+textarea { min-height: 150px; resize: vertical; }
+input:focus, textarea:focus { border-color: var(--form-rust); outline: 3px solid rgba(154, 93, 61, .16); }
+.help { margin: 5px 0 0; }
+.preview-wrap { margin-top: 14px; max-width: 460px; border: 1px solid var(--form-line); background: #eee5da; }
+.preview-wrap img { display: block; width: 100%; max-height: 340px; object-fit: contain; }
+fieldset { min-width: 0; margin: 0 0 20px; padding: 0; border: 0; }
+.choice-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.choice-grid label { margin: 0; padding: 10px; border: 1px solid var(--form-line); background: #fff; font-weight: 700; cursor: pointer; }
+.choice-grid input { width: auto; margin-right: 5px; }
+.agreement-list { display: grid; gap: 12px; }
+.agree { display: flex; gap: 10px; align-items: flex-start; padding: 12px; border: 1px solid var(--form-line); background: #faf5ee; cursor: pointer; }
+.agree input { flex: 0 0 auto; width: 20px; height: 20px; margin-top: 3px; }
+.submit-button { display: block; width: 100%; min-height: 56px; border: 0; border-radius: 999px; color: #fff; background: var(--form-brown); font: inherit; font-weight: 800; cursor: pointer; }
+.submit-button:hover { background: #422b20; }
+@media (max-width: 620px) { .form-main { margin-top: 26px; } .panel { padding: 20px 16px; } .form-grid, .choice-grid { grid-template-columns: 1fr; } .choice-grid label { min-height: 46px; } }
+
+@media (max-width: 768px) {
+    .site-header .header-inner {
+        display: block;
+        padding: 12px 16px 10px;
+    }
+
+    .site-header .site-title {
+        margin-bottom: 8px;
+    }
+
+    .site-header .site-title h1 {
+        font-size: 24px;
+    }
+
+    .site-header .site-title p {
+        margin-top: 2px;
+        font-size: 12px;
+    }
+
+    .site-header .global-nav {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 4px 8px;
+        max-width: none;
+    }
+
+    .site-header .global-nav a {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+        padding: 8px 6px;
+        font-size: 13px;
+        line-height: 1.3;
+        white-space: normal;
+    }
+}
