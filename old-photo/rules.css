@@ -1,0 +1,134 @@
+:root {
+    --rules-ink: #33251f;
+    --rules-brown: #5b3d2e;
+    --rules-rust: #9a5d3d;
+    --rules-paper: #fffdf8;
+    --rules-bg: #f3eee6;
+    --rules-line: #d9cdbd;
+    --rules-muted: #756b62;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    color: var(--rules-ink);
+    background: var(--rules-bg);
+    font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+    line-height: 1.8;
+}
+
+a {
+    color: var(--rules-rust);
+}
+
+.rules-main {
+    width: min(900px, calc(100% - 32px));
+    margin: 48px auto 72px;
+}
+
+.rules-heading {
+    margin-bottom: 28px;
+    text-align: center;
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+    color: var(--rules-rust);
+    font-size: .78rem;
+    font-weight: 800;
+    letter-spacing: .14em;
+}
+
+.rules-heading h1 {
+    margin: 0;
+    color: var(--rules-brown);
+    font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+    font-size: clamp(2rem, 6vw, 3.4rem);
+    line-height: 1.35;
+}
+
+.rules-heading p:last-child {
+    margin: 12px 0 0;
+    color: var(--rules-muted);
+}
+
+.rules-panel {
+    padding: clamp(20px, 4vw, 42px);
+    border: 1px solid var(--rules-line);
+    background: var(--rules-paper);
+    box-shadow: 0 10px 25px rgba(70, 47, 32, .08);
+}
+
+.rules-list {
+    display: grid;
+    gap: 24px;
+    margin: 0;
+    padding-left: 2.1rem;
+}
+
+.rules-list li {
+    padding-left: .45rem;
+}
+
+.rules-list h2 {
+    margin: 0 0 6px;
+    color: var(--rules-brown);
+    font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+    font-size: 1.25rem;
+    line-height: 1.45;
+}
+
+.rules-list p {
+    margin: 0;
+}
+
+.rules-footer {
+    padding-top: 28px;
+    color: var(--rules-muted);
+    text-align: center;
+}
+
+.rules-footer p {
+    margin: 2px 0;
+}
+
+.rules-apply-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    margin-top: 20px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    color: #fff;
+    background: var(--rules-brown);
+    font-weight: 800;
+    text-decoration: none;
+}
+
+@media (max-width: 600px) {
+    .rules-main {
+        width: min(100% - 24px, 900px);
+        margin: 30px auto 48px;
+    }
+
+    .rules-panel {
+        padding: 20px 16px 24px;
+    }
+
+    .rules-list {
+        gap: 20px;
+        padding-left: 1.65rem;
+    }
+
+    .rules-list li {
+        padding-left: .2rem;
+    }
+
+    .rules-list h2 {
+        font-size: 1.12rem;
+    }
+}

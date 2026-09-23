@@ -12,6 +12,7 @@
     const fileInput = document.getElementById("photo");
     const previewWrap = document.getElementById("preview-wrap");
     const preview = document.getElementById("preview");
+    const residentRegistrationGuide = document.getElementById("resident-registration-guide");
 
     document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll("#commonHeader a[href^='../'], #commonFooter a[href^='../']")
@@ -169,6 +170,7 @@
     form.addEventListener("submit", async event => {
         event.preventDefault();
         if (submitButton.disabled) return;
+        residentRegistrationGuide.hidden = true;
 
         try {
             validateForm();
@@ -182,6 +184,7 @@
                 await submitToSupabase();
                 submitButton.textContent = "送信済み";
                 showMessage("写真の提供を受け付けました。内容を確認後、掲載準備を進めます。", "success");
+                residentRegistrationGuide.hidden = false;
                 return;
             }
             showMessage("入力内容の確認が完了しました。現在は公開準備中のため、送信は行っていません。", "success");

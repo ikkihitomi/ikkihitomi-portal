@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,6 +14,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="../../images/favicon-16x16.png">
     <link rel="apple-touch-icon" href="../../images/apple-touch-icon.png">
 </head>
+
 <body>
     <div id="commonHeader"></div>
 
@@ -24,43 +26,76 @@
         </div>
 
         <div id="form-message" class="form-message" role="status" aria-live="polite"></div>
-        <div class="form-notice"><strong>企画開始：2026年10月1日</strong><p>現段階では受付内容を確認するための画面です。送信機能は準備中です。</p></div>
+        <div id="resident-registration-guide" class="resident-registration-guide" role="status" aria-live="polite"
+            hidden>
+            <p>写真のご提供ありがとうございました。</p>
+            <p>一箕地区の行事や地域情報を公式LINEでお届けしています。<br>住民登録がお済みでない方は、こちらからご登録ください。</p>
+            <p>※すでに住民登録済みの方は、再登録の必要はありません。</p>
+            <a class="resident-registration-link" href="https://liff.line.me/2010870639-dCVC8ERa" target="_blank"
+                rel="noopener">住民登録へ進む</a>
+        </div>
+        <div class="form-notice"><strong>企画開始：2026年10月1日</strong>
+            <p>現段階では受付内容を確認するための画面です。送信機能は準備中です。</p>
+        </div>
 
         <form id="historical-photo-form" novalidate>
             <section class="panel">
                 <h2>応募者情報</h2>
                 <p class="section-note">掲載内容の確認や連絡に使用します。公開する提供者名とは別に管理します。</p>
-                <div class="field"><label for="applicant-name">応募者氏名<span>必須</span></label><input id="applicant-name" type="text" maxlength="100" autocomplete="name" required></div>
+                <div class="field"><label for="applicant-name">応募者氏名<span>必須</span></label><input id="applicant-name"
+                        type="text" maxlength="100" autocomplete="name" required></div>
                 <div class="form-grid">
-                    <div class="field"><label for="applicant-email">メールアドレス<span>いずれか必須</span></label><input id="applicant-email" type="email" maxlength="200" autocomplete="email" inputmode="email"></div>
-                    <div class="field"><label for="applicant-phone">電話番号<span>いずれか必須</span></label><input id="applicant-phone" type="tel" maxlength="30" autocomplete="tel" inputmode="tel"></div>
+                    <div class="field"><label for="applicant-email">メールアドレス<span>いずれか必須</span></label><input
+                            id="applicant-email" type="email" maxlength="200" autocomplete="email" inputmode="email">
+                    </div>
+                    <div class="field"><label for="applicant-phone">電話番号<span>いずれか必須</span></label><input
+                            id="applicant-phone" type="tel" maxlength="30" autocomplete="tel" inputmode="tel"></div>
                 </div>
             </section>
 
             <section class="panel">
                 <h2>写真の情報</h2>
-                <div class="field"><label for="title">写真タイトル<span>必須</span></label><input id="title" type="text" maxlength="100" required></div>
+                <div class="field"><label for="title">写真タイトル<span>必須</span></label><input id="title" type="text"
+                        maxlength="100" required></div>
                 <div class="form-grid">
-                    <div class="field"><label for="era">撮影年代<span>必須</span></label><input id="era" type="text" maxlength="80" placeholder="例：昭和30年代、1965年頃" required></div>
-                    <div class="field"><label for="sort-year">並べ替え用西暦<span>任意</span></label><input id="sort-year" type="number" min="1800" max="2026" inputmode="numeric" placeholder="不明の場合は空欄"></div>
+                    <div class="field"><label for="era">撮影年代<span>必須</span></label><input id="era" type="text"
+                            maxlength="80" placeholder="例：昭和30年代、1965年頃" required></div>
+                    <div class="field"><label for="sort-year">並べ替え用西暦<span>任意</span></label><input id="sort-year"
+                            type="number" min="1800" max="2026" inputmode="numeric" placeholder="不明の場合は空欄"></div>
                 </div>
-                <div class="field"><label for="location">撮影場所<span>必須</span></label><input id="location" type="text" maxlength="150" placeholder="例：一箕町大字八幡" required></div>
-                <div class="field"><label for="description">写真の説明<span>必須</span></label><textarea id="description" maxlength="1000" required></textarea><p class="help">写真に写っている場所や当時の思い出などを入力してください。</p></div>
-                <div class="field"><label for="photo">写真ファイル<span>必須</span></label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp" required><p class="help">JPEG・PNG・WebP、10MB以下。</p><div id="preview-wrap" class="preview-wrap" hidden><img id="preview" alt="選択した写真のプレビュー"></div></div>
+                <div class="field"><label for="location">撮影場所<span>必須</span></label><input id="location" type="text"
+                        maxlength="150" placeholder="例：一箕町大字八幡" required></div>
+                <div class="field"><label for="description">写真の説明<span>必須</span></label><textarea id="description"
+                        maxlength="1000" required></textarea>
+                    <p class="help">写真に写っている場所や当時の思い出などを入力してください。</p>
+                </div>
+                <div class="field"><label for="photo">写真ファイル<span>必須</span></label><input id="photo" type="file"
+                        accept="image/jpeg,image/png,image/webp" required>
+                    <p class="help">JPEG・PNG・WebP、10MB以下。</p>
+                    <div id="preview-wrap" class="preview-wrap" hidden><img id="preview" alt="選択した写真のプレビュー"></div>
+                </div>
             </section>
 
             <section class="panel">
                 <h2>掲載名と同意</h2>
-                <div class="field"><label for="provider-name">公開時の提供者名<span>掲載名方式により必須</span></label><input id="provider-name" type="text" maxlength="100" placeholder="実名以外も選択できます"></div>
-                <fieldset class="field"><legend>掲載名の方式<span>必須</span></legend><div class="choice-grid">
-                    <label><input type="radio" name="name-mode" value="real_name" required> 実名</label>
-                    <label><input type="radio" name="name-mode" value="family_name"> 姓のみ</label>
-                    <label><input type="radio" name="name-mode" value="nickname"> ニックネーム</label>
-                    <label><input type="radio" name="name-mode" value="anonymous"> 匿名</label>
-                </div></fieldset>
+                <div class="field"><label for="provider-name">公開時の提供者名<span>掲載名方式により必須</span></label><input
+                        id="provider-name" type="text" maxlength="100" placeholder="実名以外も選択できます"></div>
+                <fieldset class="field">
+                    <legend>掲載名の方式<span>必須</span></legend>
+                    <div class="choice-grid">
+                        <label><input type="radio" name="name-mode" value="real_name" required> 実名</label>
+                        <label><input type="radio" name="name-mode" value="family_name"> 姓のみ</label>
+                        <label><input type="radio" name="name-mode" value="nickname"> ニックネーム</label>
+                        <label><input type="radio" name="name-mode" value="anonymous"> 匿名</label>
+                    </div>
+                </fieldset>
                 <div class="agreement-list">
-                    <label class="agree"><input id="rights-consent" type="checkbox" required><span>写真の権利を保有している、または提供する権限があり、Web掲載に同意します。事務局が必要に応じて写真のトリミング、個人情報部分の加工、非掲載の判断を行う場合があることにも同意します。</span></label>
-                    <label class="agree"><input id="privacy-consent" type="checkbox" required><span>個人情報取扱いについて確認し、同意します。</span></label>
+                    <label class="agree"><input id="rights-consent" type="checkbox" required><span><a
+                                href="../rules.html" target="_blank"
+                                rel="noopener">応募・掲載規約</a>を確認し、写真の権利・Web掲載に同意します</span></label>
+                    <label class="agree"><input id="privacy-consent" type="checkbox" required><span><a
+                                href="../../privacy/" target="_blank"
+                                rel="noopener">プライバシーポリシー</a>を確認し、個人情報の取扱いに同意します</span></label>
                 </div>
             </section>
 
@@ -74,4 +109,5 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="apply.js"></script>
 </body>
+
 </html>
