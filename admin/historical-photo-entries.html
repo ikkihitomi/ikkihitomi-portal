@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex,nofollow">
+    <title>一箕の昔と写真 管理｜一箕CMS</title>
+    <link rel="stylesheet" href="./historical-photo-entries.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase-config.js"></script>
+    <script src="./historical-photo-entries.js" defer></script>
+</head>
+
+<body>
+    <header class="admin-header">
+        <div>
+            <p class="eyebrow">HISTORICAL PHOTO ARCHIVE</p>
+            <h1>一箕の昔と写真 管理</h1>
+            <p>応募写真の確認、掲載情報の編集、公開状態を管理します。</p>
+        </div>
+        <nav class="header-actions" aria-label="管理画面ナビゲーション">
+            <a href="./index.html">管理トップ</a>
+            <button id="reload-button" type="button">再読み込み</button>
+        </nav>
+    </header>
+
+    <main class="admin-main">
+        <p id="page-message" class="page-message" role="status" aria-live="polite">写真を読み込んでいます。</p>
+
+        <section class="filter-panel" aria-label="写真の絞り込み">
+            <label class="field">
+                <span>検索</span>
+                <input id="search-input" type="search" placeholder="タイトル・年代・場所・提供者名">
+            </label>
+            <label class="field">
+                <span>状態</span>
+                <select id="status-filter">
+                    <option value="">すべて</option>
+                    <option value="received">received</option>
+                    <option value="reviewing">reviewing</option>
+                    <option value="approved">approved</option>
+                    <option value="rejected">rejected</option>
+                    <option value="hidden">hidden</option>
+                </select>
+            </label>
+        </section>
+
+        <div class="section-heading">
+            <h2>応募一覧</h2>
+            <span id="result-count">0件</span>
+        </div>
+        <section id="entries-grid" class="entries-grid" aria-live="polite"></section>
+        <p id="empty-panel" class="empty-panel" hidden>条件に該当する写真はありません。</p>
+    </main>
+
+    <dialog id="detail-dialog" class="detail-dialog">
+        <form method="dialog" class="dialog-shell">
+            <header class="dialog-header">
+                <div>
+                    <p class="eyebrow">PHOTO REVIEW</p>
+                    <h2 id="detail-title">写真詳細</h2>
+                </div>
+                <button class="close-button" value="cancel" aria-label="閉じる">×</button>
+            </header>
+
+            <div class="image-grid">
+                <figure>
+                    <figcaption>原本画像</figcaption>
+                    <img id="original-image" alt="原本画像">
+                    <a id="original-link" class="image-link" target="_blank" rel="noopener">原本を開く</a>
+                </figure>
+                <figure>
+                    <figcaption>掲載用画像</figcaption>
+                    <img id="display-image" alt="掲載用画像">
+                    <a id="display-link" class="image-link" target="_blank" rel="noopener">掲載用画像を開く</a>
+                </figure>
+            </div>
+
+            <div class="detail-layout">
+                <section>
+                    <h3>画像・応募者情報</h3>
+                    <dl id="detail-list" class="detail-list"></dl>
+                </section>
+                <section class="edit-panel">
+                    <h3>掲載情報の編集</h3>
+                    <label class="field"><span>タイトル</span><input id="edit-title" type="text" maxlength="100"></label>
+                    <label class="field"><span>撮影年代</span><input id="edit-era" type="text" maxlength="80"></label>
+                    <div class="two-columns">
+                        <label class="field"><span>開始年</span><input id="edit-year" type="number" min="1800"
+                                max="2100"></label>
+                        <label class="field"><span>終了年</span><input id="edit-end-year" type="number" min="1800"
+                                max="2100"></label>
+                    </div>
+                    <label class="field"><span>撮影場所</span><input id="edit-location" type="text" maxlength="150"></label>
+                    <label class="field"><span>公開提供者名</span><input id="edit-provider" type="text"
+                            maxlength="100"></label>
+                    <label class="field"><span>説明</span><textarea id="edit-description" rows="6"
+                            maxlength="1000"></textarea></label>
+                    <div class="two-columns">
+                        <label class="field"><span>status</span>
+                            <select id="edit-status">
+                                <option value="received">received</option>
+                                <option value="reviewing">reviewing</option>
+                                <option value="approved">approved</option>
+                                <option value="rejected">rejected</option>
+                                <option value="hidden">hidden</option>
+                            </select>
+                        </label>
+                        <label class="field"><span>表示順</span><input id="edit-order" type="number" min="0"
+                                step="1"></label>
+                    </div>
+                    <label class="checkbox-field"><input id="edit-public" type="checkbox">
+                        is_public（approved時のみ有効）</label>
+                    <label class="field"><span>管理者メモ</span><textarea id="edit-note" rows="5"></textarea></label>
+                </section>
+            </div>
+
+            <div class="dialog-actions">
+                <button id="save-button" class="button primary" type="button">変更を保存</button>
+            </div>
+            <p id="dialog-message" class="dialog-message" role="status" aria-live="polite"></p>
+        </form>
+    </dialog>
+</body>
+
+</html>
