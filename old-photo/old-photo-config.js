@@ -8,7 +8,8 @@ window.OLD_PHOTO_CONFIG = {
     tableName: "historical_photos",
     storageBucket: "historical-photos",
     startDate: "2026-10-01",
-    publicApiEnabled: false,
+    publicPageSize: 24,
+    publicApiEnabled: true,
     submitApiEnabled: true,
     maxFileSize: 10 * 1024 * 1024,
     allowedTypes: ["image/jpeg", "image/png", "image/webp"]
