@@ -175,6 +175,10 @@ h2 {
     cursor: pointer;
 }
 
+.archive-load-more[hidden] {
+    display: none;
+}
+
 .archive-load-more:disabled {
     opacity: .6;
     cursor: wait;
