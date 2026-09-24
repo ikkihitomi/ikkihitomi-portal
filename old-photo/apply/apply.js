@@ -13,6 +13,8 @@
     const previewWrap = document.getElementById("preview-wrap");
     const preview = document.getElementById("preview");
     const residentRegistrationGuide = document.getElementById("resident-registration-guide");
+    let displayVariant = null;
+    let previewObjectUrl = null;
 
     document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll("#commonHeader a[href^='../'], #commonFooter a[href^='../']")
@@ -40,6 +42,15 @@
         message.className = `form-message ${type}`.trim();
     }
 
+    function clearPreview() {
+        if (previewObjectUrl) {
+            URL.revokeObjectURL(previewObjectUrl);
+            previewObjectUrl = null;
+        }
+        preview.removeAttribute("src");
+        previewWrap.hidden = true;
+    }
+
     function normalizePhone(value) {
         return String(value || "").replace(/[^0-9+]/g, "");
     }
@@ -56,6 +67,81 @@
         };
 
         return extensions[file.type] || "jpg";
+    }
+
+    function loadImage(file) {
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+            const objectUrl = URL.createObjectURL(file);
+
+            image.onload = () => {
+                URL.revokeObjectURL(objectUrl);
+                resolve(image);
+            };
+            image.onerror = () => {
+                URL.revokeObjectURL(objectUrl);
+                reject(new Error("画像を読み込めませんでした。"));
+            };
+            image.src = objectUrl;
+        });
+    }
+
+    function canvasToBlob(canvas, quality) {
+        return new Promise((resolve, reject) => {
+            canvas.toBlob(blob => {
+                if (blob) {
+                    resolve(blob);
+                    return;
+                }
+                reject(new Error("掲載用画像を作成できませんでした。"));
+            }, "image/jpeg", quality);
+        });
+    }
+
+    async function createDisplayVariant(file) {
+        const image = await loadImage(file);
+        const maxDimension = Math.max(image.naturalWidth, image.naturalHeight);
+        let scale = Math.min(1, 1600 / maxDimension);
+        let quality = 0.82;
+        let result = null;
+
+        for (let attempt = 0; attempt < 18; attempt += 1) {
+            const width = Math.max(1, Math.round(image.naturalWidth * scale));
+            const height = Math.max(1, Math.round(image.naturalHeight * scale));
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+
+            const context = canvas.getContext("2d");
+            if (!context) throw new Error("掲載用画像を作成できませんでした。");
+
+            context.fillStyle = "#ffffff";
+            context.fillRect(0, 0, width, height);
+            context.drawImage(image, 0, 0, width, height);
+
+            const blob = await canvasToBlob(canvas, quality);
+            result = { blob, width, height, quality };
+
+            if (blob.size <= 800 * 1024) break;
+
+            if (quality > 0.72) {
+                quality = Math.max(0.72, quality - 0.03);
+            } else {
+                scale *= 0.9;
+                quality = 0.82;
+            }
+        }
+
+        if (!result) throw new Error("掲載用画像を作成できませんでした。");
+
+        return {
+            file: new File([result.blob], "display.jpg", {
+                type: "image/jpeg",
+                lastModified: Date.now(),
+            }),
+            width: result.width,
+            height: result.height,
+        };
     }
 
     function isUuid(value) {
@@ -84,23 +170,53 @@
         if (!fields.privacyConsent.checked) throw new Error("個人情報取扱いへの同意が必要です。");
     }
 
-    async function submitToSupabase() {
+    async function submitToSupabase(setProgress) {
         const file = fileInput.files[0];
-        const storagePath = `pending/2026/${crypto.randomUUID()}.${fileExtension(file)}`;
+        const postUuid = crypto.randomUUID();
+        const originalStoragePath = `pending/2026/${postUuid}/original.${fileExtension(file)}`;
+        const displayStoragePath = `pending/2026/${postUuid}/display.jpg`;
+        let generatedDisplayVariant = displayVariant;
 
         if (!supabaseClient) {
             throw new Error("Supabase接続設定が未完了です。");
         }
 
-        const { error: uploadError } = await supabaseClient.storage
+        if (!generatedDisplayVariant || generatedDisplayVariant.sourceFile !== file) {
+            setProgress("掲載用画像を作成しています");
+            generatedDisplayVariant = await createDisplayVariant(file);
+            generatedDisplayVariant.sourceFile = file;
+            displayVariant = generatedDisplayVariant;
+        }
+
+        setProgress("原本を送信しています");
+        const { error: originalUploadError } = await supabaseClient.storage
             .from(config.storageBucket)
-            .upload(storagePath, file, {
+            .upload(originalStoragePath, file, {
                 contentType: file.type,
-                upsert: false
+                upsert: false,
             });
 
-        if (uploadError) {
-            throw new Error(`写真のアップロードに失敗しました: ${uploadError.message}`);
+        if (originalUploadError) {
+            throw new Error(`原本のアップロードに失敗しました: ${originalUploadError.message}`);
+        }
+
+        setProgress("掲載用画像を送信しています");
+        const { error: displayUploadError } = await supabaseClient.storage
+            .from(config.storageBucket)
+            .upload(displayStoragePath, generatedDisplayVariant.file, {
+                contentType: "image/jpeg",
+                upsert: false,
+            });
+
+        if (displayUploadError) {
+            console.error("Historical photo upload orphaned file paths:", {
+                originalStoragePath,
+                displayStoragePath,
+                error: displayUploadError,
+            });
+            const error = new Error("掲載用画像の送信に失敗しました。管理者へお問い合わせください。");
+            error.noRetry = true;
+            throw error;
         }
 
         const consentAt = new Date().toISOString();
@@ -110,7 +226,12 @@
         const phone = normalizePhone(fields.phone.value);
 
         const payload = {
-            p_storage_path: storagePath,
+            p_storage_path: originalStoragePath,
+            p_display_storage_path: displayStoragePath,
+            p_display_mime_type: "image/jpeg",
+            p_display_file_size: generatedDisplayVariant.file.size,
+            p_display_width: generatedDisplayVariant.width,
+            p_display_height: generatedDisplayVariant.height,
             p_original_file_name: file.name,
             p_mime_type: file.type,
             p_file_size: file.size,
@@ -135,13 +256,21 @@
             p_privacy_consent_version: "2026-10-01"
         };
 
+        setProgress("応募情報を登録しています");
         const { data, error: rpcError } = await supabaseClient.rpc(
             config.submitFunctionName,
             payload,
         );
 
         if (rpcError) {
-            throw new Error("写真の送信後に登録処理でエラーが発生しました。管理者へお問い合わせください。");
+            console.error("Historical photo registration orphaned file paths:", {
+                originalStoragePath,
+                displayStoragePath,
+                error: rpcError,
+            });
+            const error = new Error("写真の登録に失敗しました。再送信を繰り返さず、管理者へお問い合わせください。");
+            error.noRetry = true;
+            throw error;
         }
 
         if (!isUuid(data)) {
@@ -153,18 +282,31 @@
 
     fileInput.addEventListener("change", () => {
         const file = fileInput.files?.[0];
-        if (!file) { preview.removeAttribute("src"); previewWrap.hidden = true; return; }
+        clearPreview();
+        if (!file) return;
         if (!config.allowedTypes.includes(file.type) || file.size > (config.maxFileSize || 10 * 1024 * 1024)) {
             fileInput.value = "";
-            preview.removeAttribute("src");
-            previewWrap.hidden = true;
             showMessage("JPEG・PNG・WebP形式、10MB以下の写真を選択してください。", "error");
             return;
         }
-        const reader = new FileReader();
-        reader.onload = () => { preview.src = String(reader.result); previewWrap.hidden = false; };
-        reader.readAsDataURL(file);
-        showMessage("");
+        displayVariant = null;
+        showMessage("掲載用画像を作成しています。");
+        createDisplayVariant(file)
+            .then(variant => {
+                if (fileInput.files?.[0] !== file) return;
+                variant.sourceFile = file;
+                displayVariant = variant;
+                previewObjectUrl = URL.createObjectURL(variant.file);
+                preview.src = previewObjectUrl;
+                previewWrap.hidden = false;
+                showMessage("");
+            })
+            .catch(error => {
+                if (fileInput.files?.[0] !== file) return;
+                fileInput.value = "";
+                clearPreview();
+                showMessage(error instanceof Error ? error.message : "掲載用画像を作成できませんでした。", "error");
+            });
     });
 
     form.addEventListener("submit", async event => {
@@ -180,8 +322,8 @@
                 }
                 submitButton.disabled = true;
                 submitButton.textContent = "写真を送信しています…";
-                showMessage("写真を送信しています。");
-                await submitToSupabase();
+                showMessage("掲載用画像を作成しています。");
+                await submitToSupabase(showMessage);
                 submitButton.textContent = "送信済み";
                 showMessage("写真の提供を受け付けました。内容を確認後、掲載準備を進めます。", "success");
                 residentRegistrationGuide.hidden = false;
@@ -190,8 +332,9 @@
             showMessage("入力内容の確認が完了しました。現在は公開準備中のため、送信は行っていません。", "success");
         } catch (error) {
             showMessage(error instanceof Error ? error.message : "入力内容を確認してください。", "error");
-            submitButton.disabled = false;
-            submitButton.textContent = "入力内容を確認する";
+            const noRetry = error instanceof Error && error.noRetry === true;
+            submitButton.disabled = noRetry;
+            submitButton.textContent = noRetry ? "管理者へお問い合わせください" : "入力内容を確認する";
         }
     });
 })();
