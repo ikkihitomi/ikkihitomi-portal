@@ -225,6 +225,10 @@ a {
     box-shadow: var(--photo-shadow);
 }
 
+.summary-panel[hidden] {
+    display: none;
+}
+
 .public-count-box span,
 .summary-panel>div:first-child span {
     display: block;
@@ -680,4 +684,27 @@ a {
     .dialog-content dt {
         margin-top: 6px;
     }
+}
+
+.reviewing-message {
+    padding: 56px 24px;
+    border: 1px solid var(--photo-line);
+    border-radius: var(--photo-radius);
+    color: var(--photo-text);
+    background: var(--photo-panel);
+    box-shadow: var(--photo-shadow);
+    text-align: center;
+}
+
+.reviewing-message[hidden] {
+    display: none;
+}
+
+.reviewing-message h2 {
+    margin: 0 0 10px;
+}
+
+.reviewing-message p {
+    margin: 0;
+    color: var(--photo-muted);
 }
