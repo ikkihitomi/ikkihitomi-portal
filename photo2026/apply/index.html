@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,6 +14,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
     <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
 </head>
+
 <body>
     <header class="header">
         <div class="header-inner">
@@ -26,6 +28,7 @@
             <span class="version-badge">Ver1.21</span>
             <h1>写真応募フォーム</h1>
             <p>LINE登録・住民登録をしなくても応募できます。</p>
+            <p>応募期間：2026年8月1日～9月30日</p>
         </div>
 
         <div class="entry-guide" role="note">
@@ -37,6 +40,12 @@
         <div id="message" class="message" hidden aria-live="polite"></div>
         <div id="loading" class="loading" hidden>送信準備をしています…</div>
 
+        <section id="application-closed" class="application-closed" hidden>
+            <h2>フォトコンテスト2026の応募受付は終了しました</h2>
+            <p>応募期間は2026年8月1日～9月30日です。</p>
+            <a class="text-link" href="../../photo/">公開作品を見る</a>
+        </section>
+
         <form id="entry-form" novalidate>
             <section class="panel">
                 <h2>応募者情報</h2>
@@ -44,19 +53,22 @@
 
                 <div class="field">
                     <label for="applicant-name">氏名<span class="required">必須</span></label>
-                    <input id="applicant-name" name="applicant_name" type="text" maxlength="100" autocomplete="name" required>
+                    <input id="applicant-name" name="applicant_name" type="text" maxlength="100" autocomplete="name"
+                        required>
                 </div>
 
                 <div class="grid">
                     <div class="field">
                         <label for="email">メールアドレス<span class="required">必須</span></label>
-                        <input id="email" name="email" type="email" maxlength="200" autocomplete="email" inputmode="email" required>
+                        <input id="email" name="email" type="email" maxlength="200" autocomplete="email"
+                            inputmode="email" required>
                         <p class="help">入賞時や応募内容の確認に使用します。一般公開しません。</p>
                     </div>
 
                     <div class="field">
                         <label for="phone">電話番号<span class="required">必須</span></label>
-                        <input id="phone" name="phone" type="tel" maxlength="30" autocomplete="tel" inputmode="tel" placeholder="例：09012345678" required>
+                        <input id="phone" name="phone" type="tel" maxlength="30" autocomplete="tel" inputmode="tel"
+                            placeholder="例：09012345678" required>
                         <p class="help">応募内容の確認など、必要な場合にのみ使用します。</p>
                     </div>
                 </div>
@@ -93,7 +105,8 @@
                 <div class="grid">
                     <div class="field">
                         <label for="location">撮影場所<span class="required">必須</span></label>
-                        <input id="location" name="location" type="text" maxlength="100" placeholder="例：飯盛山、滝沢峠" required>
+                        <input id="location" name="location" type="text" maxlength="100" placeholder="例：飯盛山、滝沢峠"
+                            required>
                     </div>
 
                     <div class="field">
@@ -190,4 +203,5 @@
     <script src="../config.js?v=20260806-2"></script>
     <script src="./apply.js?v=20260806-4"></script>
 </body>
+
 </html>
