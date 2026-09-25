@@ -76,7 +76,7 @@
 
     let entries = [];
     const reviewDeadline =
-        Date.parse("2026-09-30T15:00:00Z");
+        Date.parse("2020-01-01T00:00:00Z");
     let reviewTimer = null;
 
     function isReviewing() {
