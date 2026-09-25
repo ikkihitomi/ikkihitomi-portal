@@ -72,6 +72,10 @@ a {
     background: var(--photo-bg);
 }
 
+.photo-hero[hidden] {
+    display: none;
+}
+
 .photo-hero-image-wrap {
     width: min(1100px, 100%);
     margin: 0 auto;
@@ -172,6 +176,10 @@ a {
         background-color 0.2s ease,
         transform 0.2s ease,
         box-shadow 0.2s ease;
+}
+
+#application-link[hidden] {
+    display: none;
 }
 
 .primary-link:hover {

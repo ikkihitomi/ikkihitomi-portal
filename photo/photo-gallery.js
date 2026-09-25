@@ -14,6 +14,16 @@
             "gallery-empty",
         );
 
+    const photoContestBanner =
+        document.getElementById(
+            "photo-contest-banner",
+        );
+
+    const applicationLink =
+        document.getElementById(
+            "application-link",
+        );
+
     const gallerySummary =
         document.getElementById(
             "gallery-summary",
@@ -90,6 +100,8 @@
         galleryEmpty.hidden = true;
         gallerySummary.hidden = true;
         reviewingMessage.hidden = false;
+        photoContestBanner.hidden = true;
+        applicationLink.hidden = true;
         publicCount.textContent = "0";
 
         if (photoDialog.open) {
@@ -102,6 +114,8 @@
     function showGallery() {
         gallerySummary.hidden = false;
         reviewingMessage.hidden = true;
+        photoContestBanner.hidden = false;
+        applicationLink.hidden = false;
     }
 
     function scheduleReviewSwitch() {
