@@ -51,7 +51,7 @@
   <div id="commonHeader"></div>
 
   <main>
-    <section class="photo-hero">
+    <section id="photo-contest-banner" class="photo-hero">
       <div class="photo-hero-image-wrap">
         <img src="../images/photo-contest-hero.jpg" alt="一箕地区フォトコンテスト2026" class="photo-hero-image">
       </div>
@@ -82,7 +82,7 @@
 
     <section class="gallery-section">
       <div class="gallery-inner">
-        <section class="summary-panel">
+        <section id="gallery-summary" class="summary-panel">
           <div class="public-count-box">
             <span>
               公開作品数
@@ -118,6 +118,11 @@
               </select>
             </label>
           </div>
+        </section>
+
+        <section id="reviewing-message" class="reviewing-message" hidden>
+          <h2>フォトコンテスト2026は審査中です</h2>
+          <p>結果発表までしばらくお待ちください</p>
         </section>
 
         <p id="gallery-message" class="gallery-message" aria-live="polite">

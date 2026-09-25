@@ -72,6 +72,10 @@ a {
     background: var(--photo-bg);
 }
 
+.photo-hero[hidden] {
+    display: none;
+}
+
 .photo-hero-image-wrap {
     width: min(1100px, 100%);
     margin: 0 auto;
@@ -174,6 +178,10 @@ a {
         box-shadow 0.2s ease;
 }
 
+#application-link[hidden] {
+    display: none;
+}
+
 .primary-link:hover {
     background: var(--photo-green-dark);
 
@@ -223,6 +231,10 @@ a {
 
     background: var(--photo-panel);
     box-shadow: var(--photo-shadow);
+}
+
+.summary-panel[hidden] {
+    display: none;
 }
 
 .public-count-box span,
@@ -680,4 +692,27 @@ a {
     .dialog-content dt {
         margin-top: 6px;
     }
+}
+
+.reviewing-message {
+    padding: 56px 24px;
+    border: 1px solid var(--photo-line);
+    border-radius: var(--photo-radius);
+    color: var(--photo-text);
+    background: var(--photo-panel);
+    box-shadow: var(--photo-shadow);
+    text-align: center;
+}
+
+.reviewing-message[hidden] {
+    display: none;
+}
+
+.reviewing-message h2 {
+    margin: 0 0 10px;
+}
+
+.reviewing-message p {
+    margin: 0;
+    color: var(--photo-muted);
 }

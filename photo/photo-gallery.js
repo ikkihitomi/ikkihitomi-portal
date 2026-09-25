@@ -14,6 +14,26 @@
             "gallery-empty",
         );
 
+    const photoContestBanner =
+        document.getElementById(
+            "photo-contest-banner",
+        );
+
+    const applicationLink =
+        document.getElementById(
+            "application-link",
+        );
+
+    const gallerySummary =
+        document.getElementById(
+            "gallery-summary",
+        );
+
+    const reviewingMessage =
+        document.getElementById(
+            "reviewing-message",
+        );
+
     const galleryMessage =
         document.getElementById(
             "gallery-message",
@@ -65,6 +85,54 @@
         );
 
     let entries = [];
+    const reviewDeadline =
+        Date.parse("2026-09-30T15:00:00Z");
+    let reviewTimer = null;
+
+    function isReviewing() {
+        return Number(config.contestYear || 2026) === 2026
+            && Date.now() >= reviewDeadline;
+    }
+
+    function showReviewing() {
+        entries = [];
+        galleryGrid.replaceChildren();
+        galleryEmpty.hidden = true;
+        gallerySummary.hidden = true;
+        reviewingMessage.hidden = false;
+        photoContestBanner.hidden = true;
+        applicationLink.hidden = true;
+        publicCount.textContent = "0";
+
+        if (photoDialog.open) {
+            photoDialog.close();
+        }
+
+        setMessage("");
+    }
+
+    function showGallery() {
+        gallerySummary.hidden = false;
+        reviewingMessage.hidden = true;
+        photoContestBanner.hidden = false;
+        applicationLink.hidden = false;
+    }
+
+    function scheduleReviewSwitch() {
+        if (reviewTimer !== null) {
+            window.clearTimeout(reviewTimer);
+        }
+
+        const delay = reviewDeadline - Date.now();
+        if (Number(config.contestYear || 2026) !== 2026 || delay <= 0) {
+            return;
+        }
+
+        reviewTimer = window.setTimeout(() => {
+            showReviewing();
+            reviewTimer = null;
+        }, delay);
+    }
 
     function escapeHtml(value) {
         return String(value ?? "")
@@ -113,6 +181,12 @@
     }
 
     async function loadEntries() {
+        if (isReviewing()) {
+            showReviewing();
+            return;
+        }
+
+        showGallery();
         setMessage(
             "公開作品を読み込んでいます。",
         );
@@ -154,6 +228,11 @@
                 result.error
                 || "公開作品を取得できませんでした。",
             );
+        }
+
+        if (result.reviewing === true || isReviewing()) {
+            showReviewing();
+            return;
         }
 
         entries =
@@ -438,6 +517,13 @@
             ).href =
                 config.applicationUrl
                 || "/photo2026/apply/";
+
+            scheduleReviewSwitch();
+
+            if (isReviewing()) {
+                showReviewing();
+                return;
+            }
 
             await loadEntries();
 

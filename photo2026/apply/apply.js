@@ -6,6 +6,8 @@ if (!cfg) {
     throw new Error("フォトコン設定ファイルを読み込めませんでした。");
 }
 
+const APPLICATION_DEADLINE = Date.parse("2026-10-01T00:00:00+09:00");
+
 let selectedFile = null;
 let districtMaster = [];
 let neighborhoodMaster = [];
@@ -13,6 +15,7 @@ let neighborhoodMaster = [];
 const form = document.getElementById("entry-form");
 const messageElement = document.getElementById("message");
 const loadingElement = document.getElementById("loading");
+const applicationClosedElement = document.getElementById("application-closed");
 const submitButton = document.getElementById("submit-button");
 const successCard = document.getElementById("success-card");
 const entryNoElement = document.getElementById("entry-no");
@@ -46,6 +49,23 @@ function hideMessage() {
 
 function normalizePhone(value) {
     return String(value || "").replace(/[^0-9+]/g, "");
+}
+
+function isApplicationClosed() {
+    return Date.now() >= APPLICATION_DEADLINE;
+}
+
+function assertApplicationOpen() {
+    if (isApplicationClosed()) {
+        throw new Error("フォトコンテスト2026の応募受付は終了しました。");
+    }
+}
+
+function showApplicationClosed() {
+    form.hidden = true;
+    applicationClosedElement.hidden = false;
+    submitButton.disabled = true;
+    loadingElement.hidden = true;
 }
 
 
@@ -193,6 +213,7 @@ function createApplicantDirectory() {
 }
 
 async function uploadPhoto(file) {
+    assertApplicationOpen();
     const now = new Date();
     const year = String(now.getFullYear());
     const month = String(now.getMonth() + 1).padStart(2, "0");
@@ -252,6 +273,7 @@ async function deleteUploadedPhoto(storagePath) {
 }
 
 async function insertPhotoEntry(storagePath) {
+    assertApplicationOpen();
     const payload = {
         p_line_user_id: null,
         p_resident_id: null,
@@ -395,6 +417,7 @@ async function handleSubmit(event) {
 
     try {
         validateForm();
+        assertApplicationOpen();
 
         if (!window.confirm("この内容でフォトコンテストへ応募しますか？")) {
             return;
@@ -438,6 +461,11 @@ async function initialize() {
     successCard.hidden = true;
     form.hidden = false;
     submitButton.disabled = true;
+
+    if (isApplicationClosed()) {
+        showApplicationClosed();
+        return;
+    }
 
     const today = new Date().toISOString().slice(0, 10);
     shootingDateInput.max = today;
