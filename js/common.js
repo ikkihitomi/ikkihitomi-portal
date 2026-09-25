@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "blog",
       "photo2026",
       "photo",
+      "old-photo",
       "about",
       "sitemap",
       "terms",
@@ -130,6 +131,11 @@ document.addEventListener("DOMContentLoaded", () => {
               📷 フォトコンテスト
             </a>
 
+            <a href="../old-photo/"
+              ${getCurrentAttribute("old-photo")}>
+              🕰️ 昔の写真
+            </a>
+
           </nav>
 
         </div>
@@ -196,6 +202,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             <a href="../photo2026/">
               フォトコンテスト
+            </a>
+
+            <a href="../old-photo/">
+              一箕の昔と写真
             </a>
 
             <a href="../about/">
