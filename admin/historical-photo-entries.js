@@ -23,6 +23,7 @@
     const displayLink = document.getElementById("display-link");
     const dialogMessage = document.getElementById("dialog-message");
     const saveButton = document.getElementById("save-button");
+    const deleteButton = document.getElementById("delete-button");
 
     const editFields = {
         title: document.getElementById("edit-title"),
@@ -263,6 +264,78 @@
         await loadEntries();
     }
 
+    async function deleteEntry() {
+        if (!currentEntry) return;
+
+        const entryId = currentEntry.id;
+        const entryTitle = currentEntry.title || "無題";
+        const confirmed = window.confirm(
+            `「${entryTitle}」を完全に削除します。\n\n投稿情報、原本画像、掲載用画像が削除され、元に戻せません。`,
+        );
+        if (!confirmed) return;
+
+        const typedTitle = window.prompt(
+            "確認のため、削除する投稿のタイトルを正確に入力してください。",
+        );
+        if (typedTitle === null) return;
+        if (typedTitle.trim() !== entryTitle) {
+            setDialogMessage("タイトルが一致しないため、削除を中止しました。", "error");
+            return;
+        }
+
+        saveButton.disabled = true;
+        deleteButton.disabled = true;
+        setDialogMessage("投稿を非公開にして、削除を準備しています。");
+
+        let deletionPrepared = false;
+
+        try {
+            const { data: preparedEntry, error: prepareError } = await client.rpc(
+                "admin_prepare_historical_photo_delete",
+                { p_id: entryId },
+            );
+            if (prepareError) throw prepareError;
+            deletionPrepared = true;
+
+            const storagePaths = [
+                preparedEntry?.storage_path,
+                preparedEntry?.display_storage_path,
+            ].filter((path, index, paths) => path && paths.indexOf(path) === index);
+
+            if (storagePaths.length > 0) {
+                setDialogMessage("原本画像と掲載用画像を削除しています。");
+                const { error: storageError } = await client.storage
+                    .from(bucket)
+                    .remove(storagePaths);
+                if (storageError) throw storageError;
+            }
+
+            setDialogMessage("投稿情報を削除しています。");
+            const { error: deleteError } = await client.rpc(
+                "admin_delete_historical_photo",
+                { p_id: entryId },
+            );
+            if (deleteError) throw deleteError;
+
+            currentEntry = null;
+            detailDialog.close();
+            await loadEntries();
+            setPageMessage(`「${entryTitle}」を完全に削除しました。`, "success");
+        } catch (error) {
+            console.error(error);
+            const detail = error instanceof Error ? error.message : "削除処理に失敗しました。";
+            const prefix = deletionPrepared
+                ? "削除を完了できませんでした。対象は非公開になっています。再読み込み後に再試行してください。"
+                : "削除を開始できませんでした。";
+            setDialogMessage(`${prefix} ${detail}`, "error");
+        } finally {
+            if (currentEntry) {
+                saveButton.disabled = false;
+                deleteButton.disabled = false;
+            }
+        }
+    }
+
     entriesGrid.addEventListener("click", event => {
         const button = event.target.closest("[data-id]");
         if (!button) return;
@@ -284,6 +357,7 @@
             setDialogMessage(error instanceof Error ? error.message : "保存に失敗しました。", "error");
         });
     });
+    deleteButton.addEventListener("click", deleteEntry);
     document.getElementById("reload-button").addEventListener("click", () => {
         loadEntries().catch(error => setPageMessage(error.message, "error"));
     });

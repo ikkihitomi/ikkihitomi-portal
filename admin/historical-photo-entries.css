@@ -155,7 +155,8 @@ a {
 
 .entries-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(270px, 340px));
+    justify-content: start;
     gap: 18px;
 }
 
@@ -259,6 +260,17 @@ a {
 .button.primary {
     color: #fff;
     background: var(--green);
+}
+
+.button.danger {
+    border-color: var(--red);
+    color: #fff;
+    background: var(--red);
+}
+
+.button.danger:hover,
+.button.danger:focus-visible {
+    background: #8f2020;
 }
 
 .button:disabled {
@@ -398,6 +410,36 @@ a {
     margin-top: 22px;
 }
 
+.danger-zone {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    margin-top: 28px;
+    padding: 18px;
+    border: 1px solid #e2aaaa;
+    border-radius: 10px;
+    background: #fff4f4;
+}
+
+.danger-zone h3,
+.danger-zone p {
+    margin: 0;
+}
+
+.danger-zone h3 {
+    color: var(--red);
+}
+
+.danger-zone p {
+    margin-top: 4px;
+    color: #744;
+}
+
+.danger-zone .button {
+    flex: 0 0 auto;
+}
+
 .dialog-message {
     margin-bottom: 0;
 }
@@ -419,6 +461,11 @@ a {
         grid-template-columns: 1fr;
     }
 
+    .danger-zone {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
     .dialog-shell {
         padding: 16px;
     }
@@ -429,5 +476,9 @@ a {
 
     .detail-list {
         grid-template-columns: 7em minmax(0, 1fr);
+    }
+
+    .entries-grid {
+        grid-template-columns: 1fr;
     }
 }
