@@ -128,28 +128,35 @@ alter table public.historical_photos enable row level security;
 revoke all on table public.historical_photos from anon, authenticated;
 revoke all on function public.set_historical_photos_updated_at() from public;
 
--- 5. Storage: 匿名応募者は pending/ 以下へ画像を新規登録するだけ。
--- SELECT / UPDATE / DELETE ポリシーは作成しない。
+-- 5. Storage: pending/ 以下への画像アップロードを許可する。
+-- 管理画面へログイン中でも投稿できるよう、anon と authenticated を対象にする。
 drop policy if exists historical_photos_pending_insert on storage.objects;
+
 create policy historical_photos_pending_insert
 on storage.objects
 for insert
-to anon
+to anon, authenticated
 with check (
     bucket_id = 'historical-photos'
     and name like 'pending/%'
     and (storage.foldername(name))[1] = 'pending'
-    and position('..' in name) = 0
-    and lower(coalesce(metadata ->> 'mimetype', '')) in ('image/jpeg', 'image/png', 'image/webp')
-    and (
-        coalesce(metadata ->> 'size', '') = ''
-        or (
-            (metadata ->> 'size') ~ '^[0-9]+$'
-            and (metadata ->> 'size')::bigint between 1 and 10485760
-        )
-    )
+    and position('../' in name) = 0
 );
 
+-- Supabase Storageのアップロード完了処理に必要なSELECTだけを許可する。
+-- 写真を一般公開するためのSELECTポリシーではない。
+drop policy if exists historical_photos_pending_upload_return on storage.objects;
+
+create policy historical_photos_pending_upload_return
+on storage.objects
+for select
+to anon, authenticated
+using (
+    storage.allow_only_operation('storage.object.upload')
+    and bucket_id = 'historical-photos'
+    and name like 'pending/%'
+    and (storage.foldername(name))[1] = 'pending'
+);
 -- 6. 登録RPC。応募者はテーブルへ直接書き込めず、この関数だけを実行する。
 create or replace function public.submit_historical_photo(
     p_storage_path text,
