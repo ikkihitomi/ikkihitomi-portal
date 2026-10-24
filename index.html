@@ -284,6 +284,28 @@
 
     </section>
 
+    <!-- フォトコンテスト入賞作品発表 -->
+    <section class="section photo-awards-section" id="photo-awards">
+      <div class="section-inner">
+        <h2 class="section-title-center">一箕地区フォトコンテスト 入賞作品</h2>
+        <p class="section-description">一箕地区の自然、風景、歴史、暮らしを写真でご紹介します。</p>
+        <div class="photo-awards-grid">
+          <a class="photo-awards-card" href="/blog/photo-contest-2025/">
+            <span class="photo-awards-year">2025</span>
+            <h3>フォトコンテスト2025 入賞作品</h3>
+            <p>入賞作品をご覧ください。</p>
+            <span class="photo-awards-link">作品を見る →</span>
+          </a>
+          <div class="photo-awards-card photo-awards-upcoming" id="photo-awards-2026">
+            <span class="photo-awards-year">2026</span>
+            <h3>フォトコンテスト2026 入賞作品</h3>
+            <p>2026年11月1日 公開予定</p>
+            <span class="photo-awards-link">公開までお待ちください</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- 一箕地区について -->
     <section class="section about-introduction" id="about">
 
@@ -786,6 +808,26 @@
   <script src="js/wordpress-neighborhood.js?v=1.22.4"></script>
   <script src="./js/wordpress-organization.js"></script>
   <script src="./js/wordpress-staff.js"></script>
+  <script>
+    // 2026年11月1日（日本時間）から入賞作品ページへのリンクを有効化
+    (function () {
+      const card = document.getElementById("photo-awards-2026");
+      if (!card) return;
+      const todayJst = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit"
+      }).format(new Date());
+      if (todayJst < "2026-11-01") return;
+      const link = document.createElement("a");
+      link.className = "photo-awards-card";
+      link.href = "/blog/photo-contest-2026/";
+      link.innerHTML = card.innerHTML;
+      const description = link.querySelector("p");
+      const action = link.querySelector(".photo-awards-link");
+      if (description) description.textContent = "入賞作品をご覧ください。";
+      if (action) action.textContent = "作品を見る →";
+      card.replaceWith(link);
+    })();
+  </script>
 </body>
 
 </html>
