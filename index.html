@@ -63,7 +63,8 @@
 
       </div>
 
-      <nav class="global-nav" aria-label="メインメニュー">
+      <button class="menu-toggle" type="button" aria-label="メニューを開く" aria-controls="globalNavigation" aria-expanded="false"><span class="menu-toggle-icon" aria-hidden="true">☰</span><span class="menu-toggle-text">メニュー</span></button>
+      <nav class="global-nav" id="globalNavigation" aria-label="メインメニュー">
 
         <a href="index.html" aria-current="page">
           🏠 ホーム
@@ -93,11 +94,11 @@
           LINE 公式LINE
         </a>
 
-        <a href="blog/">
+        <a href="https://ikki-portal.com/blog/">
           ✏️ 地域ブログ
         </a>
 
-        <a href="/photo2026/">
+        <a href="/photo/">
           📷 フォトコンテスト
         </a>
 
@@ -528,7 +529,7 @@
           </a>
 
 
-          <a class="menu-card" href="/blog/neighborhood/">
+          <a class="menu-card" href="https://ikki-portal.com/blog/neighborhood/">
 
             <div class="card-icon" aria-hidden="true">
               🏘️
@@ -612,7 +613,7 @@
 
 
 
-          <a class="menu-card photo-card" href="/photo2026/">
+          <a class="menu-card photo-card" href="/photo/">
 
             <div class="card-icon" aria-hidden="true">
               📷
@@ -730,7 +731,7 @@
           行事予定
         </a>
 
-        <a href="/blog/neighborhood/">
+        <a href="https://ikki-portal.com/blog/neighborhood/">
           町内会紹介
         </a>
 
@@ -746,11 +747,11 @@
           公式LINE
         </a>
 
-        <a href="blog/">
+        <a href="https://ikki-portal.com/blog/">
           地域ブログ
         </a>
 
-        <a href="/photo2026/">
+        <a href="/photo/">
           フォトコンテスト
         </a>
 
@@ -819,7 +820,7 @@
       if (todayJst < "2026-11-01") return;
       const link = document.createElement("a");
       link.className = "photo-awards-card";
-      link.href = "/blog/photo-contest-2026/";
+      link.href = "https://ikki-portal.com/blog/photo-contest-2026/";
       link.innerHTML = card.innerHTML;
       const description = link.querySelector("p");
       const action = link.querySelector(".photo-awards-link");

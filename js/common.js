@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </span>
 
             <h1>
-              <a href="../index.html">
+              <a href="/">
                 一箕地区ポータルサイト
               </a>
             </h1>
@@ -84,20 +84,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
           </div>
 
-          <nav class="global-nav"
-               aria-label="メインメニュー">
+          <button class="menu-toggle" type="button" aria-label="メニューを開く" aria-controls="globalNavigation" aria-expanded="false"><span class="menu-toggle-icon" aria-hidden="true">☰</span><span class="menu-toggle-text">メニュー</span></button>
+           <nav class="global-nav" id="globalNavigation" aria-label="メインメニュー">
 
-            <a href="../index.html"
+            <a href="/"
                ${getCurrentAttribute("home")}>
               🏠 ホーム
             </a>
 
-            <a href="../news/"
+            <a href="/news/"
                ${getCurrentAttribute("news")}>
               📢 お知らせ
             </a>
 
-            <a href="../event/"
+            <a href="/event/"
                ${getCurrentAttribute("event")}>
               📅 行事予定
             </a>
@@ -106,17 +106,17 @@ document.addEventListener("DOMContentLoaded", () => {
               🏘️ 町内会紹介
             </a>
 
-            <a href="../facility/"
+            <a href="/facility/"
                ${getCurrentAttribute("facility")}>
               🏢 施設予約
             </a>
 
-            <a href="../disaster/"
+            <a href="/disaster/"
                ${getCurrentAttribute("disaster")}>
               🚨 防災情報
             </a>
 
-            <a href="../line/"
+            <a href="/line/"
                ${getCurrentAttribute("line")}>
               LINE 公式LINE
             </a>
@@ -126,12 +126,12 @@ document.addEventListener("DOMContentLoaded", () => {
               ✏️ 地域ブログ
             </a>
 
-            <a href="../photo2026/"
+            <a href="/photo/"
               ${getCurrentAttribute("photo")}>
               📷 フォトコンテスト
             </a>
 
-            <a href="../old-photo/"
+            <a href="/old-photo/"
               ${getCurrentAttribute("old-photo")}>
               🕰️ 昔の写真
             </a>
@@ -168,15 +168,15 @@ document.addEventListener("DOMContentLoaded", () => {
           <nav class="footer-nav"
                aria-label="フッターメニュー">
 
-            <a href="../index.html">
+            <a href="/">
               ホーム
             </a>
 
-            <a href="../news/">
+            <a href="/news/">
               お知らせ
             </a>
 
-            <a href="../event/">
+            <a href="/event/">
               行事予定
             </a>
 
@@ -184,15 +184,15 @@ document.addEventListener("DOMContentLoaded", () => {
               町内会紹介
             </a>
 
-            <a href="../facility/">
+            <a href="/facility/">
               施設予約
             </a>
 
-            <a href="../disaster/">
+            <a href="/disaster/">
               防災情報
             </a>
 
-            <a href="../line/">
+            <a href="/line/">
               公式LINE
             </a>
 
@@ -200,35 +200,35 @@ document.addEventListener("DOMContentLoaded", () => {
               地域ブログ
             </a>
 
-            <a href="../photo2026/">
+            <a href="/photo/">
               フォトコンテスト
             </a>
 
-            <a href="../old-photo/">
+            <a href="/old-photo/">
               一箕の昔と写真
             </a>
 
-            <a href="../about/">
+            <a href="/about/">
               一箕地区について
             </a>
 
-            <a href="../sitemap/">
+            <a href="/sitemap/">
               サイトマップ
             </a>
 
-            <a href="../terms/">
+            <a href="/terms/">
               利用規約
             </a>
 
-            <a href="../privacy/">
+            <a href="/privacy/">
               プライバシーポリシー
             </a>
 
-            <a href="../contact/">
+            <a href="/contact/">
               お問い合わせ
             </a>
 
-            <a href="../release/">
+            <a href="/release/">
               更新履歴
             </a>
 
@@ -247,4 +247,33 @@ document.addEventListener("DOMContentLoaded", () => {
       </footer>
     `;
   }
+  // Ver1.60: PCは横並び、1024px以下は折りたたみメニュー
+  const menuButton = document.querySelector(".site-header .menu-toggle");
+  const menuNav = document.querySelector(".site-header .global-nav");
+  if (menuButton && menuNav) {
+    const closeMenu = () => {
+      menuButton.setAttribute("aria-expanded", "false");
+      menuButton.setAttribute("aria-label", "メニューを開く");
+      menuButton.querySelector(".menu-toggle-icon").textContent = "☰";
+      menuNav.classList.remove("is-open");
+    };
+    menuButton.addEventListener("click", () => {
+      const open = menuButton.getAttribute("aria-expanded") !== "true";
+      menuButton.setAttribute("aria-expanded", String(open));
+      menuButton.setAttribute("aria-label", open ? "メニューを閉じる" : "メニューを開く");
+      menuButton.querySelector(".menu-toggle-icon").textContent = open ? "×" : "☰";
+      menuNav.classList.toggle("is-open", open);
+    });
+    menuNav.addEventListener("click", (event) => {
+      if (event.target.closest("a")) closeMenu();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeMenu();
+    });
+    document.addEventListener("click", (event) => {
+      if (!event.target.closest(".site-header")) closeMenu();
+    });
+    window.matchMedia("(min-width: 1025px)").addEventListener("change", closeMenu);
+  }
+
 });
